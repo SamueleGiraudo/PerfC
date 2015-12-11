@@ -1,0 +1,15 @@
+Partie A. Écrire un projet maintenable 
+    A.1. Bonnes habitudes de programmation
+    A.2. Compilation
+    A.3. Programmation modulaire
+
+Partie B. Mécanismes classiques
+    B.1. Pointeurs et allocation dynamique
+    B.2. Tableaux avancés
+    B.3. Types structures avancés
+
+Partie C. Mécanismes avancés
+    C.1. Opérateurs bit à bit
+    C.2. Variables statiques et mémoïsation
+    C.3. Pointeurs de fonction et généricité
+
