@@ -1,0 +1,960 @@
+% Auteur : Samuele Giraudo
+% Création : jan. 2014, jan. 2015, fév 2015, déc. 2015
+
+\tikzstyle{Bloc}=[rectangle,draw=Vert!100,fill=Vert!20,
+    line width=1pt,minimum width=1cm,minimum height=0.75cm]
+\tikzstyle{BlocM}=[Bloc,draw=Marron=!100,fill=Marron!10]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Types structurés}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Déclaration}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Déclaration de types structurés}
+La syntaxe
+\smallskip
+
+\Code{typedef struct ALIAS $\lbrace$} \\
+\qquad \Code{TYPE\_1 CHAMP\_1;} \\
+\qquad \Code{TYPE\_2 CHAMP\_2;} \\
+\qquad \Code{\dots} \\
+\Code{$\rbrace$ NOM;}
+\smallskip
+
+permet de \alert{déclarer un type structuré} \Code{NOM}.
+\bigskip
+
+L'{\bf alias} \Code{ALIAS} est facultatif.
+\bigskip
+
+Par exemple, \vspace{-1em}
+\begin{multicols}{2}
+\begin{lstlisting}
+typedef struct {
+    int x;
+    int y;
+} Couple;
+\end{lstlisting}
+déclare un type structuré \Code{Couple} qui permet de représenter des
+couples d'entiers.
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Déclaration de types structurés récursifs}
+Il est possible de \alert{déclarer des types structurés récursifs} en
+faisant usage de l'{\bf alias} et du mot clé \Code{struct}~:
+\medskip
+
+\begin{lstlisting}
+typedef struct _Liste {
+    int e;
+    struct _Liste *s;
+} Liste;
+\end{lstlisting}
+\medskip
+
+Ceci fonctionne car la taille d'un pointeur vers une valeur de type
+\Code{T} est connue et indépendante de la nature de \Code{T}.
+\bigskip
+
+Attention, la déclaration
+\begin{lstlisting}
+typedef struct _Liste {
+    int e;
+    struct _Liste s;
+} Liste;
+\end{lstlisting}
+n'est pas valide car le {\bf champ récursif} n'est pas un {\bf pointeur}.
+\medskip
+
+Le système ne peut pas connaître pas la taille de ce champ.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Déclaration de types structurés mutuellement récursifs}
+Il est possible de \alert{déclarer des types structurés mutuellement récursifs}~:
+\begin{lstlisting}
+typedef struct _Flip {
+    int a;
+    int b;
+    struct _Flop *suiv;
+} Flip;
+
+typedef struct _Flop {
+    double x;
+    struct _Flip *suiv;
+} Flop;
+\end{lstlisting}
+
+\begin{center}
+    \todo{Dessiner un exemple de variable de type \Code{Flip}.}
+\end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Initialisation d'une variable d'un type structuré}
+Il est possible d'\alert{initialiser les champs} d'une variable d'un type
+structuré au moment de sa \alert{déclaration}.
+\medskip
+
+On utilise pour cela l'opérateur d'affectation \Code{=} avec comme valeur
+droite les valeurs des champs à affecter dans des accolades et séparées
+par des virgules.
+\medskip
+
+Par exemple,
+\begin{multicols}{2}
+\begin{lstlisting}
+typedef struct {
+    char c;
+    int a;
+    double b;
+} Triplet;
+...
+Triplet tr = {'h', 55, 214.35};
+\end{lstlisting}
+\bigskip
+
+Déclare, en l'initialisant, la variable \Code{tr}.
+\begin{center}
+    \todo{Dessiner le contenu de \Code{tr}.}
+\end{center}
+\bigskip
+\bigskip
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Dans les fonctions}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Renvoi d'une variable d'un type structuré}
+Le code
+\begin{multicols}{2}
+\begin{lstlisting}
+typedef struct {
+    int x;
+    int y;
+} Couple;
+
+
+Couple twist(Couple c) {
+    Couple res;
+    res.x = c.y;
+    res.y = c.x;
+    return res;
+}
+\end{lstlisting}
+\end{multicols}
+est correct (\Code{twist} renvoie le couple obtenu par échange des
+coordonnées de celui passé en argument).
+\smallskip
+
+\Code{twist} \alert{renvoie} une variable d'un \alert{type structuré}.
+\medskip
+
+Cependant, il n'est pas efficace car, à chaque appel de fonction
+\begin{center}
+    \Code{d = twist(c);}
+\end{center}
+la variable \Code{res}, qui vit dans la pile, doit être recopiée.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Paramètre variable d'un type structuré}
+Le code
+\begin{multicols}{2}
+\begin{lstlisting}
+typedef struct {
+    int tab1[2048];
+    int tab2[2048];
+} DeuxTab;
+
+int prem_egaux(DeuxTab x) {
+    return x.tab1[0]
+        == x.tab2[0];
+}
+\end{lstlisting}
+\end{multicols}
+est correct (\Code{prem\_egaux} teste si les premières cases des tableaux
+sont égales).
+\smallskip
+
+\Code{prem\_egaux} est \alert{paramétrée} par une variable
+d'un \alert{type structuré}.
+\medskip
+
+Cependant, il n'est pas efficace car à chaque appel de fonction
+\begin{center}
+    \Code{prem\_egaux(y);}
+\end{center}
+les champs de l'{\bf argument} \Code{y} sont recopiés dans le
+{\bf paramètre} \Code{x}.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Passage par adresse {\em vs} passage par valeur}
+Soit une fonction \Code{fct} paramétrée par une variable \Code{x} d'un
+type structuré~\Code{T}.
+\medskip
+
+Il est d'usage courant d'adopter la convention suivante~:
+\smallskip
+
+\begin{itemize}
+    \item si les champs de \Code{x} doivent être modifiés par la fonction,
+    alors on recourt à un {\bf passage par adresse}
+    \begin{center}
+        \Code{... fct(T *x, ...) $\lbrace$ ... $\rbrace$}
+    \end{center}
+    \smallskip
+
+    \item si les champs de \Code{x} ne doivent pas être modifiés par
+    la fonction, alors on recourt à un {\bf passage par valeur}
+    \begin{center}
+        \Code{... fct(T x, ...) $\lbrace$ ... $\rbrace$}
+    \end{center}
+\end{itemize}
+\bigskip
+
+\alert{Cette conception est erronée} car il est possible de \og modifier \fg\,
+une variable d'un type structuré passée par valeur à une fonction.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Passage par adresse {\em vs} passage par valeur}
+Considérons en effet le code suivant~:
+\begin{multicols}{2}
+\begin{lstlisting}
+tyepdef struct {
+    int *tab;
+    int n;
+} Tab;
+
+void init(Tab t, int k) {
+    int i;
+    for (i = 0 ; i < t.n ; ++i)
+        t.tab[i] = k;
+}
+\end{lstlisting}
+\end{multicols}
+Chaque appel de fonction
+\begin{center}
+    \Code{init(s, r);}
+\end{center}
+provoque la recopie de trois valeurs (ce qui est acceptable) mais
+\og modifie \fg\, les valeurs pointées par le champ \Code{tab} de \Code{s},
+malgré le passage par valeur.
+\bigskip
+
+{\bf Conclusion}~: écrire des fonctions avec passage par valeur des
+paramètres d'un type structuré ne présente que des désavantages.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Variables d'un type structuré dans les fonctions}
+En résumé, on adopte les deux règles suivantes~:
+\smallskip
+
+\begin{enumerate}
+    \item une fonction ne renvoie jamais de valeur d'un type structuré~;
+    \smallskip
+
+    \item tous les paramètres d'un type structuré sont passés par adresse
+    dans une fonction.
+\end{enumerate}
+\medskip
+
+Ainsi, un prototype de fonction habituel est
+\begin{center}
+    \Code{int fct(T *x,
+    \textcolor{Rouge}{E1 e1}, ..., \textcolor{Rouge}{EN en},
+    \textcolor{Vert}{S1 *s1}, ..., \textcolor{Vert}{SM *sm});}
+\end{center}
+où
+\begin{itemize}
+    \item le type de retour est \Code{int} (renvoi d'un code d'erreur)~;
+    \smallskip
+
+    \item \Code{x} est l'adresse d'une variable d'un type structuré \Code{T}~;
+    \smallskip
+
+    \item \textcolor{Rouge}{\tt e1}, ..., \textcolor{Rouge}{\tt en}
+    sont les entrées de la fonction (adresses ou non)~;
+    \smallskip
+
+    \item \textcolor{Vert}{\tt s1}, ..., \textcolor{Vert}{\tt sm}
+    sont les sorties de la fonction (qui sont des adresses).
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Variables d'un type structuré dans les fonctions}
+P.ex., voici le nécessaire pour calculer la somme pondérée de deux
+points selon les conventions établies~:
+\begin{lstlisting}
+typdef struct {
+    float x;
+    float y;
+} Point;
+
+void somme_points(Point *p1, Point *p2,
+        float coeff1, float coeff2,
+        Point *res) {
+
+    assert(p1 != NULL);
+    assert(p2 != NULL);
+    assert(res != NULL);
+
+    res->x = coeff1 * p1->x + coeff2 * p2->x;
+    res->y = coeff1 * p1->y + coeff2 * p2->y;
+}
+\end{lstlisting}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Affectation et comparaison}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Affectation de variables d'un type structuré}
+Considérons le code
+\begin{multicols}{2}
+\begin{lstlisting}
+typedef struct {
+    int a;
+    float f;
+} X;
+...
+X v1, v2;
+v1.a = 10;
+v1.f = 3.14;
+v2 = v1;
+v2.a = 20;
+\end{lstlisting}
+\end{multicols}
+\medskip
+
+\begin{center}
+    \todo{Dessiner le contenu de \Code{v1} et \Code{v2} aux l. 6, 8, 9 et 10.}
+\end{center}
+\medskip
+
+{\bf Observation}~: l'affectation recopie les champs d'une variable
+d'un type scalaire.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Affectation de variables d'un type structuré}
+Considérons le code
+\begin{multicols}{2}
+\begin{lstlisting}
+typedef struct {
+    X x;
+    char t[3];
+} Y;
+...
+Y v1, v2;
+v1.x.a = 10;
+v1.x.f = 3.14;
+v1.t = {'a', 'b', 'c'};
+v2 = v1;
+v2.x.f = 1.8;
+v2.t[0] = 'g';
+\end{lstlisting}
+\end{multicols}
+\medskip
+
+\begin{center}
+    \todo{Dessiner le contenu de \Code{v1} et \Code{v2} aux l. 9, 10 et 12.}
+\end{center}
+\medskip
+
+{\bf Observation}~: l'affectation recopie les champs d'une variable d'un
+type structuré de manière récursive et les tableaux statiques.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Affectation de variables d'un type structuré}
+Considérons le code
+\begin{multicols}{2}
+\begin{lstlisting}
+typedef struct {
+    char *t;
+    int n;
+} T;
+...
+T v1, v2;
+v1.t = (char *)
+    malloc(sizeof(char) * 3);
+v1.n = 3;
+v1.t[0] = 'a';
+v1.t[1] = 'b';
+v1.t[2] = 'c';
+v2 = v1;
+v2.n = 2;
+v2.t[0] = 'g';
+\end{lstlisting}
+\end{multicols}
+\medskip
+
+\begin{center}
+    \todo{Dessiner le contenu de \Code{v1} et \Code{v2} aux l. 12, 13 et 15.}
+\end{center}
+\medskip
+
+{\bf Observation}~: l'affectation ne recopie pas les tableaux dynamiques.
+Seule l'adresse d'un tableau dynamique est recopiée. C'est une
+\alert{copie de surface}.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Affectation de variables d'un type structuré}
+{\bf Règle générale}~: pour chaque définition d'un type structuré \Code{X},
+on définit une fonction de prototype
+\begin{center}
+    \Code{void copier\_X(X *v1, X *v2);}
+\end{center}
+qui \alert{copie en profondeur} les champs de \Code{v1} dans les champs
+de \Code{v2}.
+\medskip
+
+Par exemple, la définition du type \Code{T} précédent s'accompagne de la
+définition de la fonction
+\begin{lstlisting}
+void copier_T(T *v1, T *v2) {
+    int i;
+    assert(v1 != NULL); /* Test arg. */
+    assert(v2 != NULL); /* Test arg. */
+    v2->n = v1->n;
+    v2->t = (char *) malloc(sizeof(char) * v1->n);
+    if (v2->t == NULL) exit(EXIT_FAILURE);
+    for (i = 0 ; i < v1->n ; ++i)
+        v2->t[i] = v1->t[i];
+}
+\end{lstlisting}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Comparaison de variables d'un type structuré}
+Considérons le code
+\begin{multicols}{2}
+\begin{lstlisting}
+typedef struct {
+    int a;
+    int b;
+} A;
+...
+A v1, v2;
+...
+if (v1 == v2) {...}
+...
+if (v1 != v2) {...}
+\end{lstlisting}
+\end{multicols}
+\medskip
+
+Ce code est incorrect (il ne compile pas).
+\medskip
+
+Le compilateur n'accepte pas la comparaison de variables d'un type
+structuré.
+\smallskip
+
+\Sortie{invalid operands to binary == (have 'A' and 'A')}
+\smallskip
+
+\Sortie{invalid operands to binary != (have 'A' and 'A')}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Comparaison de variables d'un type structuré}
+{\bf Règle générale}~: pour chaque définition d'un type structuré \Code{X},
+on définit deux fonctions de prototypes
+\begin{center}
+    \Code{int sont\_ega\_X(X *v1, X *v2);} \smallskip
+
+    \Code{int sont\_dif\_X(X *v1, X *v2);}
+\end{center}
+qui \alert{testent l'égalité} et \alert{l'inégalité} entre \Code{v1}
+et \Code{v2}.
+\medskip
+
+Par exemple, la définition du type \Code{A} précédent s'accompagne de la
+définition des fonctions
+\begin{multicols}{2}
+\begin{lstlisting}
+int sont_ega_A(A *v1, A *v2) {
+    assert(v1 != NULL);
+    assert(v2 != NULL);
+    return (v1->a == v2->a)
+        && (v1->b == v2->b);
+}
+int sont_dif_A(A *v1, A *v2) {
+    assert(v1 != NULL);
+    assert(v2 != NULL);
+    return !sont_ega_A(v1, v2);
+}
+\end{lstlisting}
+\end{multicols}
+\medskip
+
+{\bf Attention}~: si \Code{X} est composé d'un champ qui est un type
+structuré \Code{Y}, il faut appeler dans \Code{sont\_ega\_X} la
+fonction de comparaison \Code{sont\_ega\_Y}.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Destruction de variables d'un type structuré}
+{\bf Règle générale}~: pour chaque définition d'un type structuré \Code{X},
+on définit une fonction de prototype
+\begin{center}
+    \Code{void detruire\_X(X *v);}
+\end{center}
+qui \alert{libère l'espace mémoire} adressé par \Code{v}.
+\medskip
+
+Par exemple, la déclaration du type \Code{B} suivant s'accompagne de la
+définition de la fonction
+\begin{multicols}{2}
+\begin{lstlisting}
+typedef struct {
+    int *tab;
+    int n;
+} B;
+
+void detruire_B(B *v) {
+    assert(v != NULL);
+    free(v->tab);
+    *v = NULL;
+}
+\end{lstlisting}
+\end{multicols}
+\medskip
+
+{\bf Attention}~: si \Code{X} est composé d'un champ qui est un type
+structuré \Code{Y}, il faut appeler dans \Code{detruire\_X} la
+fonction de comparaison \Code{detruire\_Y}.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Résumé}
+Voici en résumé la bonne marche à suivre lors de la manipulation de
+types structurés~:
+\smallskip
+
+\begin{enumerate}
+    \item on utilise l'{\bf alias} lors de la déclaration de types structurés
+    {\bf récursifs} et/ou {\bf mutuellement récursifs}~;
+    \medskip
+
+    \item on ne {\bf renvoie jamais} de valeur d'un type structuré~;
+    \medskip
+
+    \item on passe les {\bf paramètres} d'un type structuré {\bf par adresse}~;
+    \medskip
+
+    \item toute {\bf déclaration d'un type structuré} s'accompagne de la
+    définition des quatre fonctions suivantes~:
+    \begin{itemize} \normalsize
+        \item une fonction de {\bf copie}~;
+        \item une fonction de {\bf test d'égalité}~;
+        \item une fonction de {\bf test d'inégalité}~;
+        \item une fonction de {\bf destruction}.
+    \end{itemize}
+\end{enumerate}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Alignement en mémoire}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Alignement en mémoire}
+L'\alert{alignement en mémoire} d'une donnée est la façon dont celle-ci
+est organisée dans la mémoire.
+\bigskip
+
+Par exemple, les {\bf tableaux} de taille \Code{n} d'éléments d'un type
+\Code{T} sont organisés en un segment contigu de \Code{sizeof(T) * n}
+octets.
+\medskip
+
+Ainsi, un tableau \Code{t} de \Code{3} éléments de type \Code{short}
+est organisé en
+\begin{center}
+\scalebox{.6}{\begin{tikzpicture}
+    \node[BlocM](7)at(-1,0){};
+    \node[BlocM](8)at(-2,0){};
+    \node[BlocM](9)at(-3,0){};
+    \node[BlocM](10)at(6,0){};
+    \node[BlocM](11)at(7,0){};
+    \node at(-4,0){\Large $\dots$};
+    \node at(8,0){\Large $\dots$};
+    \node[Bloc](1)at(0,0){};
+    \node[Bloc](2)at(1,0){};
+    \node[Bloc](3)at(2,0){};
+    \node[Bloc](4)at(3,0){};
+    \node[Bloc](5)at(4,0){};
+    \node[Bloc](6)at(5,0){};
+    \draw(-0.5,0.75)edge[anchor=south,<->,line width=1.5pt]
+        node{\small 1 octet}(0.5,0.75);
+    \draw(-0.5,-0.75)edge[anchor=north,<->,line width=1.5pt]
+        node{\small \Code{t[0]}}(1.5,-0.75);
+    \draw(1.5,-0.75)edge[anchor=north,<->,line width=1.5pt]
+        node{\small \Code{t[1]}}(3.5,-0.75);
+    \draw(3.5,-0.75)edge[anchor=north,<->,line width=1.5pt]
+        node{\small \Code{t[2]}}(5.5,-0.75);
+\end{tikzpicture}}
+\end{center}
+\bigskip
+
+On peut se poser de la même manière la question de l'{\bf alignement
+mémoire} des variables d'un {\bf type structuré}.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Alignement en mémoire des variables d'un type structuré}
+Considérons les déclarations de types
+\begin{multicols}{2}
+\begin{lstlisting}
+typedef struct {
+    short x;
+    short y;
+    int z;
+} A;
+typedef struct {
+    short x;
+    int z;
+    short y;
+} B;
+\end{lstlisting}
+\end{multicols}
+\medskip
+
+\Code{A} et \Code{B} sont des types structurés composés des mêmes champs.
+Il n'y a que l'ordre de leur déclaration qui diffère.
+\medskip
+
+Cependant,
+\begin{lstlisting}
+    printf("%lu %lu\n", sizeof(A), sizeof(B));
+\end{lstlisting}
+affiche \Sortie{8 12}.
+\medskip
+
+Le fait que les tailles des variables de type \Code{A} et \Code{B}
+diffèrent est dû à leur {\bf alignement en mémoire}.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Alignement en mémoire des variables d'un type structuré}
+Soit \Code{a} une variable de type \Code{A}. Cette variable est organisée
+en mémoire en
+\begin{center}
+\scalebox{.6}{\begin{tikzpicture}
+    \node[BlocM](9)at(-1,0){};
+    \node[BlocM](10)at(-2,0){};
+    \node[BlocM](11)at(-3,0){};
+    \node[BlocM](12)at(8,0){};
+    \node[BlocM](13)at(9,0){};
+    \node[BlocM](14)at(10,0){};
+    \node[BlocM](15)at(11,0){};
+    \node[BlocM](16)at(12,0){};
+    \node at(-4,0){\Large $\dots$};
+    \node at(13,0){\Large $\dots$};
+    \node[Bloc,fill=Jaune!40,draw=Jaune!100](1)at(0,0){};
+    \node[Bloc,fill=Jaune!40,draw=Jaune!100](2)at(1,0){};
+    \node[Bloc,fill=Rouge!40,draw=Rouge!100](3)at(2,0){};
+    \node[Bloc,fill=Rouge!40,draw=Rouge!100](4)at(3,0){};
+    \node[Bloc,fill=Bleu!40,draw=Bleu!100](5)at(4,0){};
+    \node[Bloc,fill=Bleu!40,draw=Bleu!100](6)at(5,0){};
+    \node[Bloc,fill=Bleu!40,draw=Bleu!100](7)at(6,0){};
+    \node[Bloc,fill=Bleu!40,draw=Bleu!100](8)at(7,0){};
+    \draw(-0.5,0.75)edge[anchor=south,<->,line width=1.5pt]
+        node{\small 1 octet}(0.5,0.75);
+    \draw(-0.5,-0.75)edge[anchor=north,<->,line width=1.5pt]
+        node{\small \Code{a.x}}(1.5,-0.75);
+    \draw(1.5,-0.75)edge[anchor=north,<->,line width=1.5pt]
+        node{\small \Code{a.y}}(3.5,-0.75);
+    \draw(3.5,-0.75)edge[anchor=north,<->,line width=1.5pt]
+        node{\small \Code{a.z}}(7.5,-0.75);
+\end{tikzpicture}}
+\end{center}
+\bigskip
+
+Soit \Code{b} une variable de type \Code{B}. Cette variable est organisée
+en mémoire en
+\begin{center}
+\scalebox{.6}{\begin{tikzpicture}
+    \node[BlocM](9)at(-1,0){};
+    \node[BlocM](10)at(-2,0){};
+    \node[BlocM](11)at(-3,0){};
+    \node[BlocM](16)at(12,0){};
+    \node at(-4,0){\Large $\dots$};
+    \node at(13,0){\Large $\dots$};
+    \node[Bloc,fill=Jaune!40,draw=Jaune!100](1)at(0,0){};
+    \node[Bloc,fill=Jaune!40,draw=Jaune!100](2)at(1,0){};
+    \node[Bloc,fill=Bleu!40,draw=Bleu!100](5)at(4,0){};
+    \node[Bloc,fill=Bleu!40,draw=Bleu!100](6)at(5,0){};
+    \node[Bloc,fill=Bleu!40,draw=Bleu!100](7)at(6,0){};
+    \node[Bloc,fill=Bleu!40,draw=Bleu!100](8)at(7,0){};
+    \node[Bloc,fill=Rouge!40,draw=Rouge!100](12)at(8,0){};
+    \node[Bloc,fill=Rouge!40,draw=Rouge!100](13)at(9,0){};
+    \node[BlocM,fill=Noir!50,draw=Noir](14)at(10,0){};
+    \node[BlocM,fill=Noir!50,draw=Noir](15)at(11,0){};
+    \node[BlocM,fill=Noir!50,draw=Noir](3)at(2,0){};
+    \node[BlocM,fill=Noir!50,draw=Noir](4)at(3,0){};
+    \draw(-0.5,0.75)edge[anchor=south,<->,line width=1.5pt]
+        node{\small 1 octet}(0.5,0.75);
+    \draw(-0.5,-0.75)edge[anchor=north,<->,line width=1.5pt]
+        node{\small \Code{a.x}}(1.5,-0.75);
+    \draw(3.5,-0.75)edge[anchor=north,<->,line width=1.5pt]
+        node{\small \Code{a.z}}(7.5,-0.75);
+    \draw(7.5,-0.75)edge[anchor=north,<->,line width=1.5pt]
+        node{\small \Code{a.y}}(9.5,-0.75);
+\end{tikzpicture}}
+\end{center}
+\medskip
+
+Les octets en gris intervenant dans l'alignement mémoire de \Code{b}
+sont des \alert{octets de complétion}.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Octets de complétion}
+Des octets de complétion sont introduits pour que chaque champ \Code{c}
+d'une variable d'un type structuré \alert{commence à une adresse multiple d'un
+entier} dépendant du type de \Code{c}.
+\medskip
+
+Dans notre exemple, en sachant que tout champ de type \Code{short}
+(resp. \Code{int}) doit commencer à une adresse multiple de \Code{2}
+(resp. \Code{4}), on explique l'alignement en mémoire de \Code{b}
+précédent~:
+\begin{center}
+\scalebox{.6}{\begin{tikzpicture}
+    \node[BlocM](9)at(-1,0){};
+    \node[BlocM](10)at(-2,0){};
+    \node[BlocM](11)at(-3,0){};
+    \node[BlocM](16)at(12,0){};
+    \node at(-4,0){\Large $\dots$};
+    \node at(13,0){\Large $\dots$};
+    \node[Bloc,fill=Jaune!40,draw=Jaune!100](1)at(0,0){};
+    \node[Bloc,fill=Jaune!40,draw=Jaune!100](2)at(1,0){};
+    \node[Bloc,fill=Bleu!40,draw=Bleu!100](5)at(4,0){};
+    \node[Bloc,fill=Bleu!40,draw=Bleu!100](6)at(5,0){};
+    \node[Bloc,fill=Bleu!40,draw=Bleu!100](7)at(6,0){};
+    \node[Bloc,fill=Bleu!40,draw=Bleu!100](8)at(7,0){};
+    \node[Bloc,fill=Rouge!40,draw=Rouge!100](12)at(8,0){};
+    \node[Bloc,fill=Rouge!40,draw=Rouge!100](13)at(9,0){};
+    \node[BlocM,fill=Noir!50,draw=Noir](14)at(10,0){};
+    \node[BlocM,fill=Noir!50,draw=Noir](15)at(11,0){};
+    \node[BlocM,fill=Noir!50,draw=Noir](3)at(2,0){};
+    \node[BlocM,fill=Noir!50,draw=Noir](4)at(3,0){};
+    \draw(-0.5,0.75)edge[anchor=south,<->,line width=1.5pt]
+        node{\small 1 octet}(0.5,0.75);
+    \draw(-0.5,-0.75)edge[anchor=north,<->,line width=1.5pt]
+        node{\small \Code{a.x}}(1.5,-0.75);
+    \draw(3.5,-0.75)edge[anchor=north,<->,line width=1.5pt]
+        node{\small \Code{a.z}}(7.5,-0.75);
+    \draw(7.5,-0.75)edge[anchor=north,<->,line width=1.5pt]
+        node{\small \Code{a.y}}(9.5,-0.75);
+    \node(m1)at(0,-2){adr. mult. de \Code{4}};
+    \draw[->](m1)--(0,-1);
+    \node(m2)at(2,-3){adr. non mult. de \Code{4}};
+    \draw[->](m2)--(2,-1);
+\end{tikzpicture}}
+\end{center}
+
+Les derniers octets de complétion sont introduits pour que les tableaux
+de variables de type \Code{B} puissent être représentés en vérifiant
+cet alignement en mémoire.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Accès manuel aux champs}
+Soit \Code{a} une variable de type \Code{A} initialisée par
+\begin{lstlisting}
+    A a = {1000, 2000, 3000};
+\end{lstlisting}
+Cette variable est organisée en mémoire en
+\begin{center}
+\scalebox{.6}{\begin{tikzpicture}
+    \node[BlocM](9)at(-1,0){};
+    \node[BlocM](10)at(-2,0){};
+    \node[BlocM](11)at(-3,0){};
+    \node[BlocM](12)at(8,0){};
+    \node[BlocM](13)at(9,0){};
+    \node[BlocM](14)at(10,0){};
+    \node[BlocM](15)at(11,0){};
+    \node[BlocM](16)at(12,0){};
+    \node at(-4,0){\Large $\dots$};
+    \node at(13,0){\Large $\dots$};
+    \node[Bloc,fill=Jaune!40,draw=Jaune!100](1)at(0,0){};
+    \node[Bloc,fill=Jaune!40,draw=Jaune!100](2)at(1,0){};
+    \node[Bloc,fill=Rouge!40,draw=Rouge!100](3)at(2,0){};
+    \node[Bloc,fill=Rouge!40,draw=Rouge!100](4)at(3,0){};
+    \node[Bloc,fill=Bleu!40,draw=Bleu!100](5)at(4,0){};
+    \node[Bloc,fill=Bleu!40,draw=Bleu!100](6)at(5,0){};
+    \node[Bloc,fill=Bleu!40,draw=Bleu!100](7)at(6,0){};
+    \node[Bloc,fill=Bleu!40,draw=Bleu!100](8)at(7,0){};
+    \draw(-0.5,0.75)edge[anchor=south,<->,line width=1.5pt]
+        node{\small 1 octet}(0.5,0.75);
+    \draw(-0.5,-0.75)edge[anchor=north,<->,line width=1.5pt]
+        node{\small \Code{a.x}}(1.5,-0.75);
+    \draw(1.5,-0.75)edge[anchor=north,<->,line width=1.5pt]
+        node{\small \Code{a.y}}(3.5,-0.75);
+    \draw(3.5,-0.75)edge[anchor=north,<->,line width=1.5pt]
+        node{\small \Code{a.z}}(7.5,-0.75);
+\end{tikzpicture}}
+\end{center}
+\bigskip
+
+On peut accéder aux champs de \Code{a} de la manière suivante~:
+\begin{lstlisting}
+short x, y;
+int z;
+void *p;
+p = &a;
+x = *((short *) p); /* Equivalent a x = a.x; */
+p += 2;
+y = *((short *) p); /* Equivalent a y = a.y; */
+p += 2;
+z = *((int *) p); /* Equivalent a z = a.z; */
+\end{lstlisting}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Accès manuel aux champs}
+Soit \Code{b} une variable de type \Code{B} initialisée par
+\begin{lstlisting}
+    B b = {1000, 2000, 3000};
+\end{lstlisting}
+Cette variable est organisée en mémoire en
+\begin{center}
+\scalebox{.6}{\begin{tikzpicture}
+    \node[BlocM](9)at(-1,0){};
+    \node[BlocM](10)at(-2,0){};
+    \node[BlocM](11)at(-3,0){};
+    \node[BlocM](16)at(12,0){};
+    \node at(-4,0){\Large $\dots$};
+    \node at(13,0){\Large $\dots$};
+    \node[Bloc,fill=Jaune!40,draw=Jaune!100](1)at(0,0){};
+    \node[Bloc,fill=Jaune!40,draw=Jaune!100](2)at(1,0){};
+    \node[Bloc,fill=Bleu!40,draw=Bleu!100](5)at(4,0){};
+    \node[Bloc,fill=Bleu!40,draw=Bleu!100](6)at(5,0){};
+    \node[Bloc,fill=Bleu!40,draw=Bleu!100](7)at(6,0){};
+    \node[Bloc,fill=Bleu!40,draw=Bleu!100](8)at(7,0){};
+    \node[Bloc,fill=Rouge!40,draw=Rouge!100](12)at(8,0){};
+    \node[Bloc,fill=Rouge!40,draw=Rouge!100](13)at(9,0){};
+    \node[BlocM,fill=Noir!50,draw=Noir](14)at(10,0){};
+    \node[BlocM,fill=Noir!50,draw=Noir](15)at(11,0){};
+    \node[BlocM,fill=Noir!50,draw=Noir](3)at(2,0){};
+    \node[BlocM,fill=Noir!50,draw=Noir](4)at(3,0){};
+    \draw(-0.5,0.75)edge[anchor=south,<->,line width=1.5pt]
+        node{\small 1 octet}(0.5,0.75);
+    \draw(-0.5,-0.75)edge[anchor=north,<->,line width=1.5pt]
+        node{\small \Code{a.x}}(1.5,-0.75);
+    \draw(3.5,-0.75)edge[anchor=north,<->,line width=1.5pt]
+        node{\small \Code{a.z}}(7.5,-0.75);
+    \draw(7.5,-0.75)edge[anchor=north,<->,line width=1.5pt]
+        node{\small \Code{a.y}}(9.5,-0.75);
+\end{tikzpicture}}
+\end{center}
+\bigskip
+
+On peut accéder aux champs de \Code{b} de la manière suivante~:
+\begin{lstlisting}
+short x, y;
+int z;
+void *p;
+p = &b;
+x = *((short *) p); /* Equivalent a x = a.x; */
+p += 4;
+z = *((int *) p); /* Equivalent a z = a.z; */
+p += 4;
+y = *((short *) p); /* Equivalent a y = a.y; */
+\end{lstlisting}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{L'option {\tt Wpadded}}
+L'option du compilateur \Code{-Wpadded} permet d'obtenir un avertissement
+sanctionnant la déclaration d'un type structuré nécessitant des octets
+de complétion.
+\medskip
+
+Par exemple, avec le type structuré \Code{B} défini par
+\begin{lstlisting}
+typedef struct {
+    short x;
+    int z;
+    short y;
+} B;
+\end{lstlisting}
+on obtient l'avertissement
+\begin{footnotesize}
+\begin{verbatim}
+Prog.c:3:9: warning: padding struct to align ‘z’ [-Wpadded]
+     int z;
+         ^
+Prog.c:5:1: warning: padding struct size to alignment boundary [-Wpadded]
+ } B;
+ ^
+\end{verbatim}
+\end{footnotesize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Alignement en mémoire --- ce qu'il faut retenir}
+L'alignement mémoire d'une variable d'un type structuré dépend de
+beaucoup de paramètres, notamment~:
+\smallskip
+
+\begin{itemize}
+    \item de l'architecture de la machine exécutant ou ayant compilé le
+    programme~;
+    \smallskip
+
+    \item du compilateur ayant compilé le programme.
+\end{itemize}
+\bigskip
+
+Il est donc important de savoir que le calcul de la {\bf taille} d'une
+variable d'un {\bf type structuré} n'est pas immédiat et
+{\bf dépend du contexte}.
+\end{frame}

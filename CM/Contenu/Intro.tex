@@ -1,0 +1,144 @@
+% Auteur : Samuele Giraudo
+% Création : déc. 2015
+% Modifications : déc. 2015
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Introduction}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Introduction}
+L'objectif de ce module est d'approfondir les concepts de base et 
+d'approcher certains concepts plus avancés de la programmation en {\sf C}.
+\bigskip
+
+Celui-ci est organisé en trois axes.
+\medskip
+
+\begin{enumerate}
+    \item {\bf Axe~1}~: \alert{écrire un projet maintenable}.
+    \medskip
+    
+    Bonnes habitudes de programmation, documentation, pré-assertion,
+    gestion des erreurs, programmation modulaire, compilation.
+    \bigskip
+    
+    \item {\bf Axe~2}~: \alert{comprendre les mécanismes de base}.
+    \medskip
+    
+    Pointeurs, allocation dynamique, types, types structurés, entrées/sorties.
+    \bigskip
+    
+    \item {\bf Axe~3}~: \alert{utiliser quelques techniques avancées}.
+    \medskip
+    
+    Opérateurs bit à bit, mémoïsation, génération aléatoire, pointeurs
+    de fonction, généricité.
+\end{enumerate}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Contenu du cours}
+\begin{multicols}{3}
+    \begin{footnotesize}
+        {\large \bf Axe~1.}
+        \tableofcontents[hideallsubsections,part=1]
+        \bigskip
+
+        {\large \bf Axe~2.}
+        \tableofcontents[hideallsubsections,part=2]
+        \bigskip
+        
+        {\large \bf Axe~3.}
+        \tableofcontents[hideallsubsections,part=3]
+    \end{footnotesize}
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Pré-requis}
+Ce cours demande les pré-requis suivants~:
+\smallskip
+
+\begin{itemize}
+    \item des bases en {\bf programmation générale} (notion de programme, 
+    d'instruction, de compilation)~;
+    \medskip
+
+    \item des bases en {\bf programmation impérative} (notion de variable,
+    de structures de contrôle, de fonction)~;
+    \medskip
+    
+    \item des bases en {\bf algorithmique} (manipulation de structures de 
+    donnée élémentaires comme les tableaux, les chaînes de caractères,
+    les listes)~;
+    \medskip
+    
+    \item des bases en {\bf programmation en {\sf C}} (écriture de 
+    fonctions, manipulation de tableaux, de chaînes de caractères, 
+    connaissance des types numériques, des types structurés, 
+    notion d'allocation dynamique, de pointeur).
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Quelques dates}
+Le langage {\sf C} est apparu en 1972 dans les laboratoires Bell.
+Il a été créé par \alert{D. Ritchie} et \alert{K. Thompson}
+au même moment que l'apparition des systèmes {\sf UNIX}.
+\medskip
+
+\uncover<2->{
+Il est influencé par le langage {\sf B} qui, contrairement au {\sf C},
+ne possédait pas de système de type.
+\medskip}
+
+\uncover<3->{
+Quelques dates sur l'évolution de la spécification du langage~:
+
+\begin{itemize}
+    \item 1978~: première description complète du langage ({\sf C} traditionnel)~;
+    \smallskip
+
+    \item 1989~:%
+    {\only<4->{\bf} publication de la norme ANSI {\sf C} (ou {\sf C}89)}~;
+
+    \smallskip
+
+    \item 1995~: évolution du langage {\sf C}94/95~;
+    \smallskip
+
+    \item 1999~: évolution du langage {\sf C}99~;
+    \smallskip
+
+    \item 2011~: nouvelle version du standard {\sf C}11.
+\end{itemize}}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Quelques caractéristiques}
+Le {\sf C} est un \alert{langage de bas niveau}~: il offre la possibilité
+de se placer \og proche \fg{} de la machine. Il permet en effet de manipuler
+finement des données en mémoire, des adresses et des suites de bits.
+\bigskip
+
+\uncover<2->{
+Ce langage a été initialement pensé pour la
+\alert{conception de systèmes d'exploitation}.
+\medskip
+
+Il est cependant suffisamment expressif pour s'adapter à un large
+éventail d'utilisations.
+\bigskip}
+
+\uncover<3->{
+Il se situe à la croisée des chemins du monde des langages de programmation~:
+beaucoup de langages modernes sont traduits en {\sf C} pour être compilés.
+\bigskip}
+
+\uncover<4->{
+L'un de ses compilateurs, {\tt gcc}, fruit de nombreuses optimisations,
+fait que le {\sf C} est un langage d'une \alert{efficacité extrême}.}
+\end{frame}
+

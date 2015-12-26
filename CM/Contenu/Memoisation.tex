@@ -1,0 +1,445 @@
+% Auteur : Samuele Giraudo
+% Création : déc. 2013
+% Modifications : août 2014, fév. 2015, déc. 2015
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Mémoïsation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Variables statiques}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Notion de variable statique}
+Une \alert{variable statique} est une variable dont la durée de vie est
+égale à celle de l'exécution du programme. Une telle variable est créée
+et initialisée à la compilation.
+\medskip
+
+L'instruction
+\begin{center}
+    \Code{static T ID;}
+\end{center}
+déclare une variable statique \Code{ID} de type \Code{T}.
+\bigskip
+\bigskip
+\bigskip
+
+Elles sont les contreparties des {\bf variables automatiques} dont la
+durée de vie s'étend à l'exécution du bloc dans lesquels elles se trouvent
+et dont la création se fait à l'exécution le moment voulu.
+\medskip
+
+Les variables automatiques sont les variables habituelles (se déclarent
+sans le mot clé \Code{static}).
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Persistance des variables statiques}
+Une variable statique est \alert{rémanente}~: elle
+{\bf conserve sa dernière valeur} jusqu'à une éventuelle modification.
+\medskip
+
+\begin{multicols}{2}
+\begin{lstlisting}
+void fct(int a) {
+    static int s = 3;
+    s = s + a;
+    printf("%d\n", s);
+}
+...
+fct(1);
+fct(5);
+fct(2);
+\end{lstlisting}
+
+\bigskip
+\bigskip
+\bigskip
+\bigskip
+Produit l'affichage \\
+\Sortie{4} \\
+\Sortie{9} \\
+\Sortie{11}.
+\end{multicols}
+
+Ici, \Code{s} est une variable statique. La valeur \Code{3} (initialisation)
+ne lui est attribuée qu'une fois, lors de la compilation.
+\medskip
+
+De plus, \Code{s} conserve sa valeur (qui peut être modifiée) au fil
+de l'exécution, d'appel en appel à \Code{fct}.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Géographie de la mémoire lors d'une exécution}
+Lors de l'exécution d'un programme, la mémoire qui lui est consacrée
+est divisée de la manière suivante.
+\begin{multicols}{2}
+\begin{center}
+    \scalebox{.9}{\begin{tikzpicture}
+    \node[Zone,fill=Rouge!30](1)at(0,0){Zone statique};
+    \node[Zone,fill=Bleu!30](2)at(0,-1.5){Tas\phantom{q}};
+    \node[Zone,fill=Vert!30](3)at(0,-3){\dots\phantom{Tq}};
+    \node[Zone,fill=Marron!30](4)at(0,-4.5){Pile\phantom{q}};
+    \node[Zone,fill=gray!30,minimum height=.5cm](5)at(0,-5.5){Autre\phantom{q}};
+    \draw[->,line width=1.5pt](-2,-1.5)--(-2,-2.5);
+    \draw[->,line width=1.5pt](-2,-4.5)--(-2,-3.5);
+    \end{tikzpicture}}
+\end{center}
+Les zones de la mémoire réservées à la {\bf pile} et au {\bf tas} ont
+des {\bf tailles variables durant l'exécution}.
+\medskip
+
+Le tas grandit vers le bas (vers les adresses hautes) et la pile grandit
+vers le haut (vers les adresses basses).
+\medskip
+
+La \alert{zone statique}, qui contient les variables statiques et le
+code du programme, est de \alert{taille constante durant l'exécution}.
+\medskip
+
+Cette taille est connue et calculée lors de la compilation.
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Compter le nombre d'appels à une fonction}
+Étant donnée une fonction, on souhaite compter le nombre de fois qu'elle
+a été appelée depuis le lancement du programme.
+\medskip
+
+\begin{multicols}{2}
+\begin{lstlisting}
+int fact(int n) {
+    if (n <= 1) return 1;
+    return n * fact(n - 1);
+}
+\end{lstlisting}
+\bigskip
+\bigskip
+\bigskip
+\bigskip
+\bigskip
+
+\begin{lstlisting}
+int fact(int n) {
+
+    /* Mecanisme de comptage */
+    static int nb_app = 0;
+    nb_app += 1;
+
+    if (n <= 1) return 1;
+    return n * fact(n - 1);
+}
+\end{lstlisting}
+\end{multicols}
+
+À chaque instant, la variable statique \Code{nb\_app} a pour valeur le
+nombre de fois que \Code{fact} a été appelée.
+\medskip
+
+{\bf Problème}~: cette variable a pour portée lexicale le corps de la
+fonction \Code{fact} et est invisible ailleurs. On ne peut donc pas
+la lire depuis l'extérieur.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Compter le nombre d'appels à une fonction}
+Pour avoir accès à la valeur de \Code{nb\_app} hors du corps de \Code{fact},
+on la transmet à l'aide d'un {\bf passage par adresse}.
+\begin{lstlisting}
+int fact(int n, int *nb) {
+
+    /* Mecanisme de comptage */
+    static int nb_app = 0;
+    nb_app += 1;
+    *nb = nb_app;
+
+    if (n <= 1) return 1;
+    return n * fact(n - 1, nb);
+}
+\end{lstlisting}
+\bigskip
+
+On l'utilise se la manière suivante~:
+\begin{multicols}{2}
+\begin{lstlisting}
+int nb;
+fact(6, &nb);
+printf("%d\n", nb);
+\end{lstlisting}
+Ceci affiche \Sortie{6}.
+\bigskip
+\bigskip
+\bigskip
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Mémoïsation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Principe de la mémoïsation}
+Soit \Code{f} une fonction {\bf sans effet de bord} et
+{\bf déterministe} (sa valeur de retour ne dépend que de ses arguments).
+\bigskip
+\bigskip
+
+{\bf Observation}~: si l'on appelle \Code{f} deux fois avec des
+mêmes arguments, elle renverra deux fois la même valeur.
+\bigskip
+
+{\bf Conséquence}~: comme il est inutile (et inefficace) de refaire deux
+fois un même calcul, il suffit de mémoriser le résultat renvoyé par
+\Code{f} lors du 1\ier{} appel et de le renvoyer sans calcul lors du
+2\ieme{}.
+\bigskip
+
+{\bf Marche à suivre}~: on enregistre toutes les valeurs de retour de
+\Code{f} au fur et à mesure de ses appels.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Détails sur la mémoïsation}
+Les résultats renvoyés par \Code{f} sont mémorisés dans une
+{\bf table de hachage} \Code{mem} associant à chaque jeu d'arguments
+avec lequel elle est appelée la valeur de retour de \Code{f}.
+\bigskip
+\bigskip
+
+Il est nécessaire de disposer d'une {\bf fonction de hachage} \Code{h}
+associant à chaque jeu d'arguments un entier.
+\bigskip
+\bigskip
+
+Il ne doit y avoir qu'une seule table \Code{mem} pour \Code{f}, dont
+la durée de vie est égale à l'exécution du programme et rémanente~:
+\Code{mem} est ainsi une \alert{variable statique}, locale à \Code{f}.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Procédé général de mémoïsation d'une fonction}
+Soit \Code{f} une fonction à \Code{n} paramètres.
+\bigskip
+
+On appelle \Code{f'} la \alert{version mémoïsée} de \Code{f}, définie de la
+manière suivante.
+\medskip
+
+Lors de l'appel à \Code{f'(a\_1, \dots, a\_n)}~:
+\medskip
+
+\begin{enumerate}[(1)]
+    \item \label{item:lecture}
+    si \Code{mem} contient une donnée associée à \Code{(a\_1, \dots, a\_n)},
+    \begin{enumerate}[(a)] \normalsize
+        \item renvoyer cette valeur~;
+    \end{enumerate}
+    \medskip
+
+    \item \label{item:memorisation}
+    sinon,
+    \begin{enumerate}[(a)] \normalsize
+        \item calculer la valeur de retour de \Code{f(a\_1, \dots, a\_n)}~;
+        \item {\bf mémoriser} cette valeur dans \Code{mem}~;
+        \item renvoyer cette valeur.
+    \end{enumerate}
+\end{enumerate}
+\bigskip
+
+\eqref{item:lecture} est l'étape de {\bf lecture} et \eqref{item:memorisation}
+est l'étape de {\bf mémorisation}.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Exemple de mémoïsation d'une fonction à un paramètre}
+On souhaite mémoïser la fonction
+\begin{lstlisting}
+int fibo(int n) {
+    if (n <= 1) return n;
+    return fibo(n - 1) + fibo(n - 2);
+}
+\end{lstlisting}
+\bigskip
+
+Cette fonction est paramétrée par un entier et renvoie un entier.
+La table \Code{mem} est ainsi un tableau d'entiers. La valeur de hachage
+d'un argument \Code{n} est \Code{n}.
+\medskip
+
+On l'utilise de la manière suivante~:
+\begin{enumerate}
+    \item elle est de taille \Code{T\_MEM} où \Code{T\_MEM} est une constante
+    suffisamment grande~;
+    \smallskip
+
+    \item pour tout $\Code{0} \leq \Code{n} < \Code{T\_MEM}$,
+    la valeur de \Code{mem[n]} est
+    \begin{itemize} \normalsize
+        \item \Code{-1} si \Code{fibo(n)} n'a pas encore été appelée~;
+        \smallskip
+
+        \item la valeur renvoyée par \Code{fibo(n)} si \Code{fibo} a
+        été appelée au moins une fois avec l'argument \Code{n}.
+    \end{itemize}
+\end{enumerate}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Exemple de mémoïsation d'une fonction à un paramètre}
+\begin{multicols}{2}
+\begin{lstlisting}
+int fibo(int n) {
+    /* Table */
+    static int mem[T_MEM];
+
+    /* Booleen 1er appel */
+    static int init = 1;
+
+    int i, res;
+
+    /* Init. 1er appel */
+    if (init) {
+        for (i=0;i<T_MEM;++i)
+            mem[i] = -1;
+        init = 0;
+    }
+
+    /* Lecture */
+    if (mem[n] != -1)
+        return mem[n];
+
+    /* Calcul */
+    if (n <= 1)
+        res = n;
+    else
+        res = fibo(n - 1)
+            + fibo(n - 2);
+
+    /* Memorisation */
+    mem[n] = res;
+
+    return res;
+}
+\end{lstlisting}
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Mémoïsation de fonctions à plusieurs paramètres}
+Soit \Code{f} une fonction à \Code{n} paramètres.
+\bigskip
+
+La table \Code{mem} devient un \alert{tableau de variables d'un type structuré}
+\Code{E\_f} composé
+\begin{enumerate}
+    \item d'un champ pour chaque {\bf paramètre} de \Code{f}~;
+    \item d'un champ pour le {\bf résultat} renvoyé par \Code{f} appelé
+    avec les arguments spécifiés par les précédents champs~;
+    \item d'un champ {\bf booléen} indiquant si le résultat de \Code{f}
+    appelée avec les arguments spécifiés par les précédents champs a bien
+    été calculé.
+\end{enumerate}
+\bigskip
+
+Il faut de plus disposer d'une \alert{fonction de hachage} \Code{h\_f}
+de même signature que \Code{f} et qui renvoie un entier positif.
+\medskip
+
+Elle permet d'attribuer à chaque jeu d'arguments une position dans la
+table \Code{mem}.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Exemple de mémoïsation d'une fonction à deux paramètres}
+On souhaite mémoïser la fonction
+\begin{lstlisting}
+int puiss(int n, int p) {
+    if (p == 0) return 1;
+    return n * puiss(n, p - 1);
+}
+\end{lstlisting}
+\medskip
+
+Celle-ci est paramétrée par deux entiers. Le {\bf type structuré}
+\Code{E\_puiss} est donc défini par
+\begin{lstlisting}
+typedef struct {
+    int n; /* 1er parametre */
+    int p; /* 2e parametre */
+    int res; /* Resultat */
+    int ok; /* Indique si le calcul a deja ete fait */
+} E_puiss;
+\end{lstlisting}
+\medskip
+
+On utilise la {\bf fonction de hachage} suivante~:
+\begin{lstlisting}
+int h_puiss(int n, int p) {
+    return n ^ (p << 2);
+}
+\end{lstlisting}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Exemple de mémoïsation d'une fonction à deux paramètres}
+\begin{multicols}{2}
+\begin{lstlisting}
+int puiss(int n, int p) {
+    /* Table */
+    static E_puiss mem[T_MEM];
+
+    /* Booleen 1er appel */
+    static int init = 1;
+
+    int i, res, h;
+
+    /* Init. 1er appel */
+    if (init) {
+        for (i=0;i<T_MEM;++i)
+            mem[i].ok = 0;
+        init = 0;
+    }
+
+    /* Lecture */
+    h = h_puiss(n, p) % T_MEM;
+    if (mem[h].ok) {
+        if (mem[h].n == n
+            && mem[h].p == p)
+            return mem[h].res;
+    }
+
+    /* Calcul */
+    if (p == 0) res = 1;
+    else
+      res = n * puiss(n, p - 1);
+
+    /* Memorisation */
+    mem[h].n = n;
+    mem[h].p = p;
+    mem[h].res = res;
+    mem[h].ok = 1;
+
+    return res;
+}
+\end{lstlisting}
+\end{multicols}
+\end{frame}

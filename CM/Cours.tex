@@ -1,0 +1,182 @@
+% Auteur : Samuele Giraudo
+% Création : déc. 2015 (à partir du CM de P3 et P4)
+% Modifications : déc. 2015
+
+\documentclass[10pt,xcolor={dvipsnames}]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[francais]{babel}
+\usepackage{amsmath,amsthm,amsfonts,amssymb}
+\usepackage{lmodern}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{tikz}
+%\usetikzlibrary{fit,calc}
+%\usepackage{pgfpages}
+%\pgfpagesuselayout{4 on 1}
+
+\title{{\bf Programmation {\sf C}}}
+\author{\href{http://igm.univ-mlv.fr/~giraudo/}{\bf Samuele Giraudo} \\[1em]
+{\small
+Université Paris-Est Marne-la-Vallée \\[.2em]
+LIGM, bureau 4B055 \\[.2em]
+{\tt samuele.giraudo@univ-mlv.fr} \\[.2em]
+\href{http://igm.univ-mlv.fr/~giraudo/}{http://igm.univ-mlv.fr/\~{}giraudo/}}}
+\institute{}
+\subtitle{(Perfectionnement à la programmation en {\sf C})}
+\date{}
+
+\usetheme{Rochester}
+\usecolortheme{rose}
+
+\setbeamertemplate{footline}[frame number]
+
+% Pour supprimer les boutons de commande en bas à droite par défaut.
+\setbeamertemplate{navigation symbols}{}
+
+\newenvironment{Exemple}{%
+    \setbeamercolor{block body}{fg=black, bg=Vert!12}
+    \setbeamercolor{block title}{fg=Vert,bg=Vert!40}
+    \begin{block}{Exemple}}{\end{block}}
+
+% Couleurs.
+\definecolor{Noir}{RGB}{0,0,0}
+\definecolor{Rouge}{RGB}{205,35,38}
+\definecolor{Bleu}{RGB}{2,60,195}
+\definecolor{Bleu1}{RGB}{121,176,197}
+\definecolor{Vert}{RGB}{23,103,1}
+\definecolor{Orange}{RGB}{245,113,15}
+\definecolor{Blanc}{RGB}{255,255,255}
+\definecolor{Marron}{RGB}{193,88,50}
+\definecolor{Jaune}{RGB}{255,180,30}
+\definecolor{Violet}{RGB}{181,18,225}
+
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\geq}{\geqslant}
+
+\renewcommand{\arraystretch}{1.3}
+
+\newcommand{\CRouge}[1]{\textcolor{Rouge}{#1}}
+\newcommand{\CBleu}[1]{\textcolor{Bleu}{#1}}
+\newcommand{\CVert}[1]{\textcolor{Vert}{#1}}
+\newcommand{\COrange}[1]{\textcolor{Orange}{#1}}
+\newcommand{\CMarron}[1]{\textcolor{Marron}{#1}}
+\newcommand{\CViolet}[1]{\textcolor{Violet}{#1}}
+
+\tikzset{every picture/.style={execute at begin picture={\shorthandoff{:}}}}
+
+\newcommand{\todo}[1]{\CViolet{\it #1}}
+\newcommand{\Code}[1]{\CBleu{\tt #1}}
+\newcommand{\Sortie}[1]{\CMarron{\tt #1}}
+
+\tikzstyle{Zone}=[rectangle,draw=black,line width=1pt, minimum size=3.5cm,
+font=\large,minimum height=1.5cm]
+
+% Configuration de listings.
+\lstset{
+    language=c,
+    basicstyle=\ttfamily\footnotesize,
+    identifierstyle=\color{Mahogany},
+    keywordstyle=\color{NavyBlue},
+    stringstyle=\color{Emerald},
+    commentstyle=\it\color{Gray},
+    columns=flexible,
+    tabsize=4,
+    extendedchars=true,
+    showspaces=false,
+    numbers=left,
+    numberstyle=\tiny,
+    breaklines=true,
+    breakautoindent=true,
+    captionpos=b,
+    showstringspaces=true
+}
+
+\AtBeginSection[]{
+    \frame<handout:0>{
+        \frametitle{Plan}
+        \tableofcontents[sectionstyle=show/hide,
+            subsectionstyle=show/show/hide]}}
+
+\AtBeginSubsection[]{
+    \frame<handout:0>{
+        \frametitle{Plan}
+        \tableofcontents[sectionstyle=show/hide,
+            subsectionstyle=show/shaded/hide]}}
+
+%\includeonly{Contenu/Bases}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+    \titlepage
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\include{Contenu/Intro}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{}
+\part{Axe~1}
+\begin{center} \Large
+    {\bf Axe~1}~: écrire un projet maintenable
+\end{center}
+
+\begin{footnotesize}
+    \tableofcontents[hideallsubsections,part=1]
+\end{footnotesize}
+\end{frame}
+
+\include{Contenu/Bases}
+\include{Contenu/Habitudes}
+\include{Contenu/Modules}
+\include{Contenu/Compilation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{}
+\part{Axe~2}
+\begin{center} \Large
+    {\bf Axe~2}~: comprendre les mécanismes de base
+\end{center}
+
+\begin{footnotesize}
+    \tableofcontents[hideallsubsections,part=2]
+\end{footnotesize}
+\end{frame}
+
+\include{Contenu/Allocation}
+\include{Contenu/Types}
+\include{Contenu/Structures}
+\include{Contenu/EntreesSorties}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{}
+\part{Axe~3}
+\begin{center} \Large
+    {\bf Axe~3}~: utiliser quelques techniques avancées
+\end{center}
+
+\begin{footnotesize}
+    \tableofcontents[hideallsubsections,part=3]
+\end{footnotesize}
+\end{frame}
+
+\include{Contenu/Operateurs}
+\include{Contenu/Memoisation}
+\include{Contenu/Alea}
+\include{Contenu/PointeursFonc}
+
+\end{document}

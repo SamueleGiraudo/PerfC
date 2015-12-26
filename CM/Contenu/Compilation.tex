@@ -1,0 +1,1723 @@
+% Auteur : Samuele Giraudo
+% Création : fév. 2014, jan 2015, mars 2015, déc. 2015
+
+\tikzstyle{Module}=[rectangle,draw=Violet!100,fill=Violet!20,
+    line width=1pt,font=\scriptsize\tt]
+\tikzstyle{FObj}=[rectangle,draw=Rouge!100,fill=Rouge!20,
+    line width=1pt,font=\scriptsize\tt]
+\tikzstyle{Bib}=[rectangle,draw=Vert!100,fill=Vert!20,
+    line width=1pt,font=\scriptsize\tt]
+\tikzstyle{Exec}=[rectangle,draw=Bleu!100,fill=Bleu!20,
+    line width=1pt,font=\scriptsize\tt]
+\tikzstyle{Fleche}=[->,draw=Rouge,line width=1.5pt]
+\tikzstyle{Sommet}=[circle,draw=Marron!100,fill=Marron!10,line width=1.5pt]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Compilation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Étapes}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Compilation d'un projet d'un fichier}
+La \alert{compilation} d'un projet constitué d'un \alert{unique fichier}
+\Code{Fichier.c} contenant la fonction principale \Code{main} se fait
+par la commande
+\begin{center}\Code{gcc Fichier.c}\end{center}
+\medskip
+
+Cette commande réalise à la suite les étapes suivantes~:
+\begin{enumerate}
+    \item traitement préliminaire par le {\bf pré-processeur}~;
+    \smallskip
+
+    \item compilation en {\bf langage assembleur}~;
+    \smallskip
+
+    \item traduction du langage assembleur en {\bf langage machine}~;
+    \smallskip
+
+    \item {\bf édition des liens}.
+\end{enumerate}
+\medskip
+
+Elle permet d'obtenir un fichier {\bf exécutable}.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Compilation d'un projet d'un fichier}
+\begin{center}
+    \begin{tikzpicture}
+        \node(c)at(0,0){\Code{Fichier.c}};
+        \node(i)at(0,-3){\Code{Fichier.i}};
+        \node(s)at(4,-3){\Code{Fichier.s}};
+        \node(o)at(8,-3){\Code{Fichier.o}};
+        \node(a)at(8,-6){\Code{a.out}};
+        \draw[->](c)edge[anchor=west,font=\scriptsize] node{pré-processeur}(i);
+        \draw[->](i)edge[anchor=north,font=\scriptsize] node{assembleur}(s);
+        \draw[->](s)edge[anchor=north,font=\scriptsize] node{langage machine}(o);
+        \draw[->](o)edge[anchor=east,font=\scriptsize] node{exécutable}(a);
+    \end{tikzpicture}
+\end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Pré-processeur}
+Le \alert{pré-processeur} réalise un pré-traitement du fichier source
+pour le rendre traduisible en langage machine.
+\medskip
+
+Il procède en
+\begin{enumerate}
+    \item supprimant les commentaires~;
+    \smallskip
+
+    \item incluant les fichiers d'en-tête
+    (copie/colle les fichiers \Code{.h} inclus)~;
+    \smallskip
+
+    \item traitant les autres directives pré-processeur
+    (\Code{\#define}, \Code{\#ifndef}, {\em etc.}).
+\end{enumerate}
+\medskip
+
+Il est possible de récupérer le fichier d'extension \Code{.i} ainsi
+obtenu par la commande
+\begin{center} \Code{gcc -E Fichier.c >\,> Fichier.i} \end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Compilation en assembleur}
+Après avoir été traité par le pré-processeur, le fichier \Code{Fichier.i}
+est \alert{traduit en assembleur}.
+\medskip
+
+Il est possible de récupérer le fichier d'extension \Code{.s} ainsi
+obtenu par la commande
+\begin{center} \Code{gcc -S Fichier.c} \end{center}
+\bigskip
+
+L'assembleur est un langage très proche de la machine. Il peut se traduire
+assez facilement en un langage directement exécutable par le procésseur.
+\medskip
+
+Il existe plusieurs langages d'assemblage différents~: au moins un par
+architecture.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Compilation en assembleur}
+Par exemple, avec le fichier \Code{Fichier.c} suivant~:
+
+\begin{minipage}[c]{.4\textwidth}
+\begin{lstlisting}[frame=single,numbers=none,basicstyle=\ttfamily\scriptsize]
+/* Fichier.c */
+#include <stdio.h>
+
+int main() {
+    printf("Bonjour");
+    return 0;
+}
+\end{lstlisting}
+\end{minipage}
+
+on obtient le fichier assembleur \Code{Fichier.s} suivant~:
+\begin{multicols}{3}
+\begin{lstlisting}[language={[x86masm]Assembler},numbers=none,
+    basicstyle=\ttfamily\scriptsize]
+    .file "Fichier.c"
+    .section .rodata
+.LC0:
+    .string	"Bonjour"
+    .text
+    .globl main
+    .type main, @function
+main:
+.LFB0:
+    .cfi_startproc
+    pushq %rbp
+    .cfi_def_cfa_offset 16
+    .cfi_offset 6, -16
+    movq %rsp, %rbp
+    .cfi_def_cfa_register 6
+    movl $.LC0, %edi
+    movl $0, %eax
+    call printf
+    movl $0, %eax
+    popq %rbp
+    .cfi_def_cfa 7, 8
+    ret
+    .cfi_endproc
+.LFE0:
+    .size main, .-main
+    .ident "GCC: (Ubuntu/Linaro 4.8.1-10ubuntu9) 4.8.1"
+    .section .note.GNU-stack,"",@progbits
+
+\end{lstlisting}
+\end{multicols}
+\begin{math} \end{math}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Traduction en langage machine}
+Le code assembleur \Code{Fichier.s} est traduit en \alert{langage machine}.
+\medskip
+
+On obtient ce fichier d'extension \Code{.o} par la commande
+\begin{center}\Code{gcc -c Fichier.c}\end{center}
+\bigskip
+
+Ce fichier s'appelle {\bf fichier objet}. Il est illisible pour un humain
+mais peut cependant être affiché au moyen de la commande
+\begin{center}\Code{od -x Fichier.o} ou bien \Code{od -a Fichier.o} \end{center}
+\medskip
+
+Le langage machine est directement compris par le processeur qui peut
+de ce fait exécuter directement les instructions qu'il contient.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Traduction en langage machine}
+Par exemple, avec le programme précédent, le contenu de \Code{Fichier.o}
+est
+\medskip
+
+{\tt \footnotesize
+\setlength{\tabcolsep}{.07cm}
+\begin{tabular}{ccccccccccccccccc}
+0000000 &del &E &L &F &stx &soh &soh &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0000020 &soh &nul &> &nul &soh &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0000040 &nul &nul &nul &nul &nul &nul &nul &nul &0 &soh &nul &nul &nul &nul &nul &nul \\
+0000060 &nul &nul &nul &nul &@ &nul &nul &nul &nul &nul &@ &nul &cr &nul &nl &nul \\
+0000100 &U &H &ht &e &? &nul &nul &nul &nul &8 &nul &nul &nul &nul &h &nul \\
+0000120 &nul &nul &nul &8 &nul &nul &nul &nul &] &C &B &o &n &j &o &u \\
+0000140 &r &nul &nul &G &C &C &: &sp &( &U &b &u &n &t &u &/ \\
+0000160 &L &i &n &a &r &o &sp &4 &. &8 &. &1 &- &1 &0 &u \\
+0000200 &b &u &n &t &u &9 &) &sp &4 &. &8 &. &1 &nul &nul &nul \\
+0000220 &dc4 &nul &nul &nul &nul &nul &nul &nul &soh &z &R &nul &soh &x &dle &soh \\
+0000240 &esc &ff &bel &bs &dle &soh &nul &nul &fs &nul &nul &nul &fs &nul &nul &nul \\
+0000260 &nul &nul &nul &nul &sub &nul &nul &nul &nul &A &so &dle &ack &stx &C &cr \\
+0000300 &ack &U &ff &bel &bs &nul &nul &nul &nul &. &s &y &m &t &a &b \\
+0000320 &nul &. &s &t &r &t &a &b &nul &. &s &h &s &t &r &t \\
+0000340 &a &b &nul &. &r &e &l &a &. &t &e &x &t &nul &. &d \\
+0000360 &a &t &a &nul &. &b &s &s &nul &. &r &o &d &a &t &a \\
+\end{tabular}}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Traduction en langage machine}
+{\tt \footnotesize
+\setlength{\tabcolsep}{.07cm}
+\begin{tabular}{ccccccccccccccccc}
+0000400 &nul &. &c &o &m &m &e &n &t &nul &. &n &o &t &e &. \\
+0000420 &G &N &U &- &s &t &a &c &k &nul &. &r &e &l &a &. \\
+0000440 &e &h &\_ &f &r &a &m &e &nul &nul &nul &nul &nul &nul &nul &nul \\
+0000460 &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+* \\
+0000560 &sp &nul &nul &nul &soh &nul &nul &nul &ack &nul &nul &nul &nul &nul &nul &nul \\
+0000600 &nul &nul &nul &nul &nul &nul &nul &nul &@ &nul &nul &nul &nul &nul &nul &nul \\
+0000620 &sub &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0000640 &soh &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0000660 &esc &nul &nul &nul &eot &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0000700 &nul &nul &nul &nul &nul &nul &nul &nul &dle &enq &nul &nul &nul &nul &nul &nul \\
+0000720 &0 &nul &nul &nul &nul &nul &nul &nul &vt &nul &nul &nul &soh &nul &nul &nul \\
+0000740 &bs &nul &nul &nul &nul &nul &nul &nul &can &nul &nul &nul &nul &nul &nul &nul \\
+0000760 &\& &nul &nul &nul &soh &nul &nul &nul &etx &nul &nul &nul &nul &nul &nul &nul \\
+0001000 &nul &nul &nul &nul &nul &nul &nul &nul &Z &nul &nul &nul &nul &nul &nul &nul \\
+0001020 &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0001040 &soh &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+\end{tabular}}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Traduction en langage machine}
+{\tt \footnotesize
+\setlength{\tabcolsep}{.07cm}
+\begin{tabular}{ccccccccccccccccc}
+0001060 &, &nul &nul &nul &bs &nul &nul &nul &etx &nul &nul &nul &nul &nul &nul &nul \\
+0001100 &nul &nul &nul &nul &nul &nul &nul &nul &Z &nul &nul &nul &nul &nul &nul &nul \\
+0001120 &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0001140 &soh &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0001160 &1 &nul &nul &nul &soh &nul &nul &nul &stx &nul &nul &nul &nul &nul &nul &nul \\
+0001200 &nul &nul &nul &nul &nul &nul &nul &nul &Z &nul &nul &nul &nul &nul &nul &nul \\
+0001220 &bs &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0001240 &soh &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0001260 &9 &nul &nul &nul &soh &nul &nul &nul &0 &nul &nul &nul &nul &nul &nul &nul \\
+0001300 &nul &nul &nul &nul &nul &nul &nul &nul &b &nul &nul &nul &nul &nul &nul &nul \\
+0001320 &, &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0001340 &soh &nul &nul &nul &nul &nul &nul &nul &soh &nul &nul &nul &nul &nul &nul &nul \\
+0001360 &B &nul &nul &nul &soh &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0001400 &nul &nul &nul &nul &nul &nul &nul &nul &so &nul &nul &nul &nul &nul &nul &nul \\
+0001420 &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0001440 &soh &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0001460 &W &nul &nul &nul &soh &nul &nul &nul &stx &nul &nul &nul &nul &nul &nul &nul \\
+\end{tabular}}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Traduction en langage machine}
+{\tt \footnotesize
+\setlength{\tabcolsep}{.07cm}
+\begin{tabular}{ccccccccccccccccc}
+0001500 &nul &nul &nul &nul &nul &nul &nul &nul &dle &nul &nul &nul &nul &nul &nul &nul \\
+0001520 &8 &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0001540 &bs &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0001560 &R &nul &nul &nul &eot &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0001600 &nul &nul &nul &nul &nul &nul &nul &nul &@ &enq &nul &nul &nul &nul &nul &nul \\
+0001620 &can &nul &nul &nul &nul &nul &nul &nul &vt &nul &nul &nul &bs &nul &nul &nul \\
+0001640 &bs &nul &nul &nul &nul &nul &nul &nul &can &nul &nul &nul &nul &nul &nul &nul \\
+0001660 &dc1 &nul &nul &nul &etx &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0001700 &nul &nul &nul &nul &nul &nul &nul &nul &H &nul &nul &nul &nul &nul &nul &nul \\
+0001720 &a &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0001740 &soh &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0001760 &soh &nul &nul &nul &stx &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0002000 &nul &nul &nul &nul &nul &nul &nul &nul &p &eot &nul &nul &nul &nul &nul &nul \\
+0002020 &bs &soh &nul &nul &nul &nul &nul &nul &ff &nul &nul &nul &ht &nul &nul &nul \\
+0002040 &bs &nul &nul &nul &nul &nul &nul &nul &can &nul &nul &nul &nul &nul &nul &nul \\
+0002060 &ht &nul &nul &nul &etx &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0002100 &nul &nul &nul &nul &nul &nul &nul &nul &x &enq &nul &nul &nul &nul &nul &nul \\
+\end{tabular}}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Traduction en langage machine}
+{\tt \footnotesize
+\setlength{\tabcolsep}{.07cm}
+\begin{tabular}{ccccccccccccccccc}
+0002120 &etb &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0002140 &soh &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0002160 &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0002200 &nul &nul &nul &nul &nul &nul &nul &nul &soh &nul &nul &nul &eot &nul &q &del \\
+0002220 &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0002240 &nul &nul &nul &nul &etx &nul &soh &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0002260 &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &etx &nul &etx &nul \\
+0002300 &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0002320 &nul &nul &nul &nul &etx &nul &eot &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0002340 &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &etx &nul &enq &nul \\
+0002360 &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0002400 &nul &nul &nul &nul &etx &nul &bel &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0002420 &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &etx &nul &bs &nul \\
+0002440 &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0002460 &nul &nul &nul &nul &etx &nul &ack &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0002500 &nul &nul &nul &nul &nul &nul &nul &nul &vt &nul &nul &nul &dc2 &nul &soh &nul \\
+0002520 &nul &nul &nul &nul &nul &nul &nul &nul &sub &nul &nul &nul &nul &nul &nul &nul \\
+\end{tabular}}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Traduction en langage machine}
+{\tt \footnotesize
+\setlength{\tabcolsep}{.07cm}
+\begin{tabular}{ccccccccccccccccc}
+0002540 &dle &nul &nul &nul &dle &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul &nul \\
+0002560 &nul &nul &nul &nul &nul &nul &nul &nul &nul &F &i &c &h &i &e &r \\
+0002600 &. &c &nul &m &a &i &n &nul &p &r &i &n &t &f &nul &nul \\
+0002620 &enq &nul &nul &nul &nul &nul &nul &nul &nl &nul &nul &nul &enq &nul &nul &nul \\
+0002640 &nul &nul &nul &nul &nul &nul &nul &nul &si &nul &nul &nul &nul &nul &nul &nul \\
+0002660 &stx &nul &nul &nul &nl &nul &nul &nul &| &del &del &del &del &del &del &del \\
+0002700 &sp &nul &nul &nul &nul &nul &nul &nul &stx &nul &nul &nul &stx &nul &nul &nul \\
+0002720 &nul &nul &nul &nul &nul &nul &nul &nul \\
+0002730 \\
+\end{tabular}}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Édition des liens}
+L'\alert{édition des liens} réunit le fichier objet et le code propre
+aux fonctions et types de la librairie standard utilisés (comme
+\Code{printf}, \Code{scanf}, {\em etc.}) pour produire l'exécutable
+complet.
+\bigskip
+
+C'est dans cette phase de la compilation que la
+\alert{résolution des symboles} a lieu. C'est l'étape qui consiste à
+associer aux identificateurs de fonctions leur implantation.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Compilation d'un projet de plusieurs fichiers}
+On suppose que l'on travaille sur un projet constitué de trois modules
+\Code{A}, \Code{B} et \Code{C} et d'un fichier principal \Code{Main.c}
+contenant la fonction \Code{main}.
+\medskip
+
+La compilation de ce projet se réalise au moyen des étapes suivantes~:
+\begin{enumerate}
+    \item obtenir les fichiers objets de chaque module~;
+    \item obtenir le fichier objet de \Code{Main.c}~:
+    \item lier les fichiers objets ainsi obtenus en un exécutable.
+\end{enumerate}
+\medskip
+
+\begin{center}
+    \begin{tikzpicture}[every text node part/.style={align=left}]
+        \node[Module](A)at(0,0){A.h \\ A.c};
+        \node[Module](B)at(0,-1){B.h \\ B.c};
+        \node[Module](C)at(0,-2){C.h \\ C.c};
+        \node[Module](Main)at(0,-3){Main.c};
+        \node[FObj](Ao)at(3.5,0){A.o};
+        \node[FObj](Bo)at(3.5,-1){B.o};
+        \node[FObj](Co)at(3.5,-2){C.o};
+        \node[FObj](Maino)at(3.5,-3){Main.o};
+        \node[Exec](Ex)at(9,-1.5){a.out};
+        \draw(A)edge[->,anchor=south,font=\scriptsize \tt] node{gcc -c A.c A.h}(Ao);
+        \draw(B)edge[->,anchor=south,font=\scriptsize \tt] node{gcc -c B.c B.h}(Bo);
+        \draw(C)edge[->,anchor=south,font=\scriptsize \tt] node{gcc -c C.c C.h}(Co);
+        \draw(Main)edge[->,anchor=south,font=\scriptsize \tt] node{gcc -c Main.c}(Maino);
+        \draw(4,-1.5)edge[->,anchor=south,font=\scriptsize \tt] node{gcc Main.o A.o B.o C.o}(Ex);
+    \end{tikzpicture}
+\end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Création des fichiers objets}
+Pour compiler le projet, on commence par créer un fichier objet pour
+chaque module \Code{M}. On utilise pour cela la commande
+\begin{center} \Code{gcc -c M.c M.h} \end{center}
+\medskip
+
+Cette commande est équivalente à
+\begin{center} \Code{gcc -c M.c} \end{center}
+car le fichier source \Code{M.c} inclut le fichier d'en-tête \Code{M.h}.
+\bigskip
+
+On utilisera donc de préférence cette 2\ieme{} commande.
+\bigskip
+\bigskip
+
+Chaque module est ainsi \alert{compilé séparément}.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Symboles non résolus}
+Pour compiler un module \Code{A}, il n'est pas nécessaire que \Code{A}
+ait connaissance des définitions des symboles qu'il utilise.
+\medskip
+
+Seule leurs déclarations sont suffisantes. Celles-ci se trouvent
+dans les fichiers d'en-tête inclus dans \Code{A}.
+\bigskip
+
+On dit qu'un symbole n'est pas \alert{résolu} si sa définition n'est pas
+encore connue.
+\bigskip
+
+\begin{minipage}[c]{.3\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* Fichier.c */
+int g(int x);
+
+int f(int x) {
+    return g(x);
+}
+\end{lstlisting}
+\end{minipage}\qquad
+\begin{minipage}[c]{.6\textwidth}
+Par exemple, ce fichier permet de produire un fichier objet sur la commande
+\Code{gcc -c Fichier.c} même si le symbole \Code{g} est non résolu pour
+le moment.
+\smallskip
+
+Sa déclaration (dans le fichier même ou dans un fichier inclus) est
+cependant nécessaire.
+\end{minipage}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Résolution des symboles}
+Lors de l'édition des liens, un exécutable est créé. On utilise pour
+cela la commande
+\begin{center} \Code{gcc Main.o A1.o  ... An.o} \end{center}
+dans le cadre d'un projet constitué des modules \Code{A1.o}, \dots, \Code{An.o}
+et du module principal \Code{Main.o}.
+\bigskip
+
+Cette étape \alert{lie à chaque symbole sa définition}.
+\medskip
+
+Tous les symboles utilisés dans le projet doivent être résolus (sinon,
+un message d'erreur est produit).
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Résolution des symboles --- exemple}
+\begin{minipage}[c]{.18\textwidth}
+\begin{lstlisting}[frame=single,numbers=none,basicstyle=\scriptsize\tt]
+/* A.h */
+#ifndef __A__
+#define __A__
+  int f(int x);
+#endif
+\end{lstlisting}
+\end{minipage}
+\enspace
+\begin{minipage}[c]{.18\textwidth}
+\begin{lstlisting}[frame=single,numbers=none,basicstyle=\scriptsize\tt]
+/* A.c */
+#include "A.h"
+int f(int x) {
+  return x * x;
+}
+\end{lstlisting}
+\end{minipage}
+\enspace
+\begin{minipage}[c]{.18\textwidth}
+\begin{lstlisting}[frame=single,numbers=none,basicstyle=\scriptsize\tt]
+/* B.h */
+#ifndef __B__
+#define __B__
+  int g(int x);
+#endif
+\end{lstlisting}
+\end{minipage}
+\enspace
+\begin{minipage}[c]{.18\textwidth}
+\begin{lstlisting}[frame=single,numbers=none,basicstyle=\scriptsize\tt]
+/* B.c */
+#include "B.h"
+#include "A.h"
+int g(int x) {
+  return f(x);
+}
+\end{lstlisting}
+\end{minipage}
+\enspace
+\begin{minipage}[c]{.17\textwidth}
+\begin{lstlisting}[frame=single,numbers=none,basicstyle=\scriptsize\tt]
+/* Main.c */
+#include "B.h"
+int main() {
+  g(5);
+  return 0;
+}
+\end{lstlisting}
+\end{minipage}
+
+Pour compiler ce projet, on emploie les commandes
+\medskip
+
+\Code{gcc -c A.c} \\
+\Code{gcc -c B.c} \\
+\Code{gcc -c Main.c} \\
+\Code{gcc Main.o A.o B.o}
+\bigskip
+
+L'ordre d'exécution des trois 1\ieres{} commandes n'a aucune incidence
+sur le résultat produit.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Résolution des symboles --- exemple}
+\begin{minipage}[c]{.18\textwidth}
+\begin{lstlisting}[frame=single,numbers=none,basicstyle=\scriptsize\tt]
+/* A.h */
+#ifndef __A__
+#define __A__
+  int f(int x);
+#endif
+\end{lstlisting}
+\end{minipage}
+\enspace
+\begin{minipage}[c]{.18\textwidth}
+\begin{lstlisting}[frame=single,numbers=none,basicstyle=\scriptsize\tt]
+/* A.c */
+#include "A.h"
+int f(int x) {
+  return x * x;
+}
+\end{lstlisting}
+\end{minipage}
+\enspace
+\begin{minipage}[c]{.18\textwidth}
+\begin{lstlisting}[frame=single,numbers=none,basicstyle=\scriptsize\tt]
+/* B.h */
+#ifndef __B__
+#define __B__
+  int g(int x);
+#endif
+\end{lstlisting}
+\end{minipage}
+\enspace
+\begin{minipage}[c]{.18\textwidth}
+\begin{lstlisting}[frame=single,numbers=none,basicstyle=\scriptsize\tt]
+/* B.c */
+#include "B.h"
+#include "A.h"
+int g(int x) {
+  return f(x);
+}
+\end{lstlisting}
+\end{minipage}
+\enspace
+\begin{minipage}[c]{.17\textwidth}
+\begin{lstlisting}[frame=single,numbers=none,basicstyle=\scriptsize\tt]
+/* Main.c */
+#include "B.h"
+int main() {
+  g(5);
+  return 0;
+}
+\end{lstlisting}
+\end{minipage}
+
+Lors de la création de \Code{B.o}, le compilateur {\bf ignore} ce que fait
+le symbole \Code{f}. Il sait seulement (grâce à l'inclusion de \Code{A}
+dans \Code{B}) que \Code{f} est un symbole de fonction paramétrée par un
+entier et renvoyant un entier et peut donc {\bf vérifier la correspondance
+des types}.
+\medskip
+
+C'est au moment de l'édition des liens que le compilateur va
+{\bf chercher l'implantation} du symbole \Code{f} pour créer l'exécutable
+de la bonne manière.
+\bigskip
+
+{\bf Observation importante}~: la compilation d'un projet à plusieurs
+fichiers ne dépend pas de la manière dont ses modules sont inclus les
+uns dans les autres. Le schéma de compilation est toujours le même.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{{\tt Makefile}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Compilation séparée --- exemple introductif}
+Étant donné que pour compiler un module, il n'est pas nécessaire
+d'avoir les fichiers objets des autres modules du projet, il est
+\alert{inutile de compiler} les modules que l'on a \alert{pas modifiés}
+depuis la dernière compilation.
+\medskip
+
+Considérons par exemple le projet suivant~:
+\begin{multicols}{2}
+\begin{center}
+\scalebox{.8}{\begin{tikzpicture}
+    \node[Sommet](A)at(0,0){\Code{A}};
+    \node[Sommet](B)at(0,-1){\Code{B}};
+    \node[Sommet](C)at(0,-2){\Code{C}};
+    \node[Sommet](Main)at(2,-1){\Code{Main}};
+    \draw[Fleche](Main)edge[bend right=20]node{}(A);
+    \draw[Fleche](Main)--(B);
+    \draw[Fleche](Main)edge[bend left=20]node{}(C);
+    \draw[Fleche](B)--(A);
+    \draw[Fleche](A)edge[bend right=60]node{}(C);
+\end{tikzpicture}}
+\end{center}
+On le compile pour la 1\iere{} fois par \\
+\begin{footnotesize}
+    \Code{gcc -c Main.c} \\
+    \Code{gcc -c A.c} \\
+    \Code{gcc -c B.c} \\
+    \Code{gcc -c C.c} \\
+    \Code{gcc Main.o A.o B.o C.o}
+\end{footnotesize}
+\end{multicols}
+\medskip
+
+Si on modifie par la suite le module \Code{A}, il suffit d'exécuter les commandes
+\begin{multicols}{2}
+    \Code{gcc -c A.c} \\
+    \Code{gcc Main.o A.o B.o C.o} \\
+    pour mettre à jour l'exécutable du projet.
+\end{multicols}
+\medskip
+
+Il est inutile de recompiler \Code{B}, \Code{C} et \Code{Main}
+car leur code n'a pas été modifié.
+\smallskip
+
+({\it Ceci est à nuancer, voir plus loin.})
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Schéma opérationnel de la compilation d'un projet}
+À l'appui de cette observation, la compilation d'un projet
+s'organise de la manière suivante~:
+\smallskip
+
+\begin{enumerate}[(1)]
+    \item pour chaque module \Code{A} du projet~:
+    \begin{enumerate}[(a)] \normalsize
+        \item si \Code{A.c} ou \Code{A.h} ont été modifiés {\bf après}
+        \Code{A.o} ou bien si \Code{A.o} n'existe pas, (re)compiler le
+        module \Code{A}~;
+    \end{enumerate}
+    \item si au moins un module du projet a été (re)compilé, reconstruire
+    l'exécutable.
+\end{enumerate}
+\bigskip
+
+Nous allons utiliser l'utilitaire \alert{\Code{make}} et les fichiers
+\alert{\Code{Makefile}} pour rendre cette procédure automatique.
+\bigskip
+\bigskip
+
+({\it Dans la suite, nous prendrons en plus compte des fichiers
+d'en-tête des modules dont dépend \Code{A} qui, s'ils sont modifiés,
+doivent entraîner une recompilation de \Code{A}.})
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Fichiers {\tt Makefile}}
+L'utilitaire \Code{make} est paramétré par un fichier dont le nom est
+imposé~:
+\begin{center}
+    \og \Code{Makefile} \fg{} ou \og \Code{makefile} \fg.
+\end{center}
+Il doit se trouver dans le répertoire de travail (là où se trouvent les
+autres fichiers du projet).
+\medskip
+
+Ce fichier fait partie intégrante du projet.
+\bigskip
+
+Tout fichier \Code{Makefile} est constitué de \alert{règles}.
+Elles sont de la forme
+\smallskip
+
+\Code{CIBLE: DEPENDANCES} \\
+\Code{$\rightarrow$ COMMANDE} \\
+\Code{\vdots} \\
+\Code{$\rightarrow$ COMMANDE}
+\bigskip
+
+Le symbole \og\Code{$\rightarrow$}\fg{} désigne une tabulation.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Fichiers {\tt Makefile} et fonctionnement}
+Considérons le projet et le \Code{Makefile} suivants.
+\begin{multicols}{2}
+\begin{center}
+\scalebox{.8}{\begin{tikzpicture}
+    \node[Sommet](A)at(0,0){\Code{A}};
+    \node[Sommet](B)at(0,-2){\Code{B}};
+    \node[Sommet](Main)at(2,-1){\Code{Main}};
+    \draw[Fleche](Main)edge[bend right=20]node{}(A);
+    \draw[Fleche](Main)edge[bend left=20]node{}(B);
+\end{tikzpicture}}
+\end{center}
+\bigskip
+\bigskip
+\begin{lstlisting}[language=make]
+Prog: A.o B.o Main.o
+    gcc -o Prog Main.o A.o B.o
+Main.o: Main.c
+    gcc -c Main.c
+A.o: A.c A.h
+    gcc -c A.c
+B.o: B.c B.h
+    gcc -c B.c
+\end{lstlisting}
+\end{multicols}
+\bigskip
+
+Lorsque l'on exécute la commande \Code{make}, \Code{make} tente de
+résoudre la 1\iere{} règle (l. 1). Pour cela, il doit résoudre ses
+dépendances. Ensuite, il exécute les commandes de la règle si la cible
+n'est pas à jour.
+\medskip
+
+Concrètement, pour pouvoir créer l'exécutable \Code{Prog}, il est
+nécessaire que \Code{A.o}, \Code{B.o} et \Code{Main.o} soient à jour.
+Une fois qu'ils le sont, il suffit de procéder à l'édition des liens
+(l. 2).
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Fichiers {\tt Makefile} et fonctionnement}
+Pour savoir si une cible est à jour, \Code{make} regarde les dépendances
+de la règle et~:
+\begin{itemize}
+    \item si la dépendance est la cible d'une autre règle, \Code{make}
+    procède {\bf récursivement} à sa résolution~;
+    \smallskip
+
+    \item si la dépendance est le nom d'un fichier, \Code{make} compare
+    la {\bf date de dernière modification} de la cible par rapport à
+    celle du fichier.
+\end{itemize}
+\smallskip
+
+S'il y a au moins un fichier dans les dépendances avec une date supérieure
+à celle de la cible, les commandes de la règle sont exécutées.
+\bigskip
+
+On peut imposer à \Code{make} de commencer par la résolution de la
+règle dont la cible est \Code{CIBLE} par
+\begin{center}
+    \Code{make CIBLE}
+\end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Dépendance aux fichiers d'en-tête}
+Supposons que l'on dispose de deux modules \Code{A} et \Code{B} tels que
+\begin{center}
+\scalebox{.8}{\begin{tikzpicture}
+    \node[Sommet](A)at(0,0){\Code{A}};
+    \node[Sommet](B)at(2,0){\Code{B}};
+    \draw[Fleche](B)--(A);
+\end{tikzpicture}}
+\end{center}
+
+Ceci signifie qu'il y a un \Code{\#include "A.h"} dans le fichier
+\Code{B.h}.
+\smallskip
+
+Supposons qu'un type \Code{T} ait été déclaré dans \Code{A} et que \Code{B}
+utilise ce type.
+\bigskip
+
+Toute modification de \Code{A.h} doit être suivie d'une nouvelle
+compilation de \Code{B}. En effet, si la déclaration de \Code{T} a été
+modifiée, \Code{B} doit être recompilé pour la prendre en compte.
+\medskip
+
+En conséquence, dans le \Code{Makefile} du projet doit figurer la règle
+\begin{multicols}{2}
+\begin{lstlisting}[language=make]
+B.o: B.c B.h A.h
+    gcc -c B.c
+\end{lstlisting}
+pour déclarer que la construction de \Code{B.o} {\bf dépend aussi}
+de \Code{A.h}.
+\end{multicols}
+
+{\bf Attention}~: ceci ne s'applique pas aux modifications de l'implantation
+des fonctions de \Code{A} dans \Code{A.c} (comme nous l'avons déjà vu).
+La cible \Code{B.o} ne dépend ainsi pas de \Code{A.c}. Elle ne dépend
+que des {\bf déclarations} du module \Code{A} (et donc de \Code{A.h}).
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Exemple complet de {\tt Makefile}}
+\begin{multicols}{2}
+\begin{center}
+\scalebox{.4}{\begin{tikzpicture}[scale=.8]
+    \node[Sommet,minimum size=2cm,font=\Large](Piece)at(-4,0){\Code{Piece}};
+    \node[Sommet,minimum size=2cm,font=\Large](Case)at(-4,-4){\Code{Case}};
+    \node[Sommet,minimum size=2cm,font=\Large](Position)at(0,-2){\Code{Position}};
+    \node[Sommet,minimum size=2cm,font=\Large](IA)at(4,0){\Code{IA}};
+    \node[Sommet,minimum size=2cm,font=\Large](IGraph)at(4,-4){\Code{IGraph}};
+    \node[Sommet,minimum size=2cm,draw=Vert,fill=Vert!20,font=\Large](Main)at(7,-2){\Code{Main}};
+    \draw[Fleche](Main)edge[bend right=20]node{}(IA);
+    \draw[Fleche](Main)edge[bend left=20]node{}(IGraph);
+    \draw[Fleche](IGraph)edge[bend left=20]node{}(Case);
+    \draw[Fleche](IGraph)edge[bend left=20]node{}(Position);
+    \draw[Fleche](IGraph)edge[bend right=40]node{}(Piece);
+    \draw[Fleche](IA)edge[bend left=40]node{}(Case);
+    \draw[Fleche](IA)edge[bend right=20]node{}(Position);
+    \draw[Fleche](IA)edge[bend right=20]node{}(Piece);
+    \draw[Fleche](Position)edge[bend right=20]node{}(Case);
+    \draw[Fleche](Position)edge[bend left=20]node{}(Piece);
+\end{tikzpicture}}
+\end{center}
+Le \Code{Makefile} du projet dont le graphe d'inclusions est donné
+ci-contre est
+\end{multicols}
+
+\begin{lstlisting}[language=make,basicstyle=\footnotesize\tt]
+Echecs: Main.o Piece.o Case.o Position.o IA.o IGraph.o
+    gcc -o Echecs Main.o Piece.o Case.o Position.o IA.o IGraph.o
+Main.o: Main.c IA.h IGraph.h
+    gcc -c Main.c
+Piece.o: Piece.c Piece.h
+    gcc -c Piece.c
+Case.o: Case.c Case.h
+    gcc -c Case.c
+Position.o: Position.c Position.h Piece.h Case.h
+    gcc -c Position.c
+IA.o: IA.c IA.h Piece.h Case.h Position.h
+    gcc -c IA.c
+IGraph.o: IGraph.c IGraph.h Piece.h Case.h Position.h
+    gcc -c IGraph.c
+\end{lstlisting}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Écriture de {\tt Makefile} simples --- résumé}
+Le \Code{Makefile} d'un projet contenant des modules \Code{A1}, \dots,
+\Code{An} et un module principal \Code{Main} est génériquement de la
+forme
+\begin{lstlisting}[language=make]
+NOM: Main.o A1.o ... An.o
+    gcc -o NOM Main.o A1.o ... An.o
+
+Main.o: Main.c EXTRAmain
+    gcc -c Main.c
+
+A1.o: A1.c A1.h EXTRA1
+    gcc -c A1.c
+
+...
+
+An.o: An.c An.h EXTRAn
+    gcc -c An.c
+\end{lstlisting}
+où \Code{EXTRAmain} est la suite des noms des fichiers \Code{.h} que
+\Code{Main.c} inclut et pour tout \Code{$1 \leq k \leq n$}, \Code{EXTRAk}
+est la suite des noms des fichiers \Code{.h} dont le module \Code{Ak} dépend.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Variables dans les {\tt Makefile}}
+Il est possible de \alert{définir des variables} dans un \Code{Makefile}
+par
+\begin{center}\Code{ID=VAL}\end{center}
+Ceci définit une variable identifiée par \Code{ID}. Sa valeur est
+la {\bf chaîne de caractères} \Code{VAL}.
+\bigskip
+
+On accède à la valeur d'une variable identifiée par \Code{ID} par
+\begin{center}\Code{\$(ID)}\end{center}
+Ceci substitue à l'occurrence de \Code{\$(ID)} la chaîne de caractères qui
+lui a été attribuée lors de sa définition.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Variables dans les {\tt Makefile} --- exemple}
+
+Les variables permettent de factoriser les règles d'un \Code{Makefile}~:
+\medskip
+
+\begin{lstlisting}[language=make,basicstyle=\footnotesize\tt]
+Main: Main.o A.o
+    gcc -o Main Main.o A.o -ansi -pedantic -Wall
+
+Main.o: Main.c
+    gcc -c Main.c -ansi -pedantic -Wall
+
+A.o : A.c A.h
+    gcc -c A.c -ansi -pedantic -Wall
+\end{lstlisting}
+\medskip
+
+s'écrit plus simplement par
+\medskip
+
+\begin{lstlisting}[language=make,basicstyle=\footnotesize\tt]
+CFLAGS=-ansi -pedantic -Wall
+
+Main: Main.o A.o
+    gcc -o Main Main.o A.o $(CFLAGS)
+
+Main.o: Main.c
+    gcc -c Main.c $(CFLAGS)
+
+A.o : A.c A.h
+    gcc -c A.c $(CFLAGS)
+\end{lstlisting}
+\begin{math}\end{math}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Variables dans les {\tt Makefile}}
+On utilise en général les noms de variable suivants~:
+\begin{itemize}
+    \item \Code{CFLAGS} pour les options de compilation, p.ex.,
+\begin{lstlisting}[language=make,numbers=none,basicstyle=\footnotesize\tt]
+CFLAGS=-ansi -pedantic -Wall
+\end{lstlisting}
+
+    \item \Code{LDFLAGS} pour l'inclusion de bibliothèques, p.ex.,
+\begin{lstlisting}[language=make,numbers=none,basicstyle=\footnotesize\tt]
+LDFLAGS=-lm -lMLV
+\end{lstlisting}
+
+    \item \Code{CC} pour le compilateur utilisé, p.ex.,
+
+\begin{minipage}[c]{.16\textwidth}
+\begin{lstlisting}[language=make,numbers=none,basicstyle=\footnotesize\tt]
+CC=gcc
+\end{lstlisting}
+\end{minipage}
+ou bien \hspace{2.5em}
+\begin{minipage}[c]{.16\textwidth}
+\begin{lstlisting}[language=make,numbers=none,basicstyle=\footnotesize\tt]
+CC=colorgcc
+\end{lstlisting}
+\end{minipage}
+
+    \item \Code{OPT} pour les option d'optimisation de code
+
+\begin{minipage}[c]{.16\textwidth}
+\begin{lstlisting}[language=make,numbers=none,basicstyle=\footnotesize\tt]
+OPT=-O1
+\end{lstlisting}
+\end{minipage}
+ou bien \hspace{2.5em}
+\begin{minipage}[c]{.16\textwidth}
+\begin{lstlisting}[language=make,numbers=none,basicstyle=\footnotesize\tt]
+OPT=-O2
+\end{lstlisting}
+\end{minipage}
+ou encore \hspace{2.5em}
+\begin{minipage}[c]{.16\textwidth}
+\begin{lstlisting}[language=make,numbers=none,basicstyle=\footnotesize\tt]
+OPT=-O3
+\end{lstlisting}
+\end{minipage}
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Règles courantes}
+{\bf Observation}~: la plupart des règles des \Code{Makefile} sont sous
+l'une de ces deux formes~:
+\medskip
+
+\begin{enumerate}
+\item
+\Code{M.o: M.c DEP2... DEPn \\
+$\rightarrow$ gcc -c M.c}
+\medskip
+
+\item
+\Code{EXEC: DEP1 ... DEPn \\
+$\rightarrow$ gcc -o EXEC DEP1 ... DEPn}
+\end{enumerate}
+\bigskip
+
+La 1\iere{} forme de règle a pour but de construire le fichier objet
+d'un module \Code{M}. Dans ce cas,
+\Code{DEP2}, \dots, \Code{DEPn} sont les \Code{.h} dont le module
+\Code{M} dépend.
+\bigskip
+
+La 2\ieme{} forme de règle a pour but de construire l'exécutable \Code{EXEC}
+du projet. Les dépendances \Code{DEP1}, \dots, \Code{DEPn} sont dans ce
+cas les fichiers \Code{.o} du projet.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Variables internes dans les {\tt Makefile}}
+Il est possible de simplifier l'écriture de ces règles courantes au moyen
+des \alert{variables internes}. Il y en a trois principales et deux
+secondaires~:
+\begin{center}
+    \begin{tabular}{c|c}
+        Symbole & Ce qu'il désigne \\ \hline \hline
+        \Code{\$@} & Nom de la cible \\
+        \Code{\$<} & Nom de la 1\iere{} dép. \\
+        \Code{\$\textasciicircum} & Noms de toutes les dép. \\ \hline
+        \Code{\$?} & Noms des dép. plus récentes que la cible \\
+        \Code{\$*} & Nom de la cible sans extension
+    \end{tabular}
+\end{center}
+\medskip
+
+En les utilisant, les deux règles précédentes deviennent
+
+\begin{minipage}[c]{.4\textwidth}
+\begin{lstlisting}[language=make,numbers=none,basicstyle=\footnotesize\tt]
+M.o: M.c DEP2 ... DEPn
+    gcc -c M.c
+\end{lstlisting}
+\end{minipage}
+\hspace{1em}
+$\longrightarrow$
+\hspace{2em}
+\begin{minipage}[c]{.35\textwidth}
+\begin{lstlisting}[language=make,numbers=none,basicstyle=\footnotesize\tt]
+M.o: M.c DEP2 ... DEPn
+    gcc -c $<
+\end{lstlisting}
+\begin{math}\end{math}
+\end{minipage}
+
+\begin{minipage}[c]{.4\textwidth}
+\begin{lstlisting}[language=make,numbers=none,basicstyle=\footnotesize\tt]
+EXEC: DEP1 ... DEPn
+    gcc -o EXEC DEP1 ... DEPn
+\end{lstlisting}
+\end{minipage}
+\hspace{1em}
+$\longrightarrow$
+\hspace{2em}
+\begin{minipage}[c]{.35\textwidth}
+\begin{lstlisting}[language=make,numbers=none,basicstyle=\footnotesize\tt]
+EXEC: DEP1 ... DEPn
+    gcc -o $@ $^
+\end{lstlisting}
+\begin{math}\end{math}
+\end{minipage}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Variables internes dans les {\tt Makefile} --- exemple}
+\begin{multicols}{2}
+\begin{center}
+\scalebox{.35}{\begin{tikzpicture}[scale=.8]
+    \node[Sommet,minimum size=2cm,font=\Large](Piece)at(-4,0){\Code{Piece}};
+    \node[Sommet,minimum size=2cm,font=\Large](Case)at(-4,-4){\Code{Case}};
+    \node[Sommet,minimum size=2cm,font=\Large](Position)at(0,-2){\Code{Position}};
+    \node[Sommet,minimum size=2cm,font=\Large](IA)at(4,0){\Code{IA}};
+    \node[Sommet,minimum size=2cm,font=\Large](IGraph)at(4,-4){\Code{IGraph}};
+    \node[Sommet,minimum size=2cm,draw=Vert,fill=Vert!20,font=\Large](Main)at(7,-2){\Code{Main}};
+    \draw[Fleche](Main)edge[bend right=20]node{}(IA);
+    \draw[Fleche](Main)edge[bend left=20]node{}(IGraph);
+    \draw[Fleche](IGraph)edge[bend left=20]node{}(Case);
+    \draw[Fleche](IGraph)edge[bend left=20]node{}(Position);
+    \draw[Fleche](IGraph)edge[bend right=40]node{}(Piece);
+    \draw[Fleche](IA)edge[bend left=40]node{}(Case);
+    \draw[Fleche](IA)edge[bend right=20]node{}(Position);
+    \draw[Fleche](IA)edge[bend right=20]node{}(Piece);
+    \draw[Fleche](Position)edge[bend right=20]node{}(Case);
+    \draw[Fleche](Position)edge[bend left=20]node{}(Piece);
+\end{tikzpicture}}
+\end{center}
+L'utilisation des variables et variables internes permet de simplifier
+les \Code{Makefile}.
+\end{multicols}
+
+\begin{multicols}{2}
+\begin{lstlisting}[language=make,basicstyle=\footnotesize\tt]
+CC=colorgcc
+CFLAGS=-ansi -pedantic -Wall
+OBJ=Main.o Piece.o Case.o
+    Position.o IA.o IGraph.o
+
+Echecs: $(OBJ)
+    $(CC) -o $@ $^ $(CFLAGS)
+
+
+Main.o: Main.c IA.h IGraph.h
+    $(CC) -c $< $(CFLAGS)
+
+Piece.o: Piece.c Piece.h
+    $(CC) -c $< $(CFLAGS)
+
+Case.o: Case.c Case.h
+    $(CC) -c $< $(CFLAGS)
+
+Position.o: Position.c Position.h
+            Piece.h Case.h
+    $(CC) -c $< $(CFLAGS)
+
+IA.o: IA.c IA.h
+      Piece.h Case.h Position.h
+    $(CC) -c $< $(CFLAGS)
+
+IGraph.o: IGraph.c IGraph.h
+          Piece.h Case.h Position.h
+    $(CC) -c $< $(CFLAGS)
+\end{lstlisting}
+\begin{math}\end{math}
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Règles génériques}
+Il est possible de simplifier encore d'avantage l'écriture des \Code{Makefile}
+au moyen des \alert{règles génériques}.
+\medskip
+
+Ce sont des règles de la forme
+\smallskip
+
+\Code{\%.o: \%.c \\
+$\rightarrow$ COMMANDE}
+\smallskip
+
+où \Code{COMMANDE} est une commande.
+\medskip
+
+Cette syntaxe simule une règle
+\smallskip
+
+\Code{M.o: M.c \\
+$\rightarrow$ COMMANDE}
+\smallskip
+
+pour chaque fichier \Code{M.c} du projet.
+\bigskip
+
+{\bf Intérêt principal}~: l'unique règle
+\begin{lstlisting}[language=make,numbers=none,basicstyle=\footnotesize\tt]
+%.o: %.c
+    gcc -c $<
+\end{lstlisting}
+\begin{math}\end{math}
+permet de construire chaque fichier objet du projet.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Règles génériques}
+{\bf Attention}~: la règle
+\begin{lstlisting}[language=make,numbers=none,basicstyle=\footnotesize\tt]
+%.o: %.c
+    gcc -c $<
+\end{lstlisting}%
+\begin{math}\end{math}%
+ne prend pas en compte des dépendances des modules aux fichiers \Code{.h}
+concernés.
+\bigskip
+
+Il faut les mentionner explicitement de la manière suivante~:
+\smallskip
+
+\Code{M.o: M.c M.h DEP1 ... DEPn}
+\smallskip
+
+pour chaque module \Code{M} du projet. \Code{DEP1}, \dots, \Code{DEPn}
+sont les \Code{.h} dont le module \Code{M} dépend.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Règles génériques --- exemple}
+\begin{multicols}{2}
+\begin{center}
+\scalebox{.35}{\begin{tikzpicture}[scale=.8]
+    \node[Sommet,minimum size=2cm,font=\Large](Piece)at(-4,0){\Code{Piece}};
+    \node[Sommet,minimum size=2cm,font=\Large](Case)at(-4,-4){\Code{Case}};
+    \node[Sommet,minimum size=2cm,font=\Large](Position)at(0,-2){\Code{Position}};
+    \node[Sommet,minimum size=2cm,font=\Large](IA)at(4,0){\Code{IA}};
+    \node[Sommet,minimum size=2cm,font=\Large](IGraph)at(4,-4){\Code{IGraph}};
+    \node[Sommet,minimum size=2cm,draw=Vert,fill=Vert!20,font=\Large](Main)at(7,-2){\Code{Main}};
+    \draw[Fleche](Main)edge[bend right=20]node{}(IA);
+    \draw[Fleche](Main)edge[bend left=20]node{}(IGraph);
+    \draw[Fleche](IGraph)edge[bend left=20]node{}(Case);
+    \draw[Fleche](IGraph)edge[bend left=20]node{}(Position);
+    \draw[Fleche](IGraph)edge[bend right=40]node{}(Piece);
+    \draw[Fleche](IA)edge[bend left=40]node{}(Case);
+    \draw[Fleche](IA)edge[bend right=20]node{}(Position);
+    \draw[Fleche](IA)edge[bend right=20]node{}(Piece);
+    \draw[Fleche](Position)edge[bend right=20]node{}(Case);
+    \draw[Fleche](Position)edge[bend left=20]node{}(Piece);
+\end{tikzpicture}}
+\end{center}
+
+L'utilisation des règles génériques permet de simplifier encore
+les \Code{Makefile}.
+\end{multicols}
+
+\begin{multicols}{2}
+\begin{lstlisting}[language=make,basicstyle=\footnotesize\tt]
+CC=colorgcc
+CFLAGS=-ansi -pedantic -Wall
+OBJ=Main.o Piece.o Case.o
+    Position.o IA.o IGraph.o
+
+Echecs: $(OBJ)
+    $(CC) -o $@ $^ $(CFLAGS)
+
+
+Main.o: Main.c IA.h IGraph.h
+
+Piece.o: Piece.c Piece.h
+
+Case.o: Case.c Case.h
+
+Position.o: Position.c Position.h
+            Piece.h Case.h
+
+IA.o: IA.c IA.h
+      Piece.h Case.h Position.h
+
+IGraph.o: IGraph.c IGraph.h
+          Piece.h Case.h Position.h
+
+%.o: %.c
+    $(CC) -c $< $(CFLAGS)
+\end{lstlisting}
+\begin{math}\end{math}
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Règles de nettoyage}
+{\bf Règle de nettoyage}~:
+\begin{multicols}{2}
+\begin{lstlisting}[language=make]
+clean:
+    rm -f *.o
+\end{lstlisting}
+Cette règle permet, lorsque l'on saisit la commande \Code{make clean},
+de supprimer les fichiers \Code{.o} du répertoire courant.
+\end{multicols}
+\bigskip
+\bigskip
+
+{\bf Règle de nettoyage total}~:
+\begin{multicols}{2}
+\begin{lstlisting}[language=make]
+mrproper: clean
+    rm -f EXEC
+\end{lstlisting}
+Cette règle,
+où \Code{EXEC} est le nom de l'exécutable du projet, permet de supprimer
+tous les {\bf fichiers regénérables} (c.-à-d. les fichiers \Code{.o} et
+l'exécutable) à partir des fichiers \Code{.c} et \Code{.h} du projet.
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Règles d'installation / désinstallation}
+
+{\bf Règle d'installation}~:
+\begin{multicols}{2}
+\begin{lstlisting}[language=make]
+install: EXEC
+    mkdir ../bin
+    mv EXEC ../bin/EXEC
+    make mrproper
+\end{lstlisting}
+Cette règle permet de compiler le projet, de placer son exécutable
+\Code{EXEC} dans un répertoire \Code{bin} et de supprimer les fichiers
+regénérables.
+\end{multicols}
+\bigskip
+\bigskip
+
+{\bf Règle de désinstallation}~:
+\begin{multicols}{2}
+\begin{lstlisting}[language=make]
+uninstall: mrproper
+    rm -f ../bin/EXEC
+    rm -rf ../bin
+\end{lstlisting}
+Cette règle permet de supprimer les fichiers regénérables,
+l'exécutable du projet, ainsi que le répertoire \Code{bin} le contenant.
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Bibliothèques}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Principes généraux}
+Une \alert{bibliothèque} est un regroupement de modules offrant des
+fonctionnalités allant vers un même objectif.
+\medskip
+
+Par exemple, la bibliothèque graphique {\sf MLV} est un ensemble de
+plusieurs modules (\Code{MLV\_audio}, \Code{MLV\_keyboard},
+\Code{MLV\_image}, {\em etc.}) réunis dans le but d'offrir des fonctions
+d'affichage graphique et de gérer les entrées/sorties
+(son, clavier, souris, {\em etc.}).
+\medskip
+
+L'intérêt des bibliothèques est double~:
+\begin{enumerate}
+    \item il suffit de ne réaliser qu'{\bf une seule inclusion} pour
+    bénéficier des fonctionnalités d'une bibliothèque, plutôt que
+    plusieurs inclusions sans être sûr du fichier d'en-tête à inclure~;
+    \smallskip
+
+    \item sous réserve de savoir comment créer des bibliothèques, il est
+    possible de {\bf partager et réutiliser} son propre code entre
+    plusieurs de ses projets, sans avoir à le recompiler.
+\end{enumerate}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Bibliothèques statiques/dynamiques}
+Une \alert{bibliothèque statique} est un fichier d'extension \Code{.a}.
+\medskip
+
+Lors de son utilisation, son code est inclus dans l'exécutable pendant
+l'édition des liens.
+\begin{itemize}
+    \item {\bf Avantage}~: tout projet qui utilise une bibliothèque
+    statique peut être exécuté sur une machine où la bibliothèque n'est
+    pas installée.
+    \item {\bf Inconvénient}~: l'exécutable est plus volumineux.
+\end{itemize}
+\bigskip
+\bigskip
+
+Une \alert{bibliothèque dynamique} est un fichier d'extension \Code{.so}.
+\medskip
+
+Lors de son utilisation, son code n'est pas inclus dans l'exécutable.
+C'est lors de l'exécution que les symboles provenant de la bibliothèque
+sont résolus au moyen de l'éditeur de liens dynamique.
+\begin{itemize}
+    \item {\bf Avantages}~: l'exécutable est moins volumineux. Il n'y a
+    pas de duplication du code de la bibliothèque sur un même système si
+    plusieurs projets l'utilisent.
+    \item {\bf Inconvénient}~: tout projet qui utilise une bibliothèque
+    dynamique ne peut être exécuté que sur un système où cette
+    dernière est installée.
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Compilation d'un projet utilisant des bibliothèques}
+On suppose que l'on travaille sur un projet constitué de deux modules
+\Code{A} et \Code{B} et d'un fichier principal \Code{Main.c}.
+Ce projet utilise deux bibliothèques statiques~: \Code{libc.a} et
+\Code{libMLV.a}.
+\medskip
+
+La compilation de ce projet se réalise de manière habituelle. La
+différence porte sur l'étape d'{\bf édition des liens} dans laquelle il
+est nécessaire de {\bf signaler les bibliothèques utilisées}.
+\vspace{-1.5em}
+\begin{center}
+    \begin{tikzpicture}[every text node part/.style={align=left},yscale=.9]
+        \node[Module](A)at(0,0){A.h \\ A.c};
+        \node[Module](B)at(0,-1){B.h \\ B.c};
+        \node[Module](Main)at(0,-2){Main.c};
+        \node[FObj](Ao)at(3.5,0){A.o};
+        \node[FObj](Bo)at(3.5,-1){B.o};
+        \node[FObj](Maino)at(3.5,-2){Main.o};
+        \node[Bib](libm)at(6,.7){libm.a};
+        \node[Bib](libMLV)at(8,.7){libMLV.a};
+        \node[Exec](Ex)at(10,-1){a.out};
+        \node[font=\scriptsize \tt](edliens)at(7,-1){gcc Main.o A.o B.o -lm -lMLV};
+        \draw(A)edge[->,anchor=south,font=\scriptsize \tt] node{gcc -c A.c}(Ao);
+        \draw(B)edge[->,anchor=south,font=\scriptsize \tt] node{gcc -c B.c}(Bo);
+        \draw(Main)edge[->,anchor=south,font=\scriptsize \tt] node{gcc -c Main.c}(Maino);
+        \draw[->](Ao)edge[bend left=20]node{}(edliens);
+        \draw[->](Bo)--(edliens);
+        \draw[->](Maino)edge[bend right=20]node{}(edliens);
+        \draw[->](libm)edge[bend left=30]node{}(edliens);
+        \draw[->](libMLV)edge[bend left=30]node{}(edliens);
+        \draw[->](edliens)--(Ex);
+    \end{tikzpicture}
+\end{center}
+\medskip
+
+Pour utiliser des bibliothèques qui ne sont pas situées dans le répertoire
+standard des bibliothèques, on précisera leur chemin \Code{chem} lors de
+l'édition des liens au moyen de l'option \Code{-Lchem}.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Compilation d'un projet utilisant des bibliothèques}
+Le nom d'une bibliothèque commence par \Code{lib}. On signale l'utilisation
+d'une bibliothèque à l'éditeur de liens par \Code{-lNOM} où \Code{libNOM}
+est le nom de la bibliothèque.
+%\medskip
+
+\begin{multicols}{2}
+\footnotesize
+En supposant que le graphe d'inclusions du projet précédent est celui
+ci-contre, un \Code{Makefile} possible est
+\begin{center}
+\scalebox{.6}{\begin{tikzpicture}
+    \node[Sommet](A)at(0,-.5){\Code{A}};
+    \node[Sommet](B)at(0,-1.5){\Code{B}};
+    \node[Sommet](Main)at(2,-1){\Code{Main}};
+    \draw[Fleche](B)--(A);
+    \draw[Fleche](Main)edge[bend right=20]node{}(A);
+    \draw[Fleche](Main)edge[bend left=20]node{}(B);
+\end{tikzpicture}}
+\end{center}
+\end{multicols}
+\begin{multicols}{2}
+\begin{lstlisting}[language=make,basicstyle=\scriptsize\tt]
+CC=colorgcc
+CFLAGS=-ansi -pedantic -Wall
+LDFLAGS=-lm -lMLV
+OBJ=Main.o A.o B.o
+
+Projet: $(OBJ)
+    $(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
+
+Main.o: Main.c A.h B.h
+
+A.o: A.c A.h
+
+B.o: B.c B.h A.h
+
+%.o: %.c
+    $(CC) -c $^ $(CFLAGS)
+
+clean:
+    rm -f *.o
+
+mrproper: clean
+    rm -f Projet
+
+install: Projet
+    mkdir ../bin
+    mv Projet ../bin/Projet
+    make mrproper
+
+uninstall: mrproper
+    rm -f ../bin/Projet
+    rm -rf ../bin
+\end{lstlisting}
+\begin{math}\end{math}
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{La bibliothèque standard}
+La \alert{bibliothèque standard} \Code{libc.a} (\Code{libc.so}) regroupe
+les vingt-quatre modules
+\begin{center}
+    \begin{tabular}{cccc}
+    \Code{assert}, &\quad \Code{complex}, &\quad \Code{ctype}, &\quad \Code{errno}, \\
+    \Code{fenv}, &\quad \Code{float}, &\quad \Code{inttypes}, &\quad \Code{iso646}, \\
+    \Code{limits}, &\quad \Code{locale}, &\quad \Code{math}, &\quad \Code{setjmp}, \\
+    \Code{signal}, &\quad \Code{stdarg}, &\quad \Code{stdbool}, &\quad \Code{stddef}, \\
+    \Code{stdint}, &\quad \Code{stdio}, &\quad \Code{stdlib}, &\quad \Code{string}, \\
+    \Code{tgmath}, &\quad \Code{time}, &\quad \Code{wchar}, &\quad \Code{wctype}.
+    \end{tabular}
+\end{center}
+\medskip
+
+Cette bibliothèque est {\bf liée implicitement} lors de toute édition
+des liens.
+\medskip
+
+Il est donc possible d'utiliser les modules de la bibliothèque standard
+juste en les incluant (\Code{\#include <NOM.h>}).
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Création de bibliothèques statiques}
+Pour \alert{créer une bibliothèque statique} \Code{X}, on suit les étapes
+suivantes~:
+\smallskip
+
+\begin{small}
+\begin{enumerate}
+    \item {\bf écriture des modules} \Code{M1}, \dots, \Code{Mn} qui vont
+    constituer la bibliothèque~;
+    \medskip
+
+    \item {\bf compilation des modules} et création des fichiers objets
+    \Code{M1.o}, \dots, \Code{Mn.o}~;
+    \medskip
+
+    \item {\bf création de l'archive} \Code{libX.a} par
+    \begin{center}\Code{ar r libX.a M1.o ... Mn.o}\end{center}
+    \medskip
+
+    \item {\bf génération de l'index} de la bibliothèque par
+    \begin{center} \Code{ranlib libX.a} \end{center}
+    \medskip
+
+    \item (étape facultative) {\bf écriture d'un fichier d'en-tête global}
+    \begin{center}
+    \begin{minipage}[c]{.3\textwidth}
+\begin{lstlisting}[frame=single,numbers=none,basicstyle=\scriptsize\tt]
+/* X.h */
+#ifndef __X__
+#define __X__
+
+#include "M1.h"
+...
+#include "Mn.h"
+
+#endif
+\end{lstlisting}
+    \end{minipage}
+    \end{center}
+\end{enumerate}
+\end{small}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Création de bibliothèques statiques --- exemple}
+On suppose que l'on a créé trois modules~:
+\begin{enumerate}
+    \item \Code{Liste} pour la représentation des listes chaînées~;
+    \smallskip
+
+    \item \Code{Arbre} pour la représentation des arbres binaires de
+    recherche~;
+    \smallskip
+
+    \item \Code{Tri} pour l'implantation d'algorithmes de tris de tableaux.
+\end{enumerate}
+\bigskip
+\bigskip
+
+On souhaite regrouper ces modules en une bibliothèque nommée \Code{algo}.
+\medskip
+
+Celle-ci sera constituée de deux fichiers~;
+\begin{enumerate}
+    \item \Code{libalgo.a}, l'implantation de la bibliothèque~;
+    \smallskip
+
+    \item \Code{Algo.h}, l'en-tête de la bibliothèque.
+\end{enumerate}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Création de bibliothèques statiques --- exemple}
+Pour créer de la bibliothèque \Code{algo}, on saisit les commandes
+\smallskip
+
+\begin{small}
+\Code{gcc -c Liste.c ; gcc -c Arbre.c ; gcc -c Tri.c} \\
+\Code{ar r libalgo.a Liste.o Arbre.o Tri.o} \\
+\Code{ranlib libalgo.a}
+\end{small}
+\smallskip
+
+et on écrit l'en-tête global
+\begin{center}
+\begin{minipage}[c]{.3\textwidth}
+\begin{lstlisting}[frame=single,numbers=none,basicstyle=\scriptsize\tt]
+/* Algo.h */
+#ifndef __ALGO__
+#define __ALGO__
+
+#include "Liste.h"
+#include "Arbre.h"
+#include "Tri.h"
+
+#endif
+\end{lstlisting}
+\end{minipage}
+\end{center}
+\medskip
+
+Pour utiliser la bibliothèque \Code{algo} dans un fichier \Code{F} d'un
+projet \Code{P}, il faut inclure dans \Code{F} son en-tête, réaliser
+l'édition des liens de \Code{P} avec l'option \Code{-lalgo} et indiquer
+son chemin \Code{chem} avec l'option \Code{-Lchem}.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Index}
+Il est possible de \alert{consulter l'index} d'une bibliothèque statique
+\Code{LIB} par la commande
+\begin{center}
+\Code{nm -s libLIB.a}
+\end{center}
+\medskip
+
+\begin{center}
+\begin{minipage}[c]{.22\textwidth}
+\begin{lstlisting}[frame=single,numbers=none,basicstyle=\scriptsize\tt]
+/* A.h */
+#ifndef __A__
+#define __A__
+    char h(int a);
+#endif
+\end{lstlisting}
+\end{minipage}
+\enspace
+\begin{minipage}[c]{.23\textwidth}
+\begin{lstlisting}[frame=single,numbers=none,basicstyle=\scriptsize\tt]
+/* A.c */
+#include "A.h"
+char h(int a) {
+    return a % 256;
+}
+\end{lstlisting}
+\end{minipage}
+\quad
+\begin{minipage}[c]{.23\textwidth}
+\begin{lstlisting}[frame=single,numbers=none,basicstyle=\scriptsize\tt]
+/* B.h */
+#ifndef __B__
+#define __B__
+    typedef int S;
+
+    int f(S s);
+    char g(int a);
+#endif
+\end{lstlisting}
+\end{minipage}
+\enspace
+\begin{minipage}[c]{.22\textwidth}
+\begin{lstlisting}[frame=single,numbers=none,basicstyle=\scriptsize\tt]
+/* B.c */
+#include "B.h"
+int f(S s) {
+    return s;
+}
+char g(int a) {
+    return a % 64;
+}
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+\begin{center}
+\begin{minipage}[c]{.4\textwidth}
+{\bf Création}~: \\
+\begin{small}
+\Code{gcc -c A.c ; gcc -c B.c} \\
+\Code{ar r libAB.a A.o B.o} \\
+\Code{ranlib libAB.a}
+\end{small}
+\medskip
+
+{\bf Affichage}~: \\
+\begin{small}
+\Code{nm -s libAB.a}
+\end{small}
+\end{minipage}
+\qquad
+\begin{minipage}[c]{.2\textwidth}
+\begin{lstlisting}[frame=single,numbers=none,basicstyle=\ttfamily\tiny,
+showstringspaces=false]
+Indexe de l'archive:
+h in A.o
+f in B.o
+g in B.o
+
+A.o:
+0000000000000000 T h
+
+B.o:
+0000000000000000 T f
+000000000000000c T g
+\end{lstlisting}
+\end{minipage}
+\end{center}
+\end{frame}

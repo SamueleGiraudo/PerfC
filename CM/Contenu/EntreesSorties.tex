@@ -1,0 +1,557 @@
+% Auteur : Samuele Giraudo
+% Création : oct. 2013
+% Modifications : aout 2014 oct. 2014, déc. 2015
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Entrées et sorties}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Sortie}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Écriture formatée}
+La fonction
+\begin{center}
+    \Code{int printf(char *format, V\_1, ..., V\_N);}
+\end{center}
+permet de réaliser une \alert{écriture formatée} sur la sortie standard
+\Code{stdout}.
+\medskip
+
+\uncover<2->{
+Cette fonction renvoie le nombre de caractères affichés. Si une erreur
+a lieu, elle renvoie un entier négatif.
+\medskip}
+
+\begin{multicols}{2}
+\begin{semiverbatim}\uncover<3->{
+int num;
+num = printf("%s+%d\\n",
+    "test", 200);
+printf("%d\\n", num);
+\end{semiverbatim}}
+\uncover<3->{
+Ces instructions affichent \\
+\Sortie{test+200 \\
+9}}
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Indicateurs de conversion}
+On utilise les \alert{indicateurs de conversion} suivants pour interpréter
+chaque valeur à écrire (ou à lire, voir la partie suivante) de manière
+adéquate~:
+\begin{center}
+    \begin{tabular}{c|c}
+        Indicateur de conversion & Affichage \\ \hline
+        \Code{d}, \Code{i} & Entier en base dix \\
+        \Code{u} & Entier non signé en base dix \\
+        \Code{x}, \Code{X} & Entier en hexadécimal \\
+        \Code{c} & Caractère \\
+        \Code{e}, \Code{E} & Flottant en notation scientifique \\
+        \Code{f}, \Code{g} & Flottant \\
+        \Code{s} & Chaîne de caractères \\
+        \Code{p} & Pointeur
+    \end{tabular}
+\end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Caractères spéciaux}
+Certains caractères ne s'affichent pas mais produisent un effet sur
+la sortie. Ce sont des \alert{caractères spéciaux}.
+\begin{center}
+    \begin{tabular}{c|c}
+        Caractère spécial & Rôle \\ \hline
+        \Code{\textbackslash n} & Passage à la ligne suivante \\
+        \Code{\textbackslash b} & Retour en arrière d'un caractère \\
+        \Code{\textbackslash f} & Passage à la ligne suivante avec alinéa \\
+        \Code{\textbackslash r} & Retour chariot \\
+        \Code{\textbackslash t} & Tabulation horizontale \\
+        \Code{\textbackslash v} & Tabulation verticale \\
+    \end{tabular}
+\end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Caractères d'attribut}
+Il est possible de faire suivre le \Code{\%} d'un indicateur de conversion
+de \alert{caractères d'attribut} pour réaliser un formatage avancé.
+\begin{center}\small
+    \begin{tabular}{c|c}
+        Caractère d'attribut & Rôle \\ \hline
+        \Code{0N} & Affichage du nombre sur \Code{N} chiffres (ajout de \Code{0}) \\
+        \Code{N} & Affichage du nombre sur \Code{N} chiffres (ajout d'espaces) \\
+        \Code{+} & Force l'affichage du signe d'un nombre \\
+        \Code{-} & Justifie à gauche un nombre (à droite par défaut) \\
+    \end{tabular}
+\end{center}
+\bigskip
+
+\uncover<2->{P.ex.,} \vspace{-.5em}
+\begin{multicols}{2}
+\begin{semiverbatim}\uncover<2->{
+printf("%+5d\\n", 23);}
+\end{semiverbatim}
+    \uncover<2->{affiche
+    \Sortie{\textvisiblespace \textvisiblespace +23}}
+    \uncover<3->{et}
+\begin{semiverbatim}\uncover<3->{
+printf("%+-5d %d\\n", 23, 5);}
+\end{semiverbatim}
+    \uncover<3->{affiche
+    \Sortie{+23\textvisiblespace \textvisiblespace \textvisiblespace 5}.}
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Écriture caractère par caractère}
+La fonction
+\begin{center}
+    \Code{int putchar(int c);}
+\end{center}
+permet d'\alert{afficher un caractère} sur la sortie standard.
+\medskip
+
+\uncover<2->{
+Cette fonction renvoie le caractère écrit (converti en un \Code{int}).
+Elle renvoie la constante \Code{EOF} (end-of-file) si une erreur a lieu.
+\medskip}
+
+\begin{multicols}{2}
+\begin{semiverbatim}\small\uncover<3->{
+int ret;
+ret = putchar('a');
+if (ret == EOF)
+    exit(EXIT_FAILURE);}
+\end{semiverbatim}
+\uncover<3->{
+Ces instructions affichent \Sortie{a}. Un test est réalisé pour
+détecter une erreur éventuelle.}
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Entrée}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Lecture formatée}
+La fonction
+\begin{center}
+    \Code{int scanf (char *format, PTR\_1, ..., PTR\_N);}
+\end{center}
+permet de réaliser une \alert{lecture formatée} sur l'entrée standard
+\Code{stdin}.
+\bigskip
+
+\uncover<2->{
+Cette fonction renvoie le nombre d'éléments lus correctement assignés.
+\bigskip}
+
+\begin{multicols}{2}
+\begin{semiverbatim}\uncover<3->{
+int num, ret;
+char chaine[128];
+chaine[0] = '\\0';
+ret = scanf("%d W %s",
+  &num, chaine);
+printf("%d\\n", ret);
+printf("%d %s\\n",
+  num, chaine);}
+\end{semiverbatim}
+\small
+\uncover<3->{
+Ces instructions lisent sur l'entrée standard un entier, un caractère
+\Code{'W'}, puis une chaîne de caractères.
+\medskip}
+
+\uncover<4->{
+Que font les entrées suivantes~?
+\begin{multicols}{2}
+\begin{enumerate} \footnotesize
+    \item \Sortie{25\textvisiblespace W\textvisiblespace abc\textbackslash n}}
+    \uncover<5->{
+    \item \Sortie{25\textvisiblespace W%
+        \textvisiblespace\textvisiblespace abc\textbackslash n}}
+    \uncover<6->{
+    \item \Sortie{25Wabc\textbackslash n}}
+    \uncover<7->{
+    \item \Sortie{25\textvisiblespace abc\textbackslash n}}
+    \uncover<8->{
+    \item \Sortie{xy\textvisiblespace W\textvisiblespace abc\textbackslash n}}
+    \uncover<9->{
+    \item \Sortie{25\textvisiblespace w\textvisiblespace abc\textbackslash n}
+    }
+\end{enumerate}
+\end{multicols}
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Exemple d'utilisation de {\tt scanf}}
+Ce programme lit sur l'entrée standard une chaîne d'au plus sept
+caractères (format \Code{\%Ns}), une espace, puis un entier.
+
+\begin{semiverbatim}
+\uncover<4->{#include <stdio.h>
+#include <string.h>
+
+int main() \{
+    char prenom[8];
+    int age, ret;}
+
+    \uncover<2->{ret = scanf("%7s %d", prenom, &age);}
+    \uncover<3->{while (ret != 2) \{
+        printf("%lu\\n", strlen(prenom));
+        ret = scanf("%7s %d", prenom, &age);
+    \}}
+    \uncover<4->{return 0;
+\}}
+\end{semiverbatim}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Lecture caractère par caractère}
+La fonction
+\begin{center}
+    \Code{int getchar();}
+\end{center}
+permet de \alert{lire un caractère} sur l'entrée standard.
+\medskip
+
+\uncover<2->{
+Cette fonction renvoie le caractère lu (converti en un \Code{int}).
+Elle renvoie la constante \Code{EOF} (end-of-file) lorsque la fin
+de fichier est détectée (touche {\tt Ctrl + D}).
+\medskip}
+
+\begin{multicols}{2}
+\begin{semiverbatim}\small\uncover<3->{
+char c;
+while ((c = getchar()) != EOF)
+    printf("%c", c);}
+\end{semiverbatim}
+\uncover<3->{
+Ces instructions affichent chaque caractère lu en entrée, tant que
+\Code{EOF} n'est pas rencontré.}
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Le tampon d'entrée}
+Considérons les instructions
+\begin{semiverbatim}
+char c;
+while ((c = getchar()) != EOF)
+    printf("%c", c);
+\end{semiverbatim}
+\bigskip
+
+\uncover<2->{
+Il est possible de saisir plusieurs caractères avant le
+\Code{'\textbackslash n'} (touche {\tt Entrée}).
+\bigskip}
+
+\uncover<3->{
+Avant d'être lus par le \Code{getchar} de la boucle, ils sont situés
+temporairement dans le \alert{tampon d'entrée}.
+\bigskip}
+
+\uncover<4->{Le tampon d'entrée se comporte comme un tableau
+de caractères.
+\bigskip}
+
+\uncover<5->{Chaque appel à \Code{getchar} considère le tampon d'entrée et~:
+\begin{itemize}
+    \item s'il est vide, on attend la saisie d'un caractère de l'entrée
+    standard~;
+    \smallskip
+
+    \item s'il contient au moins un élément, il le considère et le
+    supprime du tampon d'entrée.
+\end{itemize}}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Fichiers}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Tête de lecture / écriture}
+\todo{À faire.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Ouverture de fichiers}
+La fonction
+\begin{center}
+    \Code{FILE *fopen(const char *path, const char *mode);}
+\end{center}
+permet d'\alert{ouvrir un fichier}.
+\medskip
+
+\uncover<2->{
+Cette fonction renvoie un pointeur sur une variable de type \Code{FILE}
+qui est un type structuré.
+\bigskip}
+
+\uncover<3->{
+{\bf Attention}~: \Code{fopen} renvoie \Code{NULL} si l'ouverture s'est
+mal passée. Il faut donc toujours tester la valeur de retour de \Code{fopen}.
+\medskip}
+
+\uncover<4->{
+\Code{path} désigne le chemin relatif par rapport à l'exécutable du fichier
+à ouvrir.
+\smallskip
+
+\Code{mode} désigne le mode d'ouverture désiré.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Modes d'ouverture}
+Il existe plusieurs \alert{modes d'ouverture}. Chacun répond à un besoin
+particulier~:
+\smallskip
+
+\begin{itemize}
+    \item \Code{"r"}~: lecture seule.
+    \medskip
+
+    \item \Code{"w"}~: écriture seule. Si le fichier n'existe pas, il
+    est créé.
+    \medskip
+
+    \item \Code{"a"}~: écriture en ajout. Permet d'écrire dans le fichier
+    en partant de la fin. Si le fichier n'existe pas, il est créé.
+    \medskip
+
+    \item \Code{"r+"}~: lecture et écriture.
+    \medskip
+
+    \item \Code{"w+"}~: lecture et écriture avec suppression préalable
+    du contenu du fichier. Si le fichier n'existe pas, il est créé.
+    \medskip
+
+    \item \Code{"a+"}~: lecture et écriture en ajout. Permet de lire et
+    d'écrire dans le fichier en partant de la fin. Si le fichier
+    n'existe pas, il est créé.
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Fermeture de fichiers}
+La fonction
+\begin{center}
+    \Code{int fclose(FILE *fp);}
+\end{center}
+permet de \alert{fermer un fichier}.
+\bigskip
+
+\uncover<2->{
+Cette fonction permet de mettre à jour le fichier pointé par \Code{fp}
+de sorte que toutes les modifications effectuées soient prisent en compte.
+Le pointeur \Code{fp} n'est plus alors utilisable pour accéder au fichier.
+\bigskip}
+
+\uncover<3->{
+Cette fonction renvoie \Code{0} si la fermeture s'est bien déroulée et
+\Code{EOF} dans le cas contraire.
+\bigskip}
+
+\uncover<4->{{\bf Attention}~: toute ouverture d'un fichier lors de
+l'exécution d'un programme s'accompagne de la fermeture future du
+fichier en question.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Écriture dans un fichier}
+La fonction
+\begin{center}
+    \Code{int fprintf(FILE *stream, char *format, V\_1, ..., V\_N);}
+\end{center}
+permet de réaliser une \alert{écriture formatée} dans le fichier pointé
+par \Code{stream}.
+\medskip
+
+\uncover<2->{
+Cette fonction se comporte comme \Code{printf}, à la différence que
+cette dernière travaille sur le fichier \Code{stdout}.}
+
+\begin{multicols}{2}
+\begin{semiverbatim}\small\uncover<3->{
+FILE *f;
+int ret;
+f = fopen("fic.txt", "w");
+if (f == NULL)
+    exit(EXIT_FAILURE);
+fprintf(f, "abc\\n");
+ret = fclose(f);
+if (ret == EOF)
+    exit(EXIT_FAILURE);}
+\end{semiverbatim}
+\uncover<3->{
+Ces instructions déclarent un pointeur sur le fichier \Code{fic.txt}
+et écrivent \Code{"abc"} dans \Code{fic.txt}.}
+\bigskip
+\bigskip
+\bigskip
+\bigskip
+\bigskip
+\bigskip
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Lecture dans un fichier}
+La fonction
+\begin{center}
+    \Code{int fscanf(FILE *stream, char *format, V\_1, ..., V\_N);}
+\end{center}
+permet de réaliser une \alert{lecture formatée} depuis le fichier pointé
+par \Code{stream}.
+\bigskip
+
+\uncover<2->{
+Cette fonction se comporte comme \Code{scanf}, à la différence que
+cette dernière travaille sur le fichier \Code{stdin}.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Fichiers binaires}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Ouverture de fichiers en mode binaire}
+On utilise les modes d'ouverture habituels avec un \Code{b} en plus
+pour signaler l'ouverture en binaire.
+\smallskip
+
+\begin{itemize}
+    \item \Code{"rb"}~: lecture binaire seule.
+    \medskip
+
+    \item \Code{"wb"}~: écriture binaire seule. Si le fichier n'existe
+    pas, il est créé.
+    \medskip
+
+    \item \Code{"ab"}~: écriture binaire en ajout. Permet d'écrire dans le fichier
+    en partant de la fin. Si le fichier n'existe pas, il est créé.
+    \medskip
+
+    \item \Code{"rb+"}~: lecture binaire  et écriture binaire .
+    \medskip
+
+    \item \Code{"wb+"}~: lecture binaire et écriture binaire
+    avec suppression préalable
+    du contenu du fichier. Si le fichier n'existe pas, il est créé.
+    \medskip
+
+    \item \Code{"ab+"}~: lecture binaire et écriture binaire en ajout. Permet de lire et
+    d'écrire dans le fichier en partant de la fin. Si le fichier
+    n'existe pas, il est créé.
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Écriture dans un fichier binaire}
+On utilise la fonction
+\begin{center}
+    \Code{size\_t fwrite(void *ptr, size\_t size, size\_t nmemb, \\ FILE *stream);}
+\end{center}
+pour \alert{écrire} dans un fichier pointé par \Code{stream} ouvert
+en \alert{mode binaire}.
+\bigskip
+
+\uncover<2->{
+Cette fonction écrit les \Code{nmemb} valeurs de taille \Code{size} octets
+pointées par le pointeur \Code{ptr} dans le fichier pointé
+par \Code{stream}.
+\bigskip}
+
+\uncover<3->{
+Cette fonction renvoie le nombre de valeurs écrites.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Exemple d'utilisation de {\tt fwrite}}
+Ce programme écrit en mode binaire dans le fichier \Code{fic} la valeur
+d'une variable d'un type structuré.
+\medskip
+
+\begin{semiverbatim}\footnotesize
+\uncover<3->{#include <stdio.h>}
+\uncover<2->{
+typedef struct \{
+    unsigned char rouge;
+    unsigned char bleu;
+    unsigned char vert;
+\} Couleur;}
+
+\uncover<3->{int main() \{
+    FILE *f;
+    Couleur coul;
+    coul.rouge = 120; coul.bleu = 200; coul.vert = 12;}
+
+    \uncover<4->{f = fopen("fic", "wb");}
+    \uncover<5->{fwrite(&coul, sizeof(Couleur), 1, f);}
+    \uncover<6->{fclose(f);}
+
+    \uncover<3->{return 0;
+\}}
+\end{semiverbatim}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Lecture dans un fichier binaire}
+On utilise la fonction
+\begin{center}
+    \Code{size\_t fread(void *ptr, size\_t size, size\_t nmemb, \\ FILE *stream);}
+\end{center}
+pour \alert{lire} dans un fichier pointé par \Code{stream} ouvert
+en \alert{mode binaire}.
+\bigskip
+
+\uncover<2->{
+Cette fonction lit \Code{nmemb} valeurs de taille \Code{size} octets
+dans le fichier pointé par \Code{stream} et les place à l'adresse pointée
+par le pointeur \Code{ptr}.
+\bigskip}
+
+\uncover<3->{
+Cette fonction renvoie le nombre de valeurs lues.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Exemple d'utilisation de {\tt fread}}
+Ce programme écrit en mode binaire dans le fichier \Code{fic}
+un tableau d'entiers et le lit.
+\medskip
+
+\begin{semiverbatim}\footnotesize
+\uncover<2->{#include <stdio.h>}
+\uncover<2->{
+int main() \{
+    FILE *f;
+    int i, tab_1[12], tab_2[12];
+
+    for (i = 0 ; i < 12 ; ++i)
+        tab_1[i] = i;}
+
+    \uncover<3->{f = fopen("fic", "wb");}
+    \uncover<4->{fwrite(tab_1, sizeof(int), 12, f);}
+    \uncover<5->{fclose(f);}
+
+    \uncover<6->{f = fopen("fic", "rb");}
+    \uncover<7->{fread(tab_2, sizeof(int), 12, f);}
+    \uncover<8->{fclose(f);}
+
+    \uncover<2->{return 0;
+\}}
+\end{semiverbatim}
+\end{frame}

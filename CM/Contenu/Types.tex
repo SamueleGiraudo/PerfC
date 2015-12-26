@@ -1,0 +1,614 @@
+% Auteur : Samuele Giraudo
+% Création : aout 2014
+% Modifications : oct. 2014
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Types}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Notion de type}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}\frametitle{Types}
+Un \alert{type} peut être vu comme un ensemble (fini ou infini) de valeurs.
+\bigskip
+
+\uncover<2->{
+Dire qu'une variable \Code{x} est de type \Code{T} signifie que
+la valeur de \Code{x} est dans \Code{T}.
+\bigskip}
+
+\uncover<3->{
+Il existe deux sortes de types~:
+
+\begin{enumerate}
+    \item les \alert{types scalaires}, qui sont des types atomiques et
+    définis à l'avance dans le langage~;
+    \smallskip}
+
+    \uncover<4->{
+    \item les \alert{types composites}, qui sont des assemblages de
+    types scalaires ou de types composites par le biais des constructions
+    \Code{struct}, \Code{enum} ou tableau.}
+\end{enumerate}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Type d'une variable}
+Le type d'une variable indique comment {\bf interpréter} la zone
+mémoire qui lui est attribuée ainsi que sa {\bf taille}.
+\bigskip
+
+\uncover<2->{
+L'opérateur \Code{sizeof} permet de connaître la taille en octets d'un
+type. On peut aussi l'appliquer à une valeur. P.ex., \Code{sizeof(int)}
+et \Code{sizeof(33)} valent \Code{4}.
+\bigskip}
+
+\begin{multicols}{2}
+\begin{semiverbatim}\footnotesize\uncover<3->{
+int t;
+char c;
+
+printf("%d ", sizeof(int));
+printf("%d ", sizeof(t));
+printf("%d ", sizeof(31));
+
+printf("%d ", sizeof(char));
+printf("%d ", sizeof(c));
+printf("%d\\n", sizeof('a'));}
+\end{semiverbatim}
+\uncover<3->{
+Ceci affiche \Sortie{4 4 4 1 1 4}.
+\medskip
+
+L'expression \Code{sizeof('a')} vaut \Code{4}. En effet, même
+si \Code{'a'} est un caractère, c'est avant tout un entier.
+\smallskip
+
+La conversion est implicite.}
+\end{multicols}
+
+\uncover<4->{
+Le type d'une variable est \alert{attribué à sa déclaration} et ne peut
+pas être modifié.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Types scalaires}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Types entier}
+On se place sur une machine $64$ bits.
+\medskip
+
+\begin{center}
+    \begin{tabular}{c|c|c}
+        Nom & Taille (octets) & Plage \\ \hline
+        \Code{char} & $1$ & $-128$ à $127$ \\
+        \Code{short} & $2$ & $-32768$ à $32767$ \\
+        \Code{int} & $4$ & $-2^{31}$ à $2^{31} - 1$ \\
+        \Code{long} & $8$ & $-2^{63}$ à $2^{63} - 1$
+    \end{tabular}
+\end{center}
+\medskip
+
+\uncover<2->{
+Chacun de ces types peut être précédé de \Code{unsigned} pour faire en
+sorte de ne représenter que des entiers positifs. On a ainsi les plages suivantes~:
+\begin{center}
+    \begin{tabular}{c|c}
+        Nom & Plage \\ \hline
+        \Code{unsigned char} & $0$ à $255$ \\
+        \Code{unsigned short} & $0$ à $65535$ \\
+        \Code{unsigned int} & $0$ à $2^{32} - 1$ \\
+        \Code{unsigned long} & $0$ à $2^{64} - 1$
+    \end{tabular}
+\end{center}}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Entiers non signés}
+Dans le cas où l'on a besoin de représenter uniquement des valeurs
+entières positives, on utilisera les versions non signées des types
+entiers.
+\medskip
+
+\uncover<2->{
+Quelques avantages de ce procédé~:
+
+\begin{enumerate}
+    \item possibilité de représenter des entiers plus grands~;
+    \smallskip
+
+    \item gain de lisibilité du programme.
+\end{enumerate}
+\bigskip
+\bigskip}
+
+\uncover<3->{
+{\bf Attention}~: les instructions}
+\begin{semiverbatim}\uncover<3->{
+unsigned int i;
+for (i = 8 ; i >= 0 ; -\,\!-i) \{
+    ...
+\}}
+\end{semiverbatim}
+\uncover<3->{
+produisent une boucle infinie. En effet, \Code{i} étant non signé, il
+est toujours positif et donc la condition \Code{i >= 0} est toujours
+vraie.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Constantes entières}
+Il existe plusieurs manières d'exprimer des \alert{constantes entières}~:
+\medskip
+
+\begin{itemize}
+    \item en base dix~: \Code{0}, \Code{29}, \Code{-322}, \dots
+    \medskip
+
+    \uncover<2->{
+    \item en octal~: \Code{01}, \Code{0145}, \Code{-01234567}, \dots
+    \medskip}
+
+    \uncover<3->{
+    \item en hexadécimal~: \Code{0x1}, \Code{0x5555FFFF},
+    \Code{-0x98879AFA}, \dots
+    \medskip}
+
+    \uncover<4->{
+    \item par un caractère~: \Code{'a'}, \Code{'9'}, \Code{'*'},
+    \Code{'\textbackslash n'}, \dots}
+\end{itemize}
+\bigskip
+
+\uncover<5->{
+Un entier peut être représenté par un caractère car tout
+caractère est représenté par son code ASCII (qui est un entier
+compris entre \Code{0} et \Code{127}).
+\bigskip
+\bigskip}
+
+\uncover<6->{
+{\bf Attention}~: ne pas confondre les caractères chiffres avec les
+entiers (l'entier \Code{'1'} vaut \Code{49} et non pas \Code{1}).}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Types flottant}
+On se place sur une machine $64$ bits.
+\medskip
+
+\begin{center}
+    \begin{tabular}{c|c|c}
+        Nom & Taille (octets) & Valeur absolue maximale \\ \hline
+        \Code{float} & $4$ & $3.40282 \times 10^{38}$ \\
+        \Code{double} & $8$ & $1.79769 \times 10^{308}$ \\
+        \Code{long double} & $16$ & $1.18973 \times 10^{4932}$ \\
+    \end{tabular}
+\end{center}
+\medskip
+
+Le fichier d'en-tête \Code{float.h} contient des constantes donnant d'autres
+renseignements sur les types flottant.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Danger des types flottant}
+\begin{multicols}{2}
+\begin{semiverbatim}
+float x = 10000001.0;
+printf("%f\\n", x);
+\end{semiverbatim}
+Ces instructions affichent, de manière attendue, \Sortie{10000001.000000}.
+\end{multicols}
+\medskip
+
+\begin{multicols}{2}
+\begin{semiverbatim}\uncover<2->{
+float x = 100000001.0;
+printf("%f\\n", x);}
+\end{semiverbatim}
+\uncover<2->{
+En revanche, ces instructions affichent, de manière inattendue,
+\Sortie{100000000.000000}.}
+\end{multicols}
+\bigskip
+
+\uncover<3->{
+Les nombres flottants sont représentés de manière \alert{approchée}.
+\medskip
+
+Comme ces exemples le montrent, même certains entiers, représentables
+de manière exacte par des types entier, ne le sont pas par des types
+flottant.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Danger des types flottant~: une solution partielle}
+Les types flottant présentent divers désavantages par rapport aux types
+entier~:
+\begin{enumerate}
+    \item \alert{représentation non exacte} des nombres~;
+    \item opérations arithmétiques beaucoup \alert{moins efficaces}.
+\end{enumerate}
+\bigskip
+
+\uncover<2->{
+Pour ces raisons, {\bf il est recommandé de ne jamais utiliser de types
+flottant}.
+\bigskip}
+
+\uncover<3->{
+{\bf Solution partielle}~: on représente par l'entier $x \times 10^{k}$
+tout nombre $x$ qui dispose de $k \geq 0$ chiffres (en base dix) après
+la virgule, $k$ étant fixé.
+\medskip}
+
+\uncover<4->{
+P.ex., si l'on a besoin de manipuler des nombres à $k := 2$ chiffres
+après la virgule, les nombres $0.15$ et $331.9$ sont respectivement
+représentés par les entiers $15$ et $33190$.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}\frametitle{Opérations sur les types scalaires}
+Les valeurs d'un type scalaire (entier ou flottant) forment un
+\alert{ensemble totalement ordonné}~: étant donné deux valeurs, il est
+toujours possible de les comparer. On utilise pour cela les
+\alert{opérateurs relationnels}
+\begin{center}
+    \Code{==}, \Code{!=}, \Code{<=}, \Code{>=}, \Code{<}, \Code{>}.
+\end{center}
+
+\uncover<2->{
+Il est possible de mélanger des comparaisons de valeurs de types entier
+et de types flottant. Dans ce cas, les entiers sont convertis
+implicitement en une valeur de type flottant avant d'effectuer
+la comparaison.
+\bigskip}
+
+\uncover<3->{
+Sur des variables de type scalaires sont définis les
+\alert{opérateurs arithmétiques}
+\begin{center}
+    \Code{+}, \Code{-}, \Code{*}, \Code{/}, \Code{++}, \Code{-\,\!-}.
+\end{center}
+Les opérateurs \Code{++} et \Code{-\,\!-} servent à additionner ou à
+retrancher de $1$ la valeur des variables sur lesquels ils sont appliqués.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Récapitulatif}
+Dans cette sous-partie, nous avons vu~:
+
+\begin{enumerate}
+    \item les types scalaires~;
+    \smallskip
+
+    \item les entiers non signés~;
+    \smallskip
+
+    \item les types flottant et leurs pièges~;
+    \smallskip
+
+    \item des opérateurs relationnels et arithmétiques sur les types
+    scalaires.
+\end{enumerate}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Types construits}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Types structurés}
+La syntaxe
+\smallskip
+
+\Code{typedef struct ALIAS $\lbrace$} \\
+\qquad \Code{TYPE\_1 CHAMP\_1;} \\
+\qquad \Code{TYPE\_2 CHAMP\_2;} \\
+\qquad \Code{\dots} \\
+\Code{$\rbrace$ NOM;}
+\smallskip
+
+permet de \alert{déclarer un type structuré} \Code{NOM}, constitué
+des {\bf champs} \Code{CHAMP\_1}, \Code{CHAMP\_2}, \dots.
+L'{\bf alias} \Code{ALIAS} est facultatif.
+\bigskip
+
+\uncover<2->{
+C'est un {\bf amalgame} de types.
+\bigskip}
+
+\uncover<3->{
+P.ex., \vspace{-.5em}}
+\begin{multicols}{2}
+\begin{semiverbatim}\uncover<3->{
+typedef struct \{
+    int x;
+    int y;
+\} Couple;}
+\end{semiverbatim}
+\uncover<3->{
+déclare un type structuré \Code{Couple} qui permet de représenter des
+couples d'entiers.}
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Types structurés}
+Si \Code{x} est une variable d'un type structuré \Code{T} contenant
+le champ \Code{ch}, on {\bf accède} à ce champ par la syntaxe
+\begin{center}
+    \Code{x.ch}
+\end{center}
+\medskip
+
+\uncover<2->{
+Si \Code{adr\_x} est une adresse sur une variable de type \Code{T},
+on accède à ce même champ par la syntaxe
+\begin{center}
+    \Code{adr\_x->ch}
+\end{center}}
+\uncover<3->{
+Cette syntaxe est un raccourci pour
+\begin{center}
+    \Code{(*adr\_x).ch}
+\end{center}
+\bigskip}
+
+\uncover<4->{
+P.ex., les trois suites d'instructions suivantes sont équivalentes~:
+\vspace{-.5em}}
+\begin{multicols}{3}
+\begin{semiverbatim}\uncover<4->{
+Couple *c;
+...
+c->x = c->x + 1;}
+\end{semiverbatim}
+
+\begin{semiverbatim}\uncover<4->{
+Couple *c;
+...
+*(c).x = c->x + 1;}
+\end{semiverbatim}
+
+\begin{semiverbatim}\uncover<4->{
+Couple *c;
+...
+c->x = (*c).x + 1;}
+\end{semiverbatim}
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Opérations sur les types structurés}
+Les {\bf opérateurs relationnels} ne sont pas définis sur les types
+structurés.
+\medskip
+
+Il est donc impossible de tester si deux variables d'un même type
+structuré sont égales au moyen de l'opérateur \Code{==}. Il faut
+tester l'égalité de chacun des champs qui les constituent.
+\bigskip
+
+\uncover<2->{
+En revanche, l'{\bf opérateur d'affectation} \Code{=} est compatible avec
+les types structurés.}
+
+\begin{multicols}{2}
+\begin{semiverbatim}\footnotesize\uncover<3->{
+typedef struct \{
+    char nom[32];
+    char prenom[32];
+    int age;
+\} Personne;
+...
+Personne p1, p2;
+scanf(" %s", p1.nom);
+scanf(" %s", p1.prenom);
+p1.age = 30;
+p2 = p1;}
+\end{semiverbatim}
+\uncover<3->{
+L'affectation en dernière ligne fait en sorte que tous les champs de
+\Code{p2} contiennent les mêmes valeurs que ceux de \Code{p1}.
+\bigskip}
+
+\uncover<4->{
+Il y a recopie des tableaux statiques \Code{p1.nom} et
+\Code{p1.prenom} dans \Code{p2.nom} et \Code{p2.prenom}.}
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Types énumérés}
+La syntaxe
+\smallskip
+
+\Code{typedef enum $\lbrace$} \\
+\qquad \Code{ENU\_1,} \\
+\qquad \Code{ENU\_2,} \\
+\qquad \Code{\dots} \\
+\Code{$\rbrace$ NOM;}
+\smallskip
+
+permet de \alert{déclarer un type énuméré} \Code{NOM}, constitué
+des {\bf énumérateurs} \Code{ENU\_1}, \Code{ENU\_2}, \dots.
+(Attention, on utilise des \Code{,} et non pas des \Code{;}.)
+\bigskip
+
+\uncover<2->{
+Une valeur de ce type prend pour valeur exactement un des énumérateurs
+qui le constituent.
+\bigskip}
+
+\uncover<3->{P.ex.,\vspace{-.5em}}
+\begin{multicols}{2}
+\begin{semiverbatim}\uncover<3->{
+typedef enum \{
+    FAUX,
+    VRAI
+\} Booleen;}
+\end{semiverbatim}
+\uncover<3->{
+est un type qui permet de représenter des booléens.
+\smallskip
+
+Une valeur de type \Code{Booleen} est soit \Code{FAUX}, soit \Code{VRAI}.}
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Types énumérés}
+\begin{multicols}{2}
+\begin{semiverbatim}\footnotesize
+typedef enum \{
+    LUNDI,    /* = 0 */
+    MARDI,    /* = 1 */
+    MERCREDI, /* = 2 */
+    JEUDI,    /* = 3 */
+    VENDREDI, /* = 4 */
+    SAMEDI,   /* = 5 */
+    DIMANCHE  /* = 6 */
+\} Jour;
+...
+printf("%d\\n", MERCREDI);
+\end{semiverbatim}
+Les énumérateurs sont des {\bf expressions entières}. Leur valeur est
+déterminée par leur ordre de déclaration dans le type.
+\smallskip
+
+Ces instructions affichent \Sortie{2}.
+En effet, \Code{LUNDI} vaut \Code{0} car il est le 1\ier{} énumérateur
+déclaré et les valeurs des suivants s'incrémentent selon leur
+ordre de déclaration.
+\end{multicols}
+
+\begin{multicols}{2}
+\begin{semiverbatim}\footnotesize\uncover<2->{
+typedef enum \{
+    LA = 0,
+    SI = 2,
+    DO,       /* = 3 */
+    RE = 5,
+    MI = 7,
+    FA = 8,
+    SOL = 10
+\} Note;}
+\end{semiverbatim}\small
+\uncover<2->{
+Il est possible de spécifier manuellement les valeurs
+des énumérateurs avec la syntaxe \Code{ENU = VAL} où \Code{ENU}
+est un énumérateur et \Code{VAL} une constante entière.
+\smallskip
+
+Si une valeur n'est pas spécifiée, elle est déduite de la précédente
+en l'incrémentant.}
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Types énumérés}
+L'utilisation de branchement \Code{switch} est particulièrement
+adaptée pour traiter une variable d'un type énuméré.
+\medskip
+
+\begin{multicols}{2}
+\begin{semiverbatim}\small\uncover<2->{
+Note note;
+
+scanf(" %d", &note);
+
+switch (note) \{
+  case LA : printf("A"); break;
+  case SI : printf("B"); break;
+  case DO : printf("C"); break;
+  case RE : printf("D"); break;
+  case MI : printf("E"); break;
+  case FA : printf("F"); break;
+  case SOL : printf("G");break;
+  default : printf(
+    "%d non note", note);
+\}}
+\end{semiverbatim}
+\vspace{1em}
+
+\uncover<2->{
+Ces instructions lisent une valeur entière sur l'entrée standard
+et l'affichent (en notation internationale).
+\smallskip}
+
+\uncover<3->{
+{\bf Remarque}~: une variable d'un type énuméré peut prendre comme
+valeur n'importe quel entier. Ceci explique la présence de la
+clause \Code{default}.
+\smallskip}
+
+\uncover<4->{
+L'intérêt de l'utilisation des types énumérés est principalement
+{\bf sémantique}~: un programme qui les utilise est plus facile
+à lire et à maintenir.}
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Opérations sur les types énumérés}
+Contrairement aux types structurés, il est possible de comparer les
+éléments d'un type énuméré au moyen des {\bf opérateurs relationnels}.
+\smallskip
+
+Ceci est une conséquence du fait que les énumérateurs sont des entiers.
+
+\begin{multicols}{2}
+\begin{semiverbatim}
+printf("%d\\n", SOL == SOL);
+printf("%d\\n", SOL == FA);
+printf("%d\\n", SI <= RE);
+\end{semiverbatim}
+affiche \Sortie{1} \\
+affiche \Sortie{0} \\
+affiche \Sortie{1}
+\end{multicols}
+\medskip
+
+\uncover<2->{
+De même, l'{\bf opérateur d'affectation} \Code{=} est compatible
+avec les types énumérés.
+\bigskip}
+
+\uncover<3->{
+L'{\bf opérateur de taille} \Code{sizeof} renvoie \Code{4} sur les
+valeurs d'un type énuméré. C'est la taille occupée par le type \Code{int}.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Récapitulatif}
+Dans cette sous-partie, nous avons vu~:
+
+\begin{enumerate}
+    \item les types structurés~;
+    \smallskip
+
+    \item le comportement des variables d'un type structuré face
+    aux opérateurs relationnels et à l'opérateur d'affectation~;
+    \smallskip
+
+    \item les types énumérés~;
+    \smallskip
+
+    \item l'utilisation combinée des types énumérés avec \Code{switch}~;
+    \smallskip
+
+    \item le comportement des variables d'un type énuméré face
+    aux opérateurs relationnels et à l'opérateur d'affectation.
+\end{enumerate}
+\end{frame}

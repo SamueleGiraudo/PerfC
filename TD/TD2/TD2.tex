@@ -1,0 +1,290 @@
+% Auteur : Samuele Giraudo
+% Création : 11-12-15
+% Modifications : 11-12-15, déc. 2015
+
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{amsmath,amsthm,amsfonts,amssymb}
+\usepackage{lmodern}
+\usepackage[top=2.4cm,bottom=2.4cm,left=2cm,right=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tikz}
+
+%\author{Samuele Giraudo}
+\date{}
+\title{{\bf Perfectionnement à la programmation en {\sf C}} \\
+    Fiche de TD 2 \\
+    {\small L2 Informatique 2015-2016} \\
+    {\it \small Pré-assertions, gestion d'erreurs}}
+
+\theoremstyle{definition}
+\newtheorem{Exercice}{Exercice}
+
+\newcommand{\EnsNat}{\mathbb{N}}
+\newcommand{\La}{{\tt a}}
+\newcommand{\Lb}{{\tt b}}
+\newcommand{\Lc}{{\tt c}}
+\newcommand{\Ld}{{\tt d}}
+
+% Configuration de listings.
+\lstset{
+    language=c,
+    basicstyle=\ttfamily\footnotesize,
+    identifierstyle=\color{Mahogany},
+    keywordstyle=\color{NavyBlue},
+    stringstyle=\color{Emerald},
+    commentstyle=\it\color{Gray},
+    columns=flexible,
+    tabsize=4,
+    extendedchars=true,
+    showspaces=false,
+    numbers=left,
+    numberstyle=\tiny,
+    breaklines=true,
+    breakautoindent=true,
+    captionpos=b,
+    showstringspaces=true
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Déclarations et pré-assertions)}\smallskip
+
+Pour chaque tâche décrite, proposer une déclaration de fonction y
+répondant, ainsi qu'une liste de pré-assertions adéquate. Il est 
+important de s'interroger sur les entrées de chaque problème ainsi que 
+sur sa (ou ses) sortie(s). Pour obtenir les pré-assertions adéquates, il 
+est nécessaire de s'interroger sur les entrées qui posent problème.
+
+\begin{enumerate}
+    \item Le calcul du quotient de deux entiers~;
+    \smallskip
+    
+    \item le calcul du reste de la division euclidienne de deux entiers 
+    $a$ et $b$, compris entre $0$ et $b - 1$ ({\it Attention~: l'opérateur 
+    modulo {\tt \%} du {\sf C} peut renvoyer un reste négatif.})~;
+    \smallskip
+    
+    \item le calcul du $n\ieme$ nombre de Fibonacci~;
+    \smallskip
+    
+    \item le calcul de l'image en $x$ d'un polynôme du second degré
+    $a_0 + a_1 x + a_2 x^2$~;
+    \smallskip
+    
+    \item l'affichage d'une lettre $a$ minuscule suivie de sa version 
+    en majuscule~;
+    \smallskip
+    
+    \item l'affichage d'un rectangle composé de $n$ lignes et de $m$
+    colonnes d'étoiles~;
+    \smallskip
+    
+    \item l'échange des valeurs de deux entiers~;
+    \smallskip
+    
+    \item le calcul du nombre de cases contenant des entiers positifs 
+    dans un tableau~;
+    \smallskip
+    
+    \item le calcul de la moyenne des valeurs contenues dans un tableau 
+    de flottants~;
+    \smallskip
+    
+    \item le calcul du maximum des valeurs contenues dans un tableau 
+    d'entiers~;
+    \smallskip
+    
+    \item le calcul de la distance d'un point du plan par rapport à 
+    l'origine~;
+    \smallskip
+    
+    \item l'initialisation de chaque case d'un tableau à deux dimensions 
+    par une valeur $a$~;
+    \smallskip
+    
+    \item le calcul du nombre de voyelles dans une chaîne de caractères 
+    contenant des chiffres, des espaces ou des lettres~;
+    \smallskip
+    
+    \item la création d'une chaîne de caractères obtenue en remplaçant
+    toutes ses majuscules par des minuscules~;
+    \smallskip
+    
+    \item la création d'une chaîne de caractères obtenue en remplaçant 
+    tout caractère alphabétique $c$ par un caractère alphabétique~$c'$.
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Gestion d'erreurs 1)}\smallskip
+    
+Réécrire les fonctions suivantes de sorte à les munir d'un mécanisme 
+de gestion d'erreurs. Pour chaque nouvelle fonction ainsi écrite, 
+rédiger une documentation appropriée.
+\begin{multicols}{2}
+\begin{enumerate}
+\item~
+\begin{lstlisting}
+int *allouer_tab_int(int taille) {
+    assert(taille >= 1);
+
+    return (int *) 
+        malloc(sizeof(int) * taille);
+}
+\end{lstlisting}
+
+\item~
+\begin{lstlisting}
+void copier_pointeur(char *source, 
+        char *cible) {
+    assert(source != NULL);
+    
+    cible = (char *) 
+        malloc(sizeof(char));
+    *cible = *source;
+}
+\end{lstlisting}
+
+%\bigskip
+%\bigskip
+
+\item~
+\begin{lstlisting}
+void repeter_affichage(char *chaine, 
+        int nombre) {
+    int i;
+    
+    assert(chaine != NULL);
+    assert(nombre >= 0);
+    
+    for (i = 0 ; i < nombre ; ++i) 
+        printf("%s\n", chaine);
+}
+\end{lstlisting}
+%\bigskip
+%\bigskip
+%\bigskip
+
+\item~
+\begin{lstlisting}
+void doubler() {
+    int entree;
+    
+    scanf("%d", &entree);
+    printf("%d\n", 2 * entree);
+}
+\end{lstlisting}
+\bigskip
+\bigskip
+\bigskip
+
+\item~
+\begin{lstlisting}
+int premiere_position(char *chaine, 
+        char lettre) {
+    int i;
+
+    assert(chaine != NULL);
+    
+    i = 0;
+    while (chaine[i] != '\0') {
+        if (chaine[i] == lettre)
+            return i;
+        i += 1;
+    }
+    return -1;
+}
+\end{lstlisting}
+\end{enumerate}
+\end{multicols}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Gestion d'erreurs 2)}\smallskip
+
+Pour chaque fonction ci-dessous, la définir, la munir de pré-assertions,
+imaginer les cas d'erreur possibles et mettre en place un mécanisme de
+gestion d'erreurs.
+
+\begin{enumerate}
+    \item {\tt calculer\_moyenne} paramétrée par 
+    un tableau de notes comprises entre {\tt 0} et {\tt 20}, calculant 
+    la moyenne des notes~;
+    \smallskip
+    
+    \item {\tt lettre\_frequente} paramétrée par une chaîne de caractères,
+    calculant sa lettre strictement plus fréquente~;
+    \smallskip
+    
+    \item {\tt dessiner\_etoiles} paramétrée par un tableau d'entiers 
+    et dessinant, pour chaque entier $a$ du tableau lu de la droite vers 
+    la gauche, une nouvelle ligne de $a$ occurrences de {\tt '*'} sur la 
+    sortie standard~;
+    \smallskip
+    
+    \item {\tt lire\_points\_isobarycentre} qui lit sur l'entrée standard 
+    deux points du plan cartésien au format {\tt X Y} et affiche sur 
+    la sortie standard leur isobarycentre.
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Gestion d'erreurs 3)}\smallskip
+\begin{enumerate}
+    \item Écrire une fonction {\tt est\_nom} paramétrée par une 
+    chaîne de caractères qui teste si celle-ci est constituée uniquement 
+    de caractères alphabétiques.
+    \smallskip
+    
+    \item Écrire une fonction {\tt demander\_nom} qui lit une chaîne 
+    de caractères sur l'entrée standard. Celle-ci doit gérer les erreurs
+    qui peuvent survenir (une chaîne de caractère qui n'est pas un nom 
+    est entrée ou bien une erreur provient de la fonction de lecture sur 
+    l'entrée standard).
+    \smallskip
+    
+    \item Utiliser la fonction {\tt demander\_nom} dans un programme 
+    complet pour demander un nom à un utilisateur et l'afficher sur 
+    la sortie standard. Lors de l'exécution, le programme demande un nom
+    tant que l'utilisateur ne rentre pas un nom valide.
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Gestion d'erreurs 4)}\smallskip
+
+Reprendre toutes les fonctions écrites dans la fiche de TD 1 et les 
+munir d'un mécanisme de gestion d'erreurs lorsque cela est approprié.
+On n'oubliera pas de les munir également de pré-assertions adéquates.
+\end{Exercice}
+\bigskip
+
+\end{document}
+

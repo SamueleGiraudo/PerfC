@@ -1,0 +1,572 @@
+% Auteur : Samuele Giraudo
+% Création : 11-12-15
+% Modifications : 11-12-15, déc. 2015
+
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{amsmath,amsthm,amsfonts,amssymb}
+\usepackage{lmodern}
+\usepackage[top=2.4cm,bottom=2.4cm,left=2cm,right=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tikz}
+
+%\author{Samuele Giraudo}
+\date{}
+\title{{\bf Perfectionnement à la programmation en {\sf C}} \\
+    Fiche de TD 1 \\
+    {\small L2 Informatique 2015-2016} \\
+    {\it \small Effets de bords, structures de contrôle, fonctions}}
+
+% Couleurs.
+\definecolor{Noir}{RGB}{0,0,0}
+\definecolor{Rouge}{RGB}{205,35,38}
+\definecolor{Bleu}{RGB}{2,60,195}
+\definecolor{Bleu1}{RGB}{121,176,197}
+\definecolor{Vert}{RGB}{23,103,1}
+\definecolor{Orange}{RGB}{245,113,15}
+\definecolor{Blanc}{RGB}{255,255,255}
+\definecolor{Marron}{RGB}{193,88,50}
+\definecolor{Jaune}{RGB}{255,180,30}
+\definecolor{Violet}{RGB}{181,18,225}
+
+\theoremstyle{definition}
+\newtheorem{Exercice}{Exercice}
+
+% Configuration de listings.
+\lstset{
+    language=c,
+    basicstyle=\ttfamily\footnotesize,
+    identifierstyle=\color{Mahogany},
+    keywordstyle=\color{NavyBlue},
+    stringstyle=\color{Emerald},
+    commentstyle=\it\color{Gray},
+    columns=flexible,
+    tabsize=4,
+    extendedchars=true,
+    showspaces=false,
+    numbers=left,
+    numberstyle=\tiny,
+    breaklines=true,
+    breakautoindent=true,
+    captionpos=b,
+    showstringspaces=true
+}
+
+\begin{document}
+
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Instructions à effets de bord)}\smallskip
+\begin{enumerate}
+    \item Rappeler ce qu'est une {\em expression à effet de bord}.
+    \smallskip
+
+    \item Déterminer si les instructions suivantes sont à effet de bord~:
+    \begin{multicols}{2}
+        \begin{enumerate}
+            \item ~
+\begin{lstlisting}
+2 + (8 * 2);
+\end{lstlisting}
+            \medskip
+
+            \item ~
+\begin{lstlisting}
+printf("Bonjour\n");
+\end{lstlisting}
+            \medskip
+
+            \item ~
+\begin{lstlisting}
+int a;
+\end{lstlisting}
+            \medskip
+            
+            \item ~
+\begin{lstlisting}
+int a = 2;
+\end{lstlisting}
+            \medskip
+
+            \item ~
+\begin{lstlisting}
+a = 2 + (8 * 2);
+\end{lstlisting}
+            \medskip
+
+            \item ~
+\begin{lstlisting}
+a == 2 + (8 * 2);
+\end{lstlisting}
+            \medskip
+
+            \item ~
+\begin{lstlisting}
+a * 2 + (8 * 2);
+\end{lstlisting}
+            \medskip
+
+            \item ~
+\begin{lstlisting}
+if (a == 17) {a;}
+\end{lstlisting}
+            \medskip
+
+            \item ~
+\begin{lstlisting}
+if (--a == 16) {a;}
+\end{lstlisting}
+            \medskip
+
+            \item ~
+\begin{lstlisting}
+a++;
+\end{lstlisting}
+            \medskip
+
+            \item ~
+\begin{lstlisting}
+a + 1;
+\end{lstlisting}
+            \medskip
+
+        \item ~
+\begin{lstlisting}
+while (1) a + 1;
+\end{lstlisting}
+            \medskip
+
+        \item ~
+\begin{lstlisting}
+while (1) a += 1;
+\end{lstlisting}
+        \medskip
+        
+        \item ~
+\begin{lstlisting}
+return 1;
+\end{lstlisting}
+        \medskip
+
+        \item ~
+\begin{lstlisting}
+return a;
+\end{lstlisting}
+        \medskip
+        
+        \item ~
+\begin{lstlisting}
+return a + 1;
+\end{lstlisting}
+        \medskip
+        
+        
+    
+        \end{enumerate}
+    \end{multicols}
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Fonctions à effets de bord)}\smallskip
+
+\begin{enumerate}
+    \item Rappeler ce qu'est une {\em fonction à effet de bord}.
+    \smallskip
+
+    \item Déterminer si les fonctions suivantes sont à effet de bord~:
+    \begin{multicols}{2}
+        \begin{enumerate}
+            \item ~
+\begin{lstlisting}
+int somme(int *tab, int n) {
+    int i, res;
+
+    res = 0;
+    for (i = 0; i < n; i++)
+        res += tab[i];
+    return res
+}
+\end{lstlisting}
+            \bigskip
+            \bigskip
+            \bigskip
+
+            \item ~
+\begin{lstlisting}
+void afficher(int *tab, int n) {
+    int i;
+
+    for (i = 0; i < n; i++)
+        printf("%d ", tab[i]);
+}
+\end{lstlisting}
+            \bigskip
+            \bigskip
+            \bigskip
+
+            \item ~
+\begin{lstlisting}
+void echanger(int *x, int *y) {
+    int tmp;
+
+    tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+\end{lstlisting}
+            \bigskip
+
+            \item ~
+\begin{lstlisting}
+int nb_appels = 0;
+
+int fct_1(int n) {
+    nb_appels++;
+    return n + 1;
+}
+\end{lstlisting}
+            \medskip
+
+            \item ~
+\begin{lstlisting}
+int nb_appels = 0;
+
+int fct_2(int n) {
+    if (nb_appels == 0)
+        return 0;
+    else
+        return n + 1;
+}
+\end{lstlisting}
+
+            \item ~
+\begin{lstlisting}
+int remplacer(char *tab, char a,
+        char c) {
+    int i, nb;
+    nb = 0;
+    i = 0;
+    while (tab[i] != '\0') {
+        if (tab[i] == a) {
+            tab[i] = c;
+            nb += 1;
+        }
+        i += 1;
+    }
+    return nb;
+}
+\end{lstlisting}
+        \end{enumerate}
+    \end{multicols}
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Programme douteux)}\smallskip
+
+Expliquer ce qu'affiche le programme suivant et en quoi il n'est pas
+recommandable.
+\begin{lstlisting}
+#include <stdio.h>
+
+int etrange(int *n, int m) {
+    *n += m;
+    return *n + 1;
+}
+
+int main() {
+    int n;
+
+    n = 0;
+    n = etrange(&n, etrange(&n, 10));
+    printf("%d\n", n);
+
+    return 0;
+}
+\end{lstlisting}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Portée lexicale)}\smallskip
+\begin{enumerate}
+    \item Rappeler ce qu'est un {\em bloc}.
+    \smallskip
+
+    \item Rappeler ce qu'est la {\em portée lexicale} d'une variable.
+    \smallskip
+    
+    \item Déterminer la portée lexicale de chaque variable déclarée dans 
+    les suite d'instructions ci-dessous.
+\begin{multicols}{3}
+\begin{enumerate}
+\item~
+\begin{lstlisting}
+{
+    int a, b, c;
+    a = 10;
+    c = 8;
+    {
+        char c;
+        c = 'a';
+    }
+    {
+        int c;
+        c = 16;
+    }
+    a += 1;
+    b = 5;
+}
+\end{lstlisting}
+
+\item~
+\begin{lstlisting}
+int x;
+{
+    int y;
+    float z;
+    printf("%d", x);
+    {
+        float x;
+        x = 3.4;
+    }
+    {
+        char y;
+        y = 'F';
+    }
+}
+\end{lstlisting}
+\bigskip
+
+\item~
+\begin{lstlisting}
+    int a, b;
+    a = 0;
+    {
+        int a;
+        float b;
+        a = 3;
+        {
+            b = 10;
+            {
+                int b;
+                b = 3;
+                a += 1;
+            }
+        }
+    }
+\end{lstlisting}
+\end{enumerate}
+\end{multicols}
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Structures de boucle)}\smallskip
+\begin{enumerate}
+    \item Rappeler quelles sont les structures de boucle et
+    expliquer leur utilité.
+    \smallskip
+
+    \item Expliquer dans quelles circonstances il est préférable
+    d'utiliser une boucle {\tt for} plutôt qu'une boucle {\tt while}
+    et réciproquement. Donner des exemples pour illustrer le propos.
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Boucles et affichage de motifs)}\smallskip
+
+Écrire, en utilisant judicieusement des boucles {\tt for},
+{\tt while} ou encore {\tt do while}, les fonctions suivantes.
+\begin{enumerate}
+    \item ~
+\begin{lstlisting}
+void afficher_drapeau(int n);
+\end{lstlisting}
+    qui produit la sortie suivante
+    (donnée ici dans le cas ${\tt n} = 4$)~:
+    \begin{center}
+        \begin{tabular}{cccc}
+            - & - & - & - \\
+            * & - & - & - \\
+            * & * & - & - \\
+            * & * & * & - \\
+            * & * & * & *
+        \end{tabular}
+    \end{center}
+
+    \item ~
+\begin{lstlisting}
+void afficher_damier(int n);
+\end{lstlisting}
+    qui produit la sortie suivante
+    (donnée ici dans le cas ${\tt n} = 4$)~:
+    \begin{center}
+        \begin{tabular}{cccc}
+            * & - & * & - \\
+            - & * & - & * \\
+            * & - & * & - \\
+            - & * & - & *
+        \end{tabular}
+    \end{center}
+
+    \item ~
+\begin{lstlisting}
+void afficher_triangle(int n);
+\end{lstlisting}
+    qui produit la sortie suivante
+    (donnée ici dans le cas ${\tt n} = 6$)~:
+    \begin{center}
+        \begin{tabular}{cccccccccccccccc}
+            * \\
+            * & * \\
+            * & * & * & * \\
+            * & * & * & * & * & * & * \\
+            * & * & * & * & * & * & * & * & * & * & * \\
+            * & * & * & * & * & * & * & * & * & * & * & * & * & * & * & * \\
+        \end{tabular}
+    \end{center}
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Suite de Syracuse et récursivité)}\smallskip
+
+La {\em suite de Syracuse} est une suite
+$\left(S^{(n)}_i\right)_{i \geq 0}$ d'entiers dépendant d'un paramètre~$n$
+définie de la manière suivante~:
+\begin{equation*}
+    S^{(n)}_i :=
+    \begin{cases}
+        n & \mbox{si $i = 0$}, \\[.75em]
+        \dfrac{1}{2}\, S^{(n)}_{i - 1}
+            & \mbox{si $S^{(n)}_{i - 1}$ est pair}, \\[.75em]
+        3\, S^{(n)}_{i - 1} + 1 & \mbox{sinon}.
+    \end{cases}
+\end{equation*}
+\smallskip
+
+Une conjecture célèbre énonce que pour tout entier $n \geq 1$, il existe
+un entier $i \geq 0$ tel que $S_i = 1$. Le statut de cette assertion 
+demeure encore inconnu aujourd'hui (2016).
+\smallskip
+
+\begin{enumerate}
+    \item Écrire un programme qui demande à l'utilisateur d'entrer au
+    clavier un entier {\tt n} et qui affiche les éléments de la suite
+    $\left(S^{(n)}_i\right)_{i \geq 0}$ et s'arrête dès qu'un
+    terme est égal à~$1$.
+    \item Expliquer si le programme précédent est un algorithme.
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Déclaration de fonctions)}\smallskip
+
+\begin{enumerate}
+    \item Identifier et donner les différentes parties
+    (identificateur, signature, type de retour, instructions) de la
+    fonction suivante~:
+    \begin{lstlisting}
+float aire(int a, int b) {
+    return (.0 + a * b) / 2;
+}
+    \end{lstlisting}
+    \smallskip
+
+    \item Déclarer une fonction testant la primalité d'un entier.
+    \smallskip
+
+    \item Déclarer une fonction paramétrée par une chaîne de caractères
+    et deux caractères. Cette fonction remplace les occurrences du
+    1\ier{} caractère par le 2\ieme{} dans la chaîne de caractères.
+    \smallskip
+
+    \item Déclarer une fonction qui joue une note dans le terminal.
+    La fonction accepte comme arguments la fréquence en Hz de
+    la note à jouer ainsi que sa durée en ms.
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Pile et fonctions)}\smallskip
+
+\begin{enumerate}
+    \item Schématiser l'état de la pile à chaque instant de l'exécution
+    de l'instruction
+    \begin{lstlisting}
+afficher(7, 2);
+    \end{lstlisting}
+    avec les définitions suivantes~:
+    \begin{multicols}{2}
+\begin{lstlisting}
+void afficher(int larg, int haut) {
+    int i;
+    for (i = 1 ; i <= haut ; ++i) {
+        afficher_ligne(larg);
+        printf("\n");
+    }
+}
+\end{lstlisting}
+\begin{lstlisting}
+void afficher_ligne(int larg) {
+    int i;
+    for (i = 1 ; i <= larg ; ++i)
+        printf("*");
+}
+\end{lstlisting}
+    \end{multicols}
+    \smallskip
+
+    \item Dessiner l'arbre des appels récursifs puis schématiser l'état 
+    de la pile à chaque instant de l'exécution de l'instruction
+    \begin{lstlisting}
+tribo(5);
+    \end{lstlisting}
+    avec la définitions suivante~:
+\begin{lstlisting}
+int tribo(int n) {
+    if (n <= 2)
+        return n;
+    return tribo(n - 1) + tribo(n - 2) + tribo(n - 3);
+}
+\end{lstlisting}
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+\end{document}

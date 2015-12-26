@@ -1,0 +1,721 @@
+% Auteur : Samuele Giraudo
+% Création : déc. 2015
+% Modifications : déc. 2015
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Habitudes}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Mise en page}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Mise en page d'un programme}
+Pour écrire un programme de valeur, il faut soigner les points suivants~:
+\medskip
+
+\begin{enumerate}
+    \item l'indentation~;
+    \medskip
+    
+    \item l'organisation des espaces autour des caractères~;
+    \medskip
+    
+    \item le choix des identificateurs~;
+    \medskip
+    
+    \item la documentation.
+\end{enumerate}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Indentation}
+L'\alert{indentation} consiste à disposer des caractères blancs au début 
+de certaines lignes d'un programme. 
+\medskip
+
+Contrairement au {\sf Python}, celle-ci ne modifie pas le comportement 
+d'un programme.
+\medskip
+
+L'objectif est d'augmenter sa lisibilité.
+\medskip
+
+Règle~: on place {\bf quatre espaces} (pas de tabulation) avant chaque 
+instruction d'un bloc et on incrémente cet espacement de quatre en 
+quatre en fonction de la profondeur des blocs.
+\medskip
+
+\begin{multicols}{2}
+\begin{lstlisting}[showspaces=true]
+/* Correct. */
+a = 8;
+if (b >= 0) {
+    printf("%d\n", a);
+    a = 0;
+    for (i = 0 ; i <= b ; ++i)
+        a /= 2;
+}
+\end{lstlisting}
+
+\begin{lstlisting}[showspaces=true]
+/* Incorrect. */
+a = 8;
+if (b >= 0) {
+  printf("%d\n", a);
+  a = 0;
+  for (i = 0 ; i <= b ; ++i)
+      a /= 2;
+}
+\end{lstlisting}
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Organisation des blocs}
+Un \alert{bloc} des une suite d'instructions délimitée par des accolades.
+Il se trouve attaché à une instruction de branchement ou de boucle. Il
+peut aussi être indépendant.
+\medskip
+
+On {\bf revient à la ligne} après une {\bf accolade ouvrante}.
+\medskip
+
+L'{\bf accolade fermante} se trouve horizontalement au {\bf niveau du 
+début} de la ligne qui contient l'accolade ouvrante.
+
+\begin{multicols}{2}
+\begin{lstlisting}
+/* Correct. */
+if (valeur >= 1) {
+    valeur -= 1;
+}
+\end{lstlisting}
+\bigskip
+
+\begin{lstlisting}
+/* Incorrect. */
+if (valeur >= 1) 
+{
+    valeur -= 1;
+}
+\end{lstlisting}
+\end{multicols}
+
+\begin{multicols}{2}
+\begin{lstlisting}
+/* Correct. */
+valeur = 1;
+{
+    int a;
+    valeur = 10;
+}
+\end{lstlisting}
+
+\begin{lstlisting}
+/* Incorrect. */
+valeur = 1; {
+    int a;
+    valeur = 10;
+}
+\end{lstlisting}
+
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Organisation des espaces}
+On place une {\bf espace avant et après} chaque opérateur.
+\begin{multicols}{2}
+\begin{lstlisting}[showspaces=true]
+/* Correct. */
+a = b * 2 + 5;
+\end{lstlisting}
+
+\begin{lstlisting}[showspaces=true]
+/* Incorrect. */
+a = b*2 + 5;
+\end{lstlisting}
+\end{multicols}
+\medskip
+
+On utilise les règles habituelles de {\bf typographie} pour l'usage des 
+{\bf virgules}.
+\begin{multicols}{2}
+\begin{lstlisting}[showspaces=true]
+/* Correct. */
+f(a, b, c, 16);
+\end{lstlisting}
+
+\begin{lstlisting}[showspaces=true]
+/* Incorrect. */
+f(a,b,c,16);
+\end{lstlisting}
+\end{multicols}
+\medskip
+
+On ne place {\bf pas d'espace} après une {\bf parenthèse ouvrante} ou 
+avant une {\bf parenthèse fermante}.
+\begin{multicols}{2}
+\begin{lstlisting}[showspaces=true]
+/* Correct. */
+a = (f(a, 3) + a) * 2; 
+\end{lstlisting}
+
+\begin{lstlisting}[showspaces=true]
+/* Incorrect. */
+a = (f( a, 3) + a ) * 2;
+\end{lstlisting}
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Choix des identificateurs}
+Les \alert{identificateurs} doivent à la fois {\bf renseigner sur le rôle} 
+des entités auxquelles ils appartiennent (variables, paramètres, 
+fonctions, modules, {\em etc.}) et être {\bf concis}. 
+\begin{lstlisting}
+/* Identificateur non explicite. */
+v
+\end{lstlisting}
+
+\begin{lstlisting}
+/* Identificateur trop long. */
+valeur_choisie_pour_le_nombre_parties
+\end{lstlisting}
+
+\begin{lstlisting}
+/* Identificateur acceptable. */
+nb_parties
+\end{lstlisting}
+\medskip
+
+On fixe la langue au {\bf français} pour leur construction.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Choix des identificateurs}
+Les seuls identificateurs d'une lettre autorisés sont \Code{i},
+\Code{j}, \Code{k} pour les indices de boucles.
+\medskip
+
+Les majuscules sont interdites dans les identificateurs. Dans un
+identificateur composé de plusieurs mots, ces derniers sont séparés par 
+des sous-tirets.
+
+\begin{multicols}{2}
+\begin{lstlisting}
+/* Correct. */
+nb_parties
+\end{lstlisting}
+
+\begin{lstlisting}
+/* Incorrect. */
+nbParties
+\end{lstlisting}
+\end{multicols}
+
+Exception~: les identificateurs de constantes (définies par une 
+instruction pré-processeur) sont écrits exclusivement en majuscules.
+\begin{lstlisting}
+/* Correct. */
+
+#define TAILLE_MAX 1024
+#define DEBUG
+\end{lstlisting}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Documentation}
+Un programme est documenté par des \alert{commentaires}. Ce sont des 
+{\bf phrases}, placées entre \Code{/*} et \Code{*/}.
+\medskip
+
+On documente chaque \alert{fichier de programme}, au tout début, par
+
+\begin{itemize}
+    \item les prénoms et noms des auteurs~;
+    \smallskip
+    
+    \item la date de création (au format jour-mois-année) ~;
+    \smallskip
+    
+    \item la date de modification (au format précédent).
+\end{itemize}
+
+\begin{lstlisting}
+/* Auteur : S. Giraudo
+ * Creation : 21-12-2015
+ * Modification : 21-12-2015 */
+\end{lstlisting}
+\bigskip
+
+On commentera le moins possible les instructions.
+\smallskip
+
+Il faut éviter les commentaires inutiles.
+\begin{lstlisting}
+/* Incorrect. */
+/* Affiche la valeur de `a`. */
+printf("%d\n", a); 
+\end{lstlisting}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Documentation des fonctions}
+On documente la plupart des \alert{fonctions} par des commentaires 
+situés avant leur déclaration (ou leur définition).
+\medskip 
+
+Un commentaire de fonction explique
+
+\begin{itemize}
+    \item le {\bf rôle} de chaque {\bf paramètre}~;
+    \smallskip
+    
+    \item ce que {\bf renvoie} la fonction~; 
+    \smallskip
+     
+    \item l'{\bf effet} produit par la fonction.
+\end{itemize}
+
+\begin{multicols}{2}
+\begin{lstlisting}
+/* Correct. */
+/* Renvoie le plus grand entier 
+ * parmi `a` et `b`. */
+int max(int a, int b) {
+    if (a >= b) 
+        return a;
+    return b;
+}
+\end{lstlisting}
+
+\begin{lstlisting}
+/* Incorrect. */
+/* Calcule le maximum de deux 
+ * entiers */
+int max(int a, int b) {
+    if (a >= b) 
+        return a;
+    return b;
+}
+\end{lstlisting}
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Récapitulatif}
+Dans cette sous-partie, nous avons vu~:
+
+\begin{enumerate}
+    \item des règles pour la mise en page des programmes~;
+    \smallskip
+
+    \item des règles pour la documentation des programmes.
+\end{enumerate}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Gestion d'erreurs}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Mécanisme de gestion d'erreurs}
+On écrira la plupart des fonctions selon le schéma suivant~:
+
+\begin{itemize}
+    \item le type de retour est \Code{int} et la valeur de retour, le 
+    \alert{code d'erreur}, renseigne si l'exécution de la fonction s'est 
+    bien déroulée~;
+    \smallskip
+    
+    \item la (ou les) valeur(s) \og renvoyée(s) \fg{} par la fonction 
+    se fait par un (des) passage(s) par adresse.
+\end{itemize}
+\bigskip
+
+Schématiquement, une telle fonction admet ainsi le prototype
+\begin{center}
+    \Code{int FCT(T1 E1, \dots, TN EN, U1 S1, \dots, UK SK);}
+\end{center}
+dit \alert{prototype standard} où
+
+\begin{itemize}
+    \item les \Code{Ei} sont les paramètres d'entrée~;
+    \smallskip
+    
+    \item les \Code{Ti} sont des types (potentiellement des adresses)~;
+    \smallskip
+    
+    \item les \Code{Sj} sont les paramètres de sortie~;
+    \smallskip
+    
+    \item les \Code{Uj} sont des types (potentiellement des adresses).
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Mécanisme de gestion d'erreurs}
+Le \alert{code d'erreur} d'une fonction ayant un prototype standard 
+suit la spécification suivante~:
+
+\begin{itemize}
+    \item une valeur nulle signifie que l'exécution de la fonction a 
+    échoué~;
+    \smallskip
+    
+    \item une valeur positive signifie que l'exécution de la fonction 
+    s'est bien déroulée et apporte une information supplémentaire 
+    exploitable~;
+    \smallskip
+    
+    \item une valeur négative renseigne sur une erreur particulière.
+\end{itemize}
+\bigskip
+\bigskip
+
+{\bf Attention}~: il y a des fonctions de la librairie standard qui ne 
+suivent pas cette spécification.
+\smallskip
+
+De notre côté, nous allons la suivre à la lettre dans les fonctions que 
+nous écrirons.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Exemple 1 de gestion d'erreur}
+Considérons la fonction
+\begin{lstlisting}
+int division(float x, float y, float *res) {
+    if (y == 0)
+        return 0;
+    *res = x / y;
+    return 1;
+}
+\end{lstlisting}
+
+Les entrées sont les flottants \Code{x} et \Code{y}. La sortie est 
+\Code{res}~; c'est une adresse qui pointera sur le résultat de la 
+division de \Code{x} par \Code{y}.
+\smallskip
+
+La valeur de retour est un \alert{code d'erreur}~: il vaut \Code{0}
+lorsque la division ne peut pas être calculée (\Code{y} nul) et vaut
+\Code{1} sinon.
+\smallskip
+
+On remarque que l'on ne modifie pas \Code{*res} lorsque le calcul ne 
+peut pas être réalisé.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Exemple 2 de gestion d'erreur}
+\footnotesize
+Considérons la fonction
+\begin{lstlisting}
+int nb_min_maj(char *chaine, int *res_min, int *res_maj)
+    int i;
+    *res_min = 0;
+    *res_maj = 0;
+    i = 0;
+    while (chaine[i] != '\0') {
+        if ('a' <= chaine[i] <= 'z')
+            *res_min += 1;
+        else if ('A' <= chaine[i] <= 'Z')
+            *res_maj += 1;
+        else
+            return 0;
+        i += 1;
+    }
+    return i;
+}
+\end{lstlisting}
+
+L'entrée est la chaîne de caractères \Code{chaine}. Les sorties sont 
+\Code{res\_min} et \Code{res\_maj} ; ces adresses pointeront
+sur le nombre de minuscules et de majuscules dans \Code{chaine}.
+\smallskip
+
+La valeur de retour est un \alert{code d'erreur}~: il vaut \Code{0}
+si un caractère non alphabétique apparaît dans \Code{chaine} et vaut 
+la longueur de \Code{chaine} sinon.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Fonctions classiques à gestion d'erreurs}
+La librairie standard du {\sf C} contient beaucoup de fonctions à
+gestion d'erreurs. Par exemple~:
+
+\begin{itemize} \small
+    \item \Code{printf} renvoie le nombre de caractères écrits (sans 
+    compter \Code{'\textbackslash 0'})~;
+    \smallskip
+    
+    \item \Code{scanf} renvoie le nombre d'affectations réalisées lors 
+    de la lecture. La valeur \Code{EOF} est renvoyée si une erreur de 
+    lecture a lieu~;
+    \smallskip
+    
+    \item \Code{malloc} renvoie un pointeur vers la zone de la mémoire 
+    allouée. Lorsque l'allocation échoue, la valeur \Code{NULL} est 
+    renvoyée~;
+    \smallskip
+    
+    \item \Code{fopen} renvoie un pointeur sur le fichier ouvert. 
+    Lorsque l'ouverture échoue,  la valeur \Code{NULL} est renvoyée~;
+    \smallskip
+    
+    \item \Code{fclose} renvoie \Code{0} si la fermeture du fichier 
+    s'est bien déroulée (attention à ce cas particulier). Lorsque 
+    la fermeture échoue, la valeur \Code{EOF} est renvoyée.
+\end{itemize}
+
+{\bf Remarque}~: certaines de ces fonctions ont une gestion d'erreurs
+encore plus sophistiquée et modifient des variables globales 
+comme \Code{errno} (de l'en-tête \Code{errno.h}) pour renseigner 
+précisément sur l'erreur survenue.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Emploi des fonctions à gestion d'erreurs}
+On combine l'appel d'une fonction à gestion d'erreurs avec un test pour 
+traiter l'erreur éventuelle.
+\begin{lstlisting}
+if (division(8, a, &b) == 0) {
+    /* Traitement de l'erreur lors
+     * de la division par zero. */
+}
+/* Instructions suivantes. */
+\end{lstlisting}
+
+\begin{lstlisting}
+if (nb_min_maj("UnDeuxTrois", &a, &b) == 0) {
+    /* Traitement de l'erreur lorsque
+     * la chaine de caracteres contient des 
+     * caracteres non alphabetiques. */
+}
+/* Instructions suivantes. */
+\end{lstlisting}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Emploi des fonctions à gestion d'erreurs}
+Dans certains cas où une erreur survient, celle-ci peut être 
+irrécupérable. Il faut donc interrompre l'exécution du programme. On
+utilise pour cela la fonction
+\begin{lstlisting}
+    void exit(int status);
+\end{lstlisting}
+de \Code{stdlib.h}, appelée avec l'argument \Code{EXIT\_FAILURE}.
+
+\begin{lstlisting}
+/* Allocation dynamique. */
+tab = (int *) malloc(sizeof(int) * 1024);
+
+/* Verification de son succes. */
+if (NULL == tab)
+    /* Sur son echec, on interromp 
+     * l'execution immediatement. */
+    exit(EXIT_FAILURE);
+/* Instructions suivantes. */
+\end{lstlisting}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Récapitulatif}
+Dans cette sous-partie, nous avons vu~:
+
+\begin{enumerate}
+    \item la notion de prototype standard pour les fonctions~;
+    \smallskip
+
+    \item un mécanisme pour renseigner les erreurs dans les fonctions.
+\end{enumerate}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Assertions d'entrée}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Assertions d'entrée}
+Lors d'un appel à une fonction, certains arguments peuvent être dans un 
+état incohérent.
+\medskip
+
+Au lieu de gérer ces cas de figure par l'usage de codes d'erreur, il est
+possible de tester l'état des arguments.
+\medskip
+
+Une \alert{pré-assertion} (ou assertion d'entrée) est un test réalisé 
+dans une fonction pour vérifier si elle appelée avec des arguments 
+adéquats.
+\bigskip
+
+On utilise la fonction 
+\begin{lstlisting}
+void assert(int a);
+\end{lstlisting} 
+du fichier d’en-tête \Code{assert.h}. Elle fonction de la manière 
+suivante~:
+
+\begin{itemize}
+    \item lorsque l'assertion \Code{a} est fausse, l’exécution du 
+    programme est interrompue et diverses informations utiles sont 
+    affichées~;
+    \smallskip
+    
+    \item lorsque \Code{a} est vraie, l'exécution continue.
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] 
+    \frametitle{Exemple 1 de fonction avec pré-assertions}
+Considérons la fonction
+\begin{lstlisting}
+void afficher_tab(int tab[], int nb) {
+    int i;
+    assert(tab != NULL);
+    assert(nb >= 0);
+    for (i = 1 ; i <= nb ; ++i)
+        printf("%c\n", tab[i]);
+}
+\end{lstlisting}
+
+Elle possède deux pré-assertions~:
+
+\begin{enumerate}
+    \item la première teste si le tableau \Code{tab} est bien un pointeur
+    valide (différent de \Code{NULL})~;
+    \smallskip
+    
+    \item la seconde teste si la taille \Code{nb} donnée est bien 
+    positive.
+\end{enumerate}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Conception de pré-assertions}
+Il est important de munir ses fonctions de pré-assertions les plus 
+précises et complètes possibles. Quelques règles~:
+
+\begin{itemize}
+    \item la condition testée ne doit dépendre que des arguments d'une 
+    fonction (elle ne dépend pas de données apprises à l'exécution)~;
+    \smallskip
+    
+    \item la condition testée doit la plus atomique possible.
+    \begin{multicols}{2}
+        \begin{lstlisting}
+/* Correct. */
+assert(nb >= 0);
+assert(nb <= 1024);
+        \end{lstlisting}
+  
+        \begin{lstlisting}
+/* Incorrect. */
+assert(0 <= nb <= 1024);
+        \end{lstlisting}
+    \end{multicols}
+    \smallskip
+    
+    \item Pour les concevoir, il faut imaginer les pires cas possibles
+    à capturer qui peuvent survenir (p.ex., pointeurs nuls, quantités
+    négatives, chaînes de caractères vides, {\em etc.}).
+    \smallskip
+    
+    \item Elles sont situées juste après les déclarations de variables
+    dans le corps d'une fonction.
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+    \frametitle{Redondance nécessaire des pré-assertions}
+Considérons les fonctions 
+\begin{multicols}{2}
+\begin{lstlisting}
+int div(int a, int b) {
+    assert(b != 0);
+    return a / b;
+}
+
+\end{lstlisting}
+\begin{lstlisting}
+int somme_div(int a, int b) {
+    return div(a, b)
+        + div(b, a + 1);
+}
+\end{lstlisting}
+\end{multicols}
+{\bf Raisonnement}~: il n'y a pas de pré-assertion dans \Code{somme\_div}
+mais cela n'est pas grave car les cas problématiques sont capturés par
+\Code{div} qui contient une pré-assertion.
+\medskip
+
+Ceci est une {\bf fausse bonne idée}~: chaque fonction doit faire ses
+propres pré-assertions. Toute erreur doit être capturée le plus en amont
+possible.
+\medskip
+
+\begin{multicols}{2}
+La bonne version de \Code{somme\_div} consiste à capturer les
+mauvaises valeurs possibles de ses arguments de la manière suivante~:
+\bigskip
+
+\begin{lstlisting}
+int somme_div(int a, int b) {
+    assert(b != 0);
+    assert(a + 1 != 0);
+    return div(a, b)
+        + div(b, a + 1);
+}
+\end{lstlisting}
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Exemple 2 de fonction avec pré-assertion}
+La fonction \Code{nb\_min\_maj}, à code d'erreur, doit être pourvue
+de pré-assertions~:
+\begin{lstlisting}
+int nb_min_maj(char *chaine, int *res_min, int *res_maj)
+    int i;
+    
+    assert(chaine != NULL);
+    assert(res_min != NULL);
+    assert(res_maj != NULL);
+    
+    /* Suite inchangee. */
+}
+\end{lstlisting}
+
+On observe que le mécanisme de gestion d'erreurs par valeur de retour
+teste des comportement incohérents complexes qui se déroulent à 
+l'exécution, tandis que le mécanisme de pré-assertion permet de capturer 
+des erreurs évidentes.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] 
+    \frametitle{Les pré-assertions pour corriger un programme}
+\begin{center} \todo{À faire.} \end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Récapitulatif}
+Dans cette sous-partie, nous avons vu~:
+
+\begin{enumerate}
+    \item la notion de pré-assertions dans les fonctions~;
+    \smallskip
+
+    \item l'utilisation des pré-assertions pour corriger efficacement
+    un programme.
+\end{enumerate}
+\end{frame}
+

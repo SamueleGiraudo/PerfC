@@ -1,0 +1,891 @@
+% Auteur : Samuele Giraudo
+% Création : déc. 2013
+% Modifications : août 2014, déc. 2015
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Pointeurs de fonction}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Principe}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Pointeurs de fonction}
+En {\sf C}, on peut manipuler divers types d'objets~: des variables
+d'un type scalaire, des tableaux, des variables d'un type structuré,
+des adresses, {\em etc.}
+\bigskip
+
+\uncover<2->{
+À l'inverse, les {\bf fonctions} n'entrent pas dans cette catégorie
+d'objets directement manipulables.
+\bigskip}
+
+\uncover<3->{
+Cependant, au même titre qu'une variable, toute fonction possède une
+{\bf adresse} en mémoire. Il devient alors possible de réaliser des
+opérations sur les fonctions au moyen de leur adresse.
+\bigskip}
+
+\uncover<4->{
+On parle alors de \alert{pointeur de fonction}.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Adresse d'une fonction}
+Si \Code{fct} est une fonction, la syntaxe
+\begin{center} \Code{\&fct} \end{center}
+permet d'accéder à l'\alert{adresse} de \Code{fct}.
+\bigskip
+
+\begin{multicols}{2}
+\begin{semiverbatim}\small\uncover<2->{
+#include <stdio.h>
+int somme(int a, int b) \{
+    return a + b;
+\}
+int produit(int a, int b) \{
+    return a * b;
+\}
+int main() \{
+    printf("%p\\n", &somme);
+    printf("%p\\n", &produit);
+    return 0;
+\}}
+\end{semiverbatim}
+\uncover<2->{
+Ce programme affiche \Sortie{0x40052d} et \Sortie{0x400541},
+respectivement les adresses des fonctions \Code{somme} et \Code{produit}.
+\bigskip}
+
+\uncover<3->{
+{\bf Note}~: aux lignes 9 et 10, il est possible de ne pas mentionner
+les \Code{\&}. Le compilateur comprend implicitement qu'il s'agit de
+pointeurs de fonction.}
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Le type pointeur de fonction}
+La syntaxe \vspace{-.5em}
+\begin{center} \Code{T (*FCT)(T1, \dots, TN);} \end{center} \vspace{-.5em}
+où
+
+\begin{itemize}
+    \item \Code{T}, \Code{T1}, \dots, \Code{TN} sont des types~;
+    \smallskip
+
+    \item \Code{FCT} est un identificateur~;
+\end{itemize}
+permet de \alert{déclarer} un pointeur de fonction.
+\smallskip
+
+\uncover<2->{
+Celui-ci a \Code{FCT} pour identificateur et peut être l'adresse d'une
+fonction de type de retour \Code{T} et de signature \Code{(T1, \dots, TN)}.
+\bigskip}
+
+\begin{multicols}{2}
+\begin{semiverbatim}\footnotesize\uncover<3->{
+float moyenne(int a, int b) \{
+    return (0.0 + a + b) / 2;
+\}
+...
+/* Decl. d'un ptr de fonction */
+float (*moy)(int, int);
+
+/* Utilisation */
+moy = &moyenne;
+printf("%f\\n", moy(2, 3));}
+\end{semiverbatim}
+\uncover<3->{
+Pour la même raison que dans l'exemple précédent, il est possible
+à la ligne 9 de ne pas mentionner le~\Code{\&}.
+\bigskip
+
+Cependant, pour la clarté du code, nous prenons la {\bf convention de
+mentionner tous les  \Code{\&}}}.
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Champs pointeurs de fonction}
+Un \alert{champ d'un type structuré} peut être un pointeur sur une fonction.
+\medskip
+
+\uncover<2->{
+Ceci déclare un type structuré sensé modéliser des suites d'entiers~:}
+\begin{semiverbatim}\small\uncover<2->{
+typedef struct \{
+    int t;
+    int (*t_suiv)(int);
+\} Suite;}
+\end{semiverbatim}
+\uncover<2->{
+\Code{t} contient le terme courant de la suite et \Code{t\_suiv}
+est la fonction qui, étant donné un terme en entrée, calcule le terme
+suivant.}
+
+\begin{multicols}{2}
+\begin{semiverbatim}\small\uncover<3->{
+int mul_2(int t) \{
+    return 2 * t;
+\}
+...
+int i;
+Suite s;
+s.t = 1;
+s.t_suiv = &mul_2;
+for (i = 0 ; i < 6 ; ++i) \{
+    printf("%d ", s.t);
+    s.t = s.t_suiv(s.t);
+\}}
+\end{semiverbatim}
+\end{multicols}
+\uncover<3->{Ceci affiche \Sortie{1 2 4 8 16 32}.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Tableaux de pointeurs de fonction}
+Il est possible de manipuler des \alert{tableaux de pointeurs de fonction}.
+\medskip
+
+\uncover<2->{
+Pour cela, on procède en deux étapes~:
+\begin{enumerate}
+    \item on définit un type alias pour le pointeur de fonction. Syntaxe~:
+    \begin{center}
+        \Code{typedef T (*FCT)(T1, \dots, TN);}
+    \end{center}
+    \smallskip}
+
+    \uncover<3->{
+    \item on déclare ensuite le tableau de manière usuelle. Syntaxe~:
+    \begin{center}
+        \Code{FCT tab[M];}
+    \end{center}}
+\end{enumerate}
+\bigskip
+
+\uncover<4->{
+La syntaxe plus directe
+\begin{center}
+    \Code{T (*tab[M])(T1, \dots, TN);}
+\end{center}
+existe mais rend le code plus difficile à lire. Elle déclare un
+tableau \Code{tab} de pointeurs de fonction sans la déclaration de type
+préalable de la $1\iere$ méthode.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Tableaux de pointeurs de fonction}
+
+\begin{multicols}{2}
+\begin{semiverbatim}\small
+/* Alias pour ptr. de fct. */
+typedef int (*opb)(int, int);
+
+int add(int a, int b) \{
+    return a + b;
+\}
+int mul(int a, int b) \{
+    return a * b;
+\}
+...
+opb tab[2];
+
+tab[0] = &add;
+tab[1] = &mul;
+printf("%d %d\\n",
+    tab[0](10, 20),
+    tab[1](10, 20));
+\end{semiverbatim}
+\end{multicols}
+Ceci affiche \Sortie{30 200}.
+\bigskip
+
+\uncover<2->{
+Les tableaux de pointeurs de fonction peuvent être {\bf dynamiques}. La
+ligne 10 peut être remplacée par}
+\begin{semiverbatim}\small\uncover<2->{
+opb *tab;
+tab = (opb *) malloc(sizeof(opb) * 2);}
+\end{semiverbatim}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{En paramètre et en retour}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Pointeur de fonction en paramètre}
+Une fonction peut être \alert{paramétrée par un pointeur de fonction}.
+Un paramètre pointeur de fonction est spécifié avec la même syntaxe que
+celle qui sert à le déclarer.
+\bigskip
+
+\uncover<2->{P.ex.,}
+\begin{semiverbatim}\small\uncover<2->{
+int appliquer(int n, int k, int (*f)(int)) \{
+    int i;
+    for (i = 0 ; i < k ; ++i)
+        n = f(n);
+    return n;
+\}}
+\end{semiverbatim}
+\uncover<2->{
+est une fonction est paramétrée par un pointeur de fonction acceptant un
+entier et renvoyant un entier.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Pointeur de fonction en paramètre}
+\begin{multicols}{2}
+\begin{semiverbatim}\small
+int add_1(int n) \{
+    return n + 1;
+\}
+
+int mul_2(int n) \{
+    return 2 * n;
+\}
+
+...
+printf("%d\\n",
+    appliquer(3, 4, &add_1));
+
+printf("%d\\n",
+    appliquer(3, 4, &mul_2));
+\end{semiverbatim}
+\end{multicols}
+
+\uncover<2->{
+Le 1\ier{} appel à \Code{appliquer} calcule
+\begin{center}
+    \Code{(((3 + 1) + 1) + 1) + 1}
+\end{center}
+et affiche donc \Sortie{7}.
+\medskip}
+
+\uncover<3->{
+Le 2\ieme{} appel à \Code{appliquer} calcule
+\begin{center}
+    \Code{(((3 * 2) * 2) * 2) * 2}
+\end{center}
+et affiche donc \Sortie{48}.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Renvoi d'un pointeur de fonction}
+Il est possible de définir des fonctions dont le \alert{type de retour}
+est un \alert{pointeur de fonction}.
+\medskip
+
+\uncover<2->{
+Pour cela, on procède en deux étapes~:
+\begin{enumerate}
+    \item on définit un type alias \Code{R} pour le pointeur de fonction
+    que l'on souhaite renvoyer~;
+    \smallskip}
+
+    \uncover<3->{
+    \item on définit la fonction souhaitée, dont le type de retour
+    est \Code{R}.}
+\end{enumerate}
+\bigskip
+
+\uncover<4->{
+La syntaxe plus directe
+\smallskip
+
+\Code{R (*FCT(T1 ARG1, \dots, TN ARGN))(R1, \dots, RM) $\lbrace$ \\
+    \qquad ... \\
+$\rbrace$}
+\smallskip
+
+permet de définir directement une fonction \Code{FCT} de signature \\
+\Code{(T1, \dots, TN)} renvoyant l'adresse d'une fonction de type de
+retour \Code{R} et de signature \Code{(R1, \dots, RM)}. Cependant,
+le code devient illisible.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Renvoi d'un pointeur de fonction}
+Exemple~: opération aléatoire sur des entiers.
+
+\begin{multicols}{2}
+\begin{semiverbatim}\small
+/* Definition des operations */
+int add(int a, int b) \{
+    return a + b;
+\}
+int sub(int a, int b) \{
+    return a - b;
+\}
+int mod(int a, int b) \{
+    return a % b;
+\}
+/* Type de retour */
+typedef int (*opb)(int, int);
+
+opb op_alea() \{
+    opb tab[3];
+    tab[0] = &add;
+    tab[1] = &sub;
+    tab[2] = &mod;
+    return tab[rand() % 3];
+\}
+\end{semiverbatim}
+\end{multicols}
+
+\uncover<2->{
+On peut utiliser \Code{op\_alea} de la manière suivante~:}
+\begin{semiverbatim}\small\uncover<2->{
+int n;
+n = op_alea()(3, 4);}
+\end{semiverbatim}
+\uncover<2->{
+Ceci affecte, de manière aléatoire, \Code{7}, \Code{-1} ou \Code{3}
+à \Code{n}.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Généricité}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Principe de généricité}
+Une {\bf fonction} est dite \alert{générique} si elle peut accepter des
+arguments qui ne sont pas seulement ceux d'un type bien précis.
+\medskip
+
+\uncover<2->{
+Exemples~:
+\begin{itemize}
+    \item une fonction qui teste si deux valeurs sont égales~;
+    \smallskip
+    }
+    \uncover<3->{
+    \item une fonction qui affiche plusieurs fois une même valeur.}
+\end{itemize}
+\bigskip
+\bigskip
+
+\uncover<4->{
+Une {\bf structure de donnée} est dite \alert{générique} si elle peut
+représenter des données dont le type n'est pas fixé.
+\medskip}
+
+\uncover<5->{
+Exemples~:
+\begin{itemize}
+    \item une liste dont les éléments sont d'un type non fixé~;
+    \smallskip
+    }
+    \uncover<6->{
+    \item un arbre binaire dont les éléments sont d'un type non fixé.}
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Le type {\tt void *}}
+Pour manipuler une donnée dont le type n'est pas spécifié à l'avance, on
+utilise son {\bf adresse}.
+\smallskip
+
+\uncover<2->{
+Il s'agit donc d'une adresse dont on ne connaît pas le type~: c'est une
+adresse de type \Code{void *}.
+\bigskip}
+
+\uncover<3->{
+Le type \Code{void *} est appelé \alert{type pointeur générique}.}
+\bigskip
+\bigskip
+
+\uncover<4->{
+Pour convertir un pointeur générique \Code{ptr\_g} vers un pointeur d'un
+type connu \Code{T}, on utilise l'{\bf opérateur de coercition}
+\begin{center}
+    \Code{(T *) ptr\_g}.
+\end{center}
+\smallskip}
+
+\uncover<5->{
+Avant de pouvoir interpréter (c.-à-d. déréférencer) la valeur située à
+une adresse spécifiée par un pointeur générique, le convertir est
+primordial.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Fonction générique de comparaison}
+\begin{semiverbatim}\small
+int ega(int nbo, void *x, void *y) \{
+    \uncover<2->{char *xc, *yc;
+    int i;}
+
+    \uncover<3->{xc = (char *) x;
+    yc = (char *) y;}
+    \uncover<4->{for (i = 0 ; i < nbo ; ++i)}
+        \uncover<5->{if (xc[i] != yc[i])
+            return 0;}
+    \uncover<6->{return 1;}
+\}
+\end{semiverbatim}
+La fonction \Code{ega} est générique~: elle permet de tester l'égalité
+entre deux variables dont le {\bf type n'est pas connu lors de l'écriture
+de la fonction}.
+\smallskip
+
+\uncover<7->{
+On l'utilise de la manière suivante~:}
+\begin{semiverbatim}\small\uncover<7->{
+ega(sizeof(T), &t1, &t2)}
+\end{semiverbatim}
+\uncover<7->{
+pour comparer deux variables \Code{t1} et \Code{t2} de type \Code{T}.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Fonction générique d'affichage de tableau}
+\begin{semiverbatim}\small
+void aff_tab(void **tab, int n, void (*aff_elt)(void *)) \{
+    \uncover<2->{int i;}
+
+    \uncover<3->{for (i = 0 ; i < n ; ++i) \{}
+        \uncover<4->{aff_elt(tab[i]);}
+        \uncover<5->{printf(" ");}
+    \uncover<3->{\}}
+\}
+\end{semiverbatim}
+\medskip
+
+La fonction \Code{aff\_tab} est générique~: elle permet d'afficher les
+éléments d'un tableau dont le {\bf type n'est pas connu lors de l'écriture
+de la fonction}.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Fonction générique d'affichage de tableau}
+On l'utilise la fonction \Code{aff\_tab} de la manière suivante.
+\bigskip
+
+Pour afficher un tableau \Code{tab} de taille \Code{13} de pointeurs
+sur des {\bf entiers}~:
+
+\begin{semiverbatim} \small
+\uncover<2->{void aff_int(void *x) \{
+    \uncover<3->{int e;}
+    \uncover<4->{e = *((int *) x);}
+    \uncover<5->{printf("%d", e);}
+\}}
+
+\uncover<6->{/* Version raccourcie. */
+void aff_int(void *x) \{
+    printf("%d", *((int *) x));
+\}}
+\uncover<7->{...
+aff_tab((void **) tab, 13, &aff_int);}
+\end{semiverbatim}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Fonction générique d'affichage de tableau}
+Pour afficher un tableau \Code{tab} de taille \Code{23} de pointeurs
+sur des variables de {\bf type structuré} \Code{Date}~:
+\begin{semiverbatim}\small
+typedef struct \{
+    int jour;
+    int mois;
+    int annee;
+\} Date;
+...
+void aff_date(void *d) \{
+    Date dd;
+    dd = *((Date *) d);
+    printf("%d-%d-%d", dd.jour, dd.mois, dd.annee);
+\}
+...
+aff_tab((void **) tab, 23, &aff_date);
+\end{semiverbatim}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Listes génériques}
+On souhaite définir une structure de donnée liste dont les types des
+éléments ne sont pas fixés.
+\smallskip
+
+\uncover<2->{Pour cela, on utilise un pointeur générique pour le champ
+qui contient l'élément de chaque cellule~:}
+\begin{semiverbatim}\small\uncover<2->{
+typedef struct _Cellule \{
+    struct _Cellule *suiv;
+    void *e;
+\} Cellule;
+
+typedef Cellule *Liste;}
+\end{semiverbatim}
+\bigskip
+
+\uncover<3->{
+Le type \Code{Liste} permet ainsi de représenter des listes génériques.
+\smallskip}
+
+\uncover<4->{
+C'est une structure de donnée générique car le {\bf type des éléments}
+que les futures listes pourront contenir {\bf n'est pas connu lors
+de l'écriture de la fonction}.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Listes génériques}
+La fonction
+\begin{semiverbatim}\small
+void aff_lst(Liste lst, void (*aff_elt)(void *)) \{
+    Cellule *x;
+
+    assert(lst != NULL);
+    assert(aff_elt != NULL);
+
+    for (x = lst ; x != NULL ; x = x->suiv) \{
+        aff_elt(x->e);
+        printf(" ");
+    \}
+\}
+\end{semiverbatim}
+est une fonction générique pour l'affichage des éléments d'une liste
+générique.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Listes génériques}
+On l'utilise de la manière suivante (dans le cas ici d'une liste d'entiers).
+\medskip
+
+\begin{semiverbatim}\small
+void aff_int(void *e) \{
+    printf("%d", *((int *) e));
+\}
+...
+Liste lst;
+int a, b, c;
+a = 3; b = 14; c = 414;
+
+lst = (Cellule *) malloc(sizeof(Cellule));
+lst->e = &a;
+lst->suiv = (Cellule *) malloc(sizeof(Cellule));
+lst->suiv->e = &b;
+lst->suiv->suiv = (Cellule *) malloc(sizeof(Cellule));
+lst->suiv->suiv->e = &c;
+lst->suiv->suiv->suiv = NULL;
+aff_lst(lst, &aff_int);
+\end{semiverbatim}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Listes génériques}
+Beaucoup de fonctions sur les listes peuvent ainsi être rendues génériques.
+Entre autres~:
+\smallskip
+
+\begin{small}
+\begin{enumerate}
+    \uncover<2->{
+    \item \Code{void aff\_lst(Liste lst, void (*aff\_elt)(void *));}
+    \smallskip}
+
+    \uncover<3->{
+    \item \Code{void *elt\_indice(Liste lst, int i);}
+    \smallskip}
+
+    \uncover<4->{
+    \item \label{item:lst_est_triee}
+    \Code{int est\_triee(Liste lst, int (*est\_inf)(void *, void *));}
+    \smallskip}
+
+    \uncover<5->{
+    \item \label{item:lst_max}
+    \Code{void *max(Liste lst, int (*est\_inf)(void *, void *));}}
+\end{enumerate}
+\end{small}
+\medskip
+
+\uncover<6->{
+Les cas \ref{item:lst_est_triee} et \ref{item:lst_max} supposent que
+les éléments représentés par les listes sont comparables au moyen
+d'une fonction \Code{est\_inf} à fournir.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Implantation de monoïdes}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Monoïdes}
+En maths, un \alert{monoïde} est un triplet
+$(\mathcal{M}, \bullet, \mathbf{1})$ où
+\begin{enumerate}
+    \uncover<2->{
+    \item $\mathcal{M}$ est un ensemble~;
+    \smallskip}
+
+    \uncover<3->{
+    \item $\bullet$ est une application
+    $\bullet : \mathcal{M} \times \mathcal{M} \to \mathcal{M}$
+    associative, c.-à-d., pour tous $x, y, z \in \mathcal{M}$, on a
+    $(x \bullet y) \bullet z = x \bullet (y \bullet z)$~;
+    \smallskip}
+
+    \uncover<4->{
+    \item $\mathbf{1} \in \mathcal{M}$ est un élément unitaire,
+    c.-à-d., pour tout $x \in \mathcal{M}$, on a
+    $x \bullet \mathbf{1} = x = \mathbf{1} \bullet x$.}
+\end{enumerate}
+\bigskip
+
+\uncover<5->{
+Exemples~:
+\begin{itemize}
+    \item $(\mathbb{N}, +, 0)$ est le {\bf monoïde additif} des entiers
+    naturels~;
+    \smallskip}
+
+    \uncover<6->{
+    \item $(\mathbb{N}, \times, 1)$ est le {\bf monoïde multiplicatif}
+    des entiers naturels~;
+    \smallskip}
+
+    \uncover<7->{
+    \item $(\{{\tt a}, {\tt b}\}^*, \cdot, \epsilon)$ est le {\bf monoïde
+    libre} sur les lettres ${\tt a}$ et ${\tt b}$. Ses éléments sont
+    les chaînes de caractères composées de ${\tt a}$ et de ${\tt b}$.
+    Son produit $\cdot$ est la concaténation et son unité $\epsilon$
+    est la chaîne vide.}
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Implantation de monoïdes}
+On se donne les deux objectifs suivants~:
+\medskip
+
+\begin{enumerate}
+    \uncover<2->{
+    \item implanter une {\bf structure de donnée générique} pour
+    \alert{représenter des monoïdes} dont la nature des éléments n'est
+    pas connue à l'avance~;
+    \bigskip}
+
+    \uncover<3->{
+    \item implanter une {\bf fonction générique} qui
+    \alert{élève à la puissance} $n \geq 0$ un élément $x$ d'un monoïde.}
+\end{enumerate}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Structure de donnée générique de monoïde}
+D'après la définition mathématique d'un monoïde, on aboutit à la définition
+suivante~:
+\begin{semiverbatim}
+typedef struct \{
+    void *unite;
+    void *(*produit)(void *, void *);
+\} Monoide;
+\end{semiverbatim}
+\medskip
+
+\uncover<2->{
+On utilise des pointeurs génériques \Code{void *} pour les éléments
+du monoïde.
+\medskip
+
+Le champ \Code{unite} est un pointeur générique vers l'unité
+du monoïde.
+\medskip
+
+Le champ \Code{produit} est un pointeur de fonction vers
+une fonction qui réalise le produit du monoïde.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Définition du monoïde additif des entiers naturels}
+On commence par définir une fonction qui réalise le produit de
+$(\mathbb{N}, +, 0)$ et dont le type de retour et la signature respectent
+ceux du champ \Code{produit}~:
+\begin{semiverbatim}\small
+void *add(void *a, void *b) \{
+    \uncover<2->{int *res;}
+    \uncover<3->{res = (int *) malloc(sizeof(int));}
+    \uncover<4->{*res = *((int *) a) + *((int *) b);}
+    \uncover<2->{return (void *) res;}
+\}
+\end{semiverbatim}
+\medskip
+
+\uncover<5->{
+Ensuite, on créé le monoïde de la manière suivante~:}
+\begin{semiverbatim}\small\uncover<5->{
+Monoide m_add;
+int zero = 0;
+m_add.unite = &zero;
+m_add.produit = &add;}
+\end{semiverbatim}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Définition du monoïde multiplicatif des entiers naturels}
+On commence par définir une fonction qui réalise le produit de
+$(\mathbb{N}, \times, 1)$ et dont le type de retour et la signature
+respectent ceux du champ \Code{produit}~:
+\begin{semiverbatim}\small
+void *mul(void *a, void *b) \{
+    \uncover<2->{int *res;}
+    \uncover<3->{res = (int *) malloc(sizeof(int));}
+    \uncover<4->{*res = *((int *) a) * *((int *) b);}
+    \uncover<2->{return (void *) res;}
+\}
+\end{semiverbatim}
+\medskip
+
+\uncover<2->{
+Ensuite, on créé le monoïde de la manière suivante~:}
+\begin{semiverbatim}\small\uncover<2->{
+Monoide m_mul;
+int un = 1;
+m_mul.unite = &un;
+m_mul.produit = &mul;}
+\end{semiverbatim}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Définition du monoïde libre sur {\tt a} et {\tt b}}
+On commence par définir une fonction qui réalise le produit de
+$(\{{\tt a}, {\tt b}\}^*, \cdot, \epsilon)$ et dont le type de retour et
+la signature respectent ceux du champ \Code{produit}~:
+\begin{semiverbatim}\small
+void *conc(void *u, void *v) \{
+    \uncover<2->{char *res;}
+    \uncover<3->{int i, lu, lv;}
+    \uncover<4->{lu = strlen((char *) u);}
+    \uncover<4->{lv = strlen((char *) v);}
+    \uncover<5->{res = (char *) malloc(sizeof(char) * (1 + lu + lv));}
+    \uncover<6->{for (i = 0 ; i < lu ; ++i) res[i] = ((char *) u)[i];}
+    \uncover<6->{for (i = 0 ; i < lv ; ++i) res[lu + i] = ((char *) v)[i];}
+    \uncover<7->{res[lu + lv] = '\\0';}
+    \uncover<2->{return (void *) res;}
+\}
+\end{semiverbatim}
+\medskip
+
+\uncover<8->{
+Ensuite, on créé le monoïde de la manière suivante~:}
+\begin{multicols}{2}
+\begin{semiverbatim}\small\uncover<8->{
+Monoide m_lib;
+char epsilon[1] = "";
+m_lib.unite = &epsilon;
+m_lib.produit = &conc;}
+\end{semiverbatim}
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Fonction générique d'exponentiation}
+\begin{semiverbatim}\small
+void *puissance(Monoide m, void *x, int n) \{
+    \uncover<2->{void *tmp;}
+
+    \uncover<3->{if (n == 0)
+        return m.unite;}
+    \uncover<4->{tmp = puissance(m, x, n / 2);}
+    \uncover<5->{if (n % 2 == 0)
+        return m.produit(tmp, tmp);}
+    \uncover<6->{return m.produit(x, m.produit(tmp, tmp));}
+\}
+\end{semiverbatim}
+
+\uncover<7->{
+Cette fonction renvoie un pointeur générique sur une variable contenant
+le résultat de la valeur à l'adresse \Code{x} élevée à la puissance
+\Code{n}, pour le produit spécifié par le monoïde \Code{m}.
+\medskip}
+
+\uncover<8->{
+Celle fonction utilise l'algorithme dit d'{\bf exponentiation rapide}.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Application de la fonction d'exponentiation}
+\begin{semiverbatim}\small
+int res, val = 5;
+res = *((int *) puissance(m_add, &val, 3));
+printf("%d\\n", res);
+\end{semiverbatim}
+Ceci affiche $5^3$ dans le monoïde additif, c'est à dire \Sortie{15}.
+\bigskip
+
+\begin{semiverbatim}\small\uncover<2->{
+int res, val = 5;
+res = *((int *) puissance(m_mul, &val, 3));
+printf("%d\\n", res);}
+\end{semiverbatim}
+\uncover<2->{
+Ceci affiche $5^3$ dans le monoïde multiplicatif, c'est à dire \Sortie{125}.}
+\bigskip
+
+\begin{semiverbatim}\small\uncover<3->{
+char *res, ch[3] = "ab";
+res = (char *) puissance(m_lib, &ch, 4);
+printf("%s\\n", res);}
+\end{semiverbatim}
+\uncover<3->{
+Ceci affiche $({\tt ab})^4$ dans le monoïde libre, c'est à dire
+\Sortie{abababab}.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}[fragile] \frametitle{Un problème et sa solution}
+%Il y a un {\bf problème} majeur dans cette façon se représenter les
+%monoïdes.
+%\medskip
+%
+%Il consiste en ce que le produit du monoïde est de type \\
+%\Code{void *(*produit)(void *, void *)} et renvoie une adresse.
+%\smallskip
+%
+%Le problème tient au fait qu'une {\bf allocation dynamique} doit être
+%faite, ce qui induit une {\bf fuite mémoire} (voir la fonction \Code{puissance}).
+%\bigskip
+%
+%\end{frame}

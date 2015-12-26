@@ -1,0 +1,296 @@
+% Auteur : Samuele Giraudo
+% Création : 11-12-15
+% Modifications : 11-12-15, déc. 2015
+
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{amsmath,amsthm,amsfonts,amssymb}
+\usepackage{lmodern}
+\usepackage[top=2.4cm,bottom=2.4cm,left=2cm,right=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tikz}
+
+%\author{Samuele Giraudo}
+\date{}
+\title{{\bf Perfectionnement à la programmation en {\sf C}} \\
+    Fiche de TP 1 \\
+    {\small L2 Informatique 2015-2016} \\
+    {\it \small Partir sur de bonnes bases}}
+
+\theoremstyle{definition}
+\newtheorem{Exercice}{Exercice}
+
+% Configuration de listings.
+\lstset{
+    language=c,
+    basicstyle=\ttfamily\footnotesize,
+    identifierstyle=\color{Mahogany},
+    keywordstyle=\color{NavyBlue},
+    stringstyle=\color{Emerald},
+    commentstyle=\it\color{Gray},
+    columns=flexible,
+    tabsize=4,
+    extendedchars=true,
+    showspaces=false,
+    numbers=left,
+    numberstyle=\tiny,
+    breaklines=true,
+    breakautoindent=true,
+    captionpos=b,
+    showstringspaces=true
+}
+
+\begin{document}
+
+\maketitle
+
+Ce TP se déroule une seule séance et est à faire par binômes.
+Le travail réalisé doit être envoyé au plus tard exactement une
+semaine après le début de la séance de TP. Il sera disposé sur
+la plate-forme prévue à cet effet et constitué des programmes
+répondant aux questions et des éventuels fichiers annexes qui
+peuvent être demandés.
+\bigskip
+\bigskip
+
+Dans ce TP, nous révisons l'utilisation de la bibliothèque graphique
+{\sf MLV}, déjà approchée au cours des semestres précédents. Nous posons 
+aussi quelques bonnes habitudes à prendre en programmation pour le reste 
+de ces TP.
+\bigskip
+\bigskip
+
+{\bf Conseils~:}
+\begin{itemize}
+    \item pour chaque fonction programmée, s'interroger sur les arguments
+    qui peuvent poser des problèmes. Capturer ces cas à l'aide de
+    pré-assertions~;
+    \item utiliser au maximum les fonctions déjà programmées dans les
+    nouvelles à écrire. Il faut éviter au maximum la duplication de code~;
+    \item il ne suffit pas de programmer uniquement les fonctions qui sont
+    demandées. Pour mener le sujet à bien, des fonctions supplémentaires
+    et non mentionnées explicitement dans le sujet seront utiles. Soigner
+    leur nom~;
+    \item dès qu'une fonction est écrite, la tester de manière à
+    recouvrir tous les cas significatifs possibles et conserver les tests
+    (le but étant de les relancer pour vérifier l'intégrité du
+    programme lors de modifications futures)~;
+    \item commenter le code en évitant absolument les commentaires inutiles.
+    Il faut commenter chaque fonction écrite, juste avant son prototype.
+    Il faut y mentionner les trois points suivants~: (1) une description
+    du rôle de la fonction, (2) une description de ses paramètres et (3)
+    une description de ce qu'elle renvoie~;
+    \item préférer la concision au maximum. Un code concis et lisible
+    possède une grande valeur.
+\end{itemize}
+\bigskip
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (La documentation {\tt man})}\smallskip
+
+La {\em section 3} du manuel de l'utilisateur de {\sf Linux} recense
+la documentation de la plupart des fonctions proposées par la bibliothèque
+standard. Il faut donc la consulter systématiquement pour connaître
+précisément le rôle d'une fonction. Par exemple, pour afficher
+la documentation de la fonction {\tt putchar}, on saisit la commande
+\begin{center}
+    {\tt man 3 putchar}
+\end{center}
+sur le terminal. Beaucoup d'informations sont alors affichées,
+comprenant la description des paramètres de la fonction et de sa
+valeur de retour.
+
+\begin{enumerate}
+    \item Rechercher la documentation de la fonction {\tt strcoll} et
+    expliquer, en trois lignes maximum, ce qu'elle fait.
+    \smallskip
+
+    \item Écrire un programme qui illustre de manière exhaustive
+    le rôle de {\tt strcoll}.
+    \smallskip
+
+    \item Rechercher la documentation de la fonction {\tt strchr} et
+    expliquer, en deux lignes maximum, ce qu'elle fait.
+    \smallskip
+
+    \item Écrire un programme qui illustre de manière exhaustive
+    le rôle de {\tt strchr}.
+    \smallskip
+
+    \item Rechercher la documentation de la fonction {\tt atoi} et
+    expliquer, en deux lignes maximum, ce qu'elle fait.
+    \smallskip
+
+    \item Écrire un programme qui illustre de manière exhaustive
+    le rôle de {\tt atoi}.
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (La bibliothèque graphique {\sf MLV})}\smallskip
+\begin{enumerate}
+   \item Visiter la page
+    \begin{center}
+        \url{http://www-igm.univ-mlv.fr/~boussica/mlv/index.html},
+    \end{center}
+    télécharger et installer la bibliothèque graphique {\sf MLV}.
+    \smallskip
+
+    {\it Indication~: il se peut que cette bibliothèque soit déjà
+    installée.}
+    \smallskip
+
+    \item Parcourir sa documentation et s'assurer qu'elle a bien été
+    installée en créant un programme {\tt Rectangle.c} qui affiche
+    un rectangle rouge dans une fenêtre.
+    \smallskip
+
+    {\it Indication~: garder la page de documentation en permanence
+    ouverte au cours les séances de TP est une bonne idée.}
+    \smallskip
+
+    \item Créer un programme {\tt RectangleClic.c} qui affiche un
+    rectangle rouge dans une fenêtre. Lorsque l'utilisateur clique
+    sur le rectangle, il change de couleur (il passe du rouge au bleu
+    et du bleu au rouge).
+    \smallskip
+
+    {\it Indication~: bien regarder les exemples d'utilisation de
+    la bibliothèque sur le site dédié. Ils sont excellents, bien choisis
+    et très instructifs.}
+    \smallskip
+
+    \item Créer un programme {\tt Rebond.c} qui affiche un petit
+    rectangle bleu au centre d'un grand rectangle blanc. Lorsque
+    l'utilisateur appuie sur la touche {\tt Entrée}, le petit rectangle
+    se déplace progressivement en direction nord-est. Lorsqu'il atteint
+    le bord défini par le grand rectangle, celui-ci rebondit. Le petit
+    rectangle continue à bouger tant que l'utilisateur n'appuie à nouveau
+    sur {\tt Entrée}, provoquant la fin de l'exécution du programme.
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Arguments d'un programme)}\smallskip
+
+Un programme {\sf C} peut être exécuté comme une commande habituelle et
+peut donc recevoir des arguments. Un argument est une chaîne de
+caractères. Pour profiter de cette fonctionnalité, la fonction {\tt main}
+doit être écrite en respectant le prototype suivant :
+\begin{lstlisting}
+int main(int argc, char *argv[]);
+\end{lstlisting}
+La variable {\tt argc} contient le nombre d'arguments avec lesquels le
+programme vient d'être lancé et la variable {\tt argv} est un tableau de
+chaînes de caractères, indicé de $0$ à {\tt argc - 1}, qui contient les
+arguments dans l'ordre de leur saisie. Il est a noter que le nom du
+programme est lui-même considéré comme un argument et occupe de ce fait
+invariablement la première position du tableau {\tt argv}.
+\smallskip
+
+Par exemple, supposons que l'on souhaite lancer un programme nommé
+{\tt Prog} avec les arguments {\tt arg1} et {\tt autreArg}. Pour cela,
+nous saisirons la commande {\tt ./Prog arg1 autreArg}, qui a pour effet
+d'affecter à la variable {\tt argc} la valeur $3$ et le tableau
+{\tt argv} va vérifier {\tt argv[0] = "Prog"}, {\tt argv[1] = "arg1"} et
+{\tt argv[2] = "autreArg"}.
+
+\begin{enumerate}
+    \item Écrire un programme {\tt LectureArg} qui affiche sur la sortie
+    standard le nombre d'arguments avec lesquels il est lancé.
+    \smallskip
+
+    \item Écrire un programme {\tt Calc} qui prend trois arguments~:
+    un opérateurs parmi {\tt +}, {\tt -}, {\tt *} et {\tt /} et deux
+    entiers. Le programme affiche ensuite le résultat de l'opération
+    spécifiée par le 1\ier{} argument entre ses 2\ieme{} et 3\ieme{}
+    arguments. Il est important de capturer ici tous les cas d'erreur
+    et de renseigner l'utilisateur lorsque ceux-ci surviennent.
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Programmation d'un système de cryptage simple)}
+\smallskip
+
+Le but de cet exercice est de programmer un système de cryptage élémentaire
+basé sur le cryptage dit de \textit{César}. Il consiste, étant donné un
+texte \textit{en clair} (c.-à-d. non crypté), et une constante
+$K \in \mathbb{Z}$ appelée \textit{clé de cryptage}, à décaler
+circulairement chacune des lettres du texte de $K$ positions par rapport
+à sa place dans l'alphabet. Par exemple, pour le texte en clair :
+\begin{center}
+    {\tt Les TP de programmation sont super !}
+\end{center}
+et la clé~$K = 3$, on obtient le texte \textit{crypté} suivant :
+\begin{center}
+    {\tt Ohv WS gh surjudppdwlrq vrqw vxshu !}
+\end{center}
+Les caractères non alphabétiques ne sont pas modifiés.
+La formule qui permet de calculer, étant donné une lettre alphabétique en clair $\ell$, la
+lettre cryptée $c$ qui lui correspond est la suivante :
+\begin{equation} \label{F1}
+    c := (\ell + K) ~\operatorname{mod}~ 26.
+\end{equation}
+Réciproquement, pour décrypter un texte crypté, il suffit de décrypter chacune
+des lettres alphabétiques qu'il contient. Étant donné une
+lettre cryptée~$c$, le calcul de la lettre en clair~$\ell$ qui lui
+correspond s'effectue par la formule suivante :
+\begin{equation} \label{F2}
+    \ell := (c - K) ~\operatorname{mod}~ 26.
+\end{equation}
+\begin{enumerate}
+    \item Déterminer ce en quoi est évaluée l'expression {\tt -9 \% 5}
+    et en quoi cela est gênant pour la suite de l'exercice.
+    \smallskip
+
+    {\it Indication~: regarder la formule \eqref{F2} et s'interroger sur
+    quand $\ell$ définit bien un caractère.}
+    \smallskip
+
+    \item Programmer une fonction
+\begin{lstlisting}
+int bon_modulo(int a, int b);
+\end{lstlisting}
+    qui calcule le reste de la division euclidienne de {\tt a} par {\tt b}
+    (la valeur de retour doit être toujours positive).
+    \smallskip
+
+    \item Écrire un programme {\tt Crypt}, qui accepte comme arguments
+    une valeur numérique (la clé) et un mot (le mot à crypter). Ce programme
+    affiche sur la sortie standard le mot crypté selon la clé
+    en suivant la formule \eqref{F1}.
+    \smallskip
+
+    \item Écrire un autre programme {\tt Decrypt} qui réalise le décryptage.
+    Il prend comme arguments une valeur numérique (la clé) et un mot
+    (le mot à décrypter). Ce programme affiche sur la sortie standard le
+    mot décrypté selon la clé en suivant la formule \eqref{F2}.
+    \smallskip
+
+    \item Tester les deux programmes précédents, en particulier en vérifiant
+    que le mot obtenu en cryptant puis en décryptant successivement
+    un mot avec une même clé est bien égal au mot de départ.
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+\end{document}

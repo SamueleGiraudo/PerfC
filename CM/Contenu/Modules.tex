@@ -1,0 +1,1089 @@
+% Auteur : Samuele Giraudo
+% Création : jan. 2014, jan. 2015, fév. 2015 , déc. 2015
+
+\tikzstyle{Module}=[rectangle,draw=Violet!100,fill=Violet!20,
+    line width=1pt,font=\scriptsize\tt]
+\tikzstyle{ModuleC}=[Module,draw=Bleu!100,fill=Bleu!20]
+\tikzstyle{ModuleH}=[Module,draw=Vert!100,fill=Vert!20]
+\tikzstyle{Fleche}=[->,draw=Rouge,line width=1.5pt]
+\tikzstyle{Sommet}=[circle,draw=Marron!100,fill=Marron!10,line width=1.5pt]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Modules}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Notion de modularité}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Modules}
+\alert{Modulariser} un projet signifie le découper de manière cohérente
+en plusieurs parties plus petites.
+\medskip
+
+Un \alert{module} est un ensemble de données et d'instructions qui
+permettent de gérer une partie bien ciblée d'un projet.
+\bigskip
+
+Il existe deux manières de concevoir un projet~:
+\smallskip
+
+\begin{enumerate}
+    \item programmer dans un unique fichier contenant tout
+    le code nécessaire~;
+    \smallskip
+
+    \item programmer dans divers fichiers qui fractionnent le projet
+    en plusieurs sous-parties.
+\end{enumerate}
+\medskip
+
+À partir de maintenant, on adoptera la $2\ieme$ manière.
+\bigskip
+
+Il reste à savoir comment {\bf découper un projet de manière cohérente}
+et comment {\bf utiliser les outils offerts par le langage} pour gérer ce
+découpage.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Avantages offerts par la modularité}
+La modularité, illustration du principe stratégique universel
+\begin{center}
+    \og {\em diviser pour régner} \fg,
+\end{center}
+offre les avantages suivants.
+\medskip
+
+\begin{enumerate}
+    \item La {\bf lisibilité} du code est accrue, ainsi que la facilité
+    de son {\bf entretien}.
+    \medskip
+
+    \item Permet de {\bf regrouper} les types et les fonctions selon leurs
+    objectifs.
+    \medskip
+
+    \item Il devient possible de {\bf réutiliser} dans un nouveau projet
+    un module créé dans un projet antérieur.
+    \medskip
+
+    \item Permet de {\bf cacher des fonctions} (notion de fonctions privées).
+    \medskip
+
+    \item Facilite le {\bf travail par équipe}.
+    \medskip
+
+    \item Permet de rendre la {\bf compilation localisée}
+    (compilation module par module).
+\end{enumerate}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Découpage d'un projet}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Spécification d'un projet}
+Considérons le \alert{projet spécifié} de la manière suivante~:
+\medskip
+
+\begin{itemize}
+    \item le but est de fournir un programme qui permet de décider si des
+    formules logiques sans quantificateur sont valides ou contradictoires.
+    \medskip
+
+    \item La syntaxe d'une formule est la suivante~: on dispose
+    du jeu de formules atomiques $a$, $b$, \dots, $z$ et on écrit les
+    formules de manière infixe et totalement parenthésée.
+    Par exemple, la formule $(A \to (B \vee \neg C)) \wedge A$ s'écrit
+    \Code{((a IMP (b OU (NON c))) ET a)}.
+    \medskip
+
+    \item L'interaction utilisateur/programme se fait de la manière
+    suivante~:
+    \begin{enumerate} \normalsize
+        \item l'utilisateur fournit un fichier en entrée contenant une
+        formule par ligne~;
+        \smallskip
+
+        \item le programme produit un fichier en sortie contenant, ligne
+        par ligne, la réponse \Sortie{erreur} si la formule correspondante
+        est syntaxiquement erronée ou bien \Sortie{valide},
+        \Sortie{contradictoire} ou \Sortie{rien} selon la nature de la
+        formule.
+    \end{enumerate}
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Découpage du projet}
+Il y a deux parties bien distinctes dans ce projet~:
+\smallskip
+
+\begin{enumerate}
+    \item la {\bf représentation des formules} et le test de
+    validité/contradiction~;
+    \smallskip
+
+    \item la {\bf gestion syntaxique des formules} (lecture/écriture
+    d'une formule dans un fichier).
+\end{enumerate}
+
+Ces deux parties dictent le découpage suivant~:
+\begin{center}
+\begin{tikzpicture}[every text node part/.style={align=left}]
+    \node[Module](Formule)at(0,0){
+        -- type formule \\
+        -- test validité \\
+        -- test contradiction \\[.5em]
+        {\small \bf Formule}};
+    %
+    \node[Module](Parseur)at(5,0){
+        -- test syntaxique \\
+        \phantom{--} d'une formule \\
+        -- chaîne vers formule \\
+        -- formule vers chaîne \\[.5em]
+        {\small \bf Parseur}};
+    %
+    \node[Module](Main)at(2.5,-3){
+        -- lecture fichier de \\
+        \phantom{--} formules et écriture \\
+        \phantom{--} des résultats \\[.5em]
+        {\small \bf Main}};
+    %
+    \draw[Fleche](Parseur)--(Formule);
+    \draw[Fleche](Main)edge[bend left](Formule);
+    \draw[Fleche](Main)edge[bend right](Parseur);
+\end{tikzpicture}
+\end{center}
+Toute flèche \hspace{-1em}
+\raisebox{-.4em}{
+\begin{tikzpicture}
+    \node(1)at(0,0){$A$};
+    \node(2)at(1,0){$B$};
+    \draw[Fleche](1)--(2);
+\end{tikzpicture}}
+signifie que le module $A$ \alert{dépend} du module $B$.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Création de modules}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Composition d'un module}
+Un module est composé de deux fichiers~:
+\begin{enumerate}
+    \item un \alert{fichier d'en-tête} d'extension \Code{.h}~;
+    \item un \alert{fichier source} d'extension \Code{.c}.
+\end{enumerate}
+\medskip
+
+Les noms de ces deux fichiers sont les mêmes (extension mise à part).
+\medskip
+
+\begin{center}
+\begin{tikzpicture}[every text node part/.style={align=left}]
+    \node[ModuleH](Ah)at(0,0){
+        -- ... \\
+        -- ... \\[.5em]
+        {\small \bf A.h}};
+    %
+    \node[ModuleC](Ac)at(1.5,0){
+        -- ... \\
+        -- ... \\[.5em]
+        {\small \bf A.c}};
+\end{tikzpicture}
+\end{center}
+
+Seul le module principal est constitué d'un seul fichier source \Code{Main.c}.
+\begin{center}
+\begin{tikzpicture}[every text node part/.style={align=left}]
+    \node[ModuleC](Mainc)at(0,0){
+        -- ... \\
+        -- ... \\[.5em]
+        {\small \bf Main.c}};
+\end{tikzpicture}
+\end{center}
+\bigskip
+
+Par exemple, le projet précédent est constitué des fichiers
+\Code{Formule.h}, \Code{Formule.c}, \Code{Parseur.h}, \Code{Parseur.c}
+et \Code{Main.c}.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Fichiers d'en-tête}
+Un fichier d'en-tête contient des \alert{déclarations} de types et
+de fonctions (prototypes).
+\bigskip
+
+Les prototypes qui y figurent sont ceux des fonctions que l'on
+souhaite rendre visibles (utilisables) par d'autres modules.
+\bigskip
+
+Par exemple, un en-tête possible du module \Code{Formule} est
+\medskip
+
+\begin{minipage}[c]{.4\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* Formule.h */
+
+typedef struct {
+...
+} Form;
+
+int est_valide(Form *f);
+int est_contra(Form *f);
+\end{lstlisting}
+\end{minipage}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Fichiers d'en-tête}
+Les fichiers d'en-tête sont ceux que le programmeur regarde en premier
+pour connaître le \alert{rôle d'un type ou d'une fonction}.
+\medskip
+
+De ce fait, c'est dans les fichiers d'en-tête que l'{\bf on commente chaque
+type et fonction} pour préciser leur rôle.
+\medskip
+
+Par exemple, l'en-tête du module \Code{Formule} devrait être de la forme
+\medskip
+
+\begin{minipage}[c]{.9\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* Formule.h */
+
+/* Representation des formules logiques sans quantificateur. */
+typedef struct {
+...
+} Form;
+
+/* Renvoie `1` si la formule pointee par `f` est valide et
+ * `0` sinon. */
+int est_valide(Form *f);
+...
+\end{lstlisting}
+\end{minipage}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Fichiers source}
+Un fichier source contient une \alert{implantation} de l'en-tête du
+module auquel il appartient.
+\medskip
+
+Il contient de ce fait les définitions de fonctions déclarées dans
+l'en-tête.
+\medskip
+
+Par exemple, une implantation possible du module \Code{Formule} est
+\medskip
+
+\begin{minipage}[c]{.4\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* Formule.c */
+
+...
+int est_valide(Form *f) {
+    int i, j;
+    assert(f != NULL);
+    ...
+}
+
+int est_contra(Form *f) {
+    ...
+}
+\end{lstlisting}
+\end{minipage}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Fichiers source}
+Il faut impérativement que toutes les fonctions déclarées dans le fichier
+d'en-tête du module soient \alert{définies} dans le fichier source
+correspondant.
+\bigskip
+\bigskip
+
+Il est en revanche possible de définir dans un fichier source des fonctions
+qui ne sont pas déclarées dans l'en-tête correspondant.
+\bigskip
+\bigskip
+
+Une fonction définie dans un fichier source mais pas dans l'en-tête
+correspondant s'appelle \alert{fonction privée}.
+\bigskip
+\bigskip
+
+L'intérêt des fonctions privées est d'être des {\bf fonctions outils}
+dont le champ d'application est local au module dans lequel elles sont
+définies. On ne souhaite pas les rendre utilisables en dehors.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Fichiers source et fonctions privées}
+Une fonction privée se définit avec le mot clé \Code{static} (à ne pas
+confondre avec le \Code{static} pour la déclaration de variables).
+\bigskip
+
+Par exemple, on peut avoir besoin d'une fonction privée appartenant au
+module \Code{Formule} qui permet de compter le nombre d'occurrences d'un
+atome dans une formule. On la définit alors dans \Code{Formule.c} par
+\begin{lstlisting}
+static int nb_occ(Form *f, char atome) {
+    ...
+    assert(f != NULL);
+    assert('a' <= atome && atome <= 'z');
+    ...
+}
+\end{lstlisting}
+
+La portée lexicale de cette fonction s'étend à tout ce qui suit
+sa définition dans le fichier \Code{Formule.c}. Elle est invisible
+ailleurs.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Fichiers source et fonctions privées}
+C'est un contresens que de définir une fonction dans un fichier source
+sans le mot clé \Code{static} et sans l'avoir déclarée dans le fichier
+d'en-tête.
+\bigskip
+
+C'est aussi un contresens que de définir dans un fichier source une
+fonction déclarée dans le fichier d'en-tête avec \Code{static}.
+\bigskip
+
+Ainsi, pour résumer, toute fonction définie dans un fichier source est
+\begin{enumerate}
+    \item soit déclarée dans le fichier d'en-tête~;
+    \item soit non déclarée dans le fichier d'en-tête mais définie
+    par \Code{static}.
+\end{enumerate}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Allure d'un projet}
+Il y a deux manières d'organiser un projet en termes de fichiers et de
+répertoires~:
+\medskip
+
+\begin{enumerate}
+    \item la 1\iere{} consiste à regrouper l'ensemble des fichiers
+    d'en-tête et des fichiers sources dans un même répertoire. Il y figure
+    donc un nombre impair de fichiers (le module principal et les
+    paires en-tête/source pour chaque module)~;
+    \bigskip
+
+    \item la 2\ieme{} consiste à séparer les fichiers du projet
+    en deux répertoires frères, \Code{include} et \Code{src}, le
+    premier contenant les fichiers d'en-tête et l'autre, les fichiers
+    sources et le module principal du projet.
+\end{enumerate}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Utilisation des modules}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Inclusion de modules}
+Pour utiliser un module \Code{Module} dans un fichier \Code{F}, on doit
+l'y \alert{inclure}.
+\bigskip
+
+On utilise pour cela dans \Code{F} la commande pré-processeur
+\begin{center}
+    \Code{\#include "Module.h"}
+\end{center}
+\bigskip
+
+Celle-ci sera remplacée par le pré-processeur par le contenu de
+\Code{Module.h}.
+\bigskip
+
+Cette commande peut se trouver
+\smallskip
+
+\begin{itemize}
+    \item dans un fichier source pour bénéficier des fonctions définies et
+    des types déclarés par le module~;
+    \medskip
+
+    \item dans un fichier d'en-tête pour bénéficier des types déclarés
+    par le module.
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Inclusion de modules}
+Par exemple, si \Code{A} est un module définissant une fonction
+\Code{f}, pour utiliser \Code{f} dans un fichier \Code{B.c}
+ situé dans le même répertoire que \Code{A.c} et \Code{A.h},
+on écrit
+\medskip
+
+\begin{minipage}[c]{.3\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* B.c */
+
+#include "A.h"
+...
+\end{lstlisting}
+\end{minipage}
+\medskip
+
+Il est possible d'inclure à la suite plusieurs modules dans un même fichier~:
+\medskip
+
+\begin{minipage}[c]{.4\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* Fichier.c ou Fichier.h */
+
+#include "A.h"
+#include "B.h"
+#include "C.h"
+...
+\end{lstlisting}
+\end{minipage}
+\qquad
+\begin{minipage}[c]{.5\textwidth}
+De cette manière, \Code{Fichier.c} ou \Code{Fichier.h} bénéficie de tout
+ce qui est déclaré et défini dans les modules \Code{A}, \Code{B} et
+\Code{C}.
+\medskip
+
+{\bf Attention}~: les modules inclus ne doivent pas déclarer/définir des
+éléments d'un identificateur commun.
+\end{minipage}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Inclusion de modules}
+Le fichier incluant n'a \alert{accès} qu'au fichier d'en-tête du module,
+et donc qu'aux \alert{déclarations effectuées}.
+\medskip
+
+Le fichier incluant n'a pas besoin de connaître l'implantation du module.
+\bigskip
+
+Considérons par exemple le module \Code{Couple} défini par
+\medskip
+
+\begin{minipage}[c]{.38\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* Couple.h */
+
+typedef int Couple[2];
+
+int est_zero(Couple c);
+void afficher(Couple c);
+\end{lstlisting}
+\end{minipage}
+\quad
+\begin{minipage}[c]{.55\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* Couple.c */
+...
+int est_zero(Couple c) {
+  return (c[0] == 0) && (c[1]== 0);
+}
+void afficher(Couple c) {
+    printf("(%d, %d)", c[0], c[1]);
+}
+\end{lstlisting}
+\end{minipage}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Inclusion de modules}
+Supposons que l'on ait besoin d'inclure le module \Code{Couple} dans un
+fichier \Code{Fichier.c}.
+\medskip
+
+Le pré-processeur aura donc l'effet suivant sur \Code{Fichier.c}~:
+\medskip
+
+\begin{minipage}[c]{.3\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* Fichier.c avant
+ * la passe du
+ * pre-processeur */
+
+#include "Couple.h"
+...
+
+if (!est_zero(c))
+    afficher(c);
+...
+\end{lstlisting}
+\end{minipage}
+\qquad \qquad
+\begin{minipage}[c]{.4\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* Fichier.c apres la passe
+ * du pre-processeur */
+
+typedef int Couple[2];
+int est_zero(Couple c);
+void afficher(Couple c);
+...
+
+if (!est_zero(c))
+    afficher(c);
+...
+\end{lstlisting}
+\end{minipage}
+\medskip
+
+\Code{Fichier.c} a besoin uniquement de connaître les types de retour et
+les signatures des fonctions qu'il invoque (connus à leur déclaration).
+Il n'a à ce stade pas besoin de connaître les définitions de ces fonctions.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Création complète d'un module}
+Pour créer un module \Code{A}, il faut inclure son fichier d'en-tête
+\Code{A.h} dans son fichier source \Code{A.c}.
+\medskip
+
+\begin{minipage}[c]{.3\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* A.h */
+...
+\end{lstlisting}
+\end{minipage}
+\qquad \qquad
+\begin{minipage}[c]{.3\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* A.c */
+
+#include "A.h"
+...
+\end{lstlisting}
+\end{minipage}
+\medskip
+
+De cette manière,
+\begin{itemize}
+    \item d'une part, \Code{A.c} a accès aux types et
+    aux prototypes de fonctions déclarés dans \Code{A.h}~;
+    \smallskip
+
+    \item d'autre part, cela permet d'implanter les fonctions déclarées
+    dans \Code{A.h} sans contrainte d'ordre.
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Création complète d'un module}
+Considérons la situation suivante~:
+\bigskip
+
+\begin{minipage}[c]{.22\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* A.h */
+...
+#include "C.h"
+...
+\end{lstlisting}
+\end{minipage}
+\enspace
+\begin{minipage}[c]{.22\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* A.c */
+
+#include "A.h"
+...
+\end{lstlisting}
+\end{minipage}
+\quad
+\begin{minipage}[c]{.22\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* B.h */
+...
+#include "C.h"
+...
+\end{lstlisting}
+\end{minipage}
+\enspace
+\begin{minipage}[c]{.22\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* B.c */
+
+#include "B.h"
+...
+\end{lstlisting}
+\end{minipage}
+\medskip
+
+\begin{minipage}[c]{.22\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* C.h */
+...
+int f();
+...
+\end{lstlisting}
+\end{minipage}
+\enspace
+\begin{minipage}[c]{.22\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* C.c */
+
+#include "C.h"
+...
+\end{lstlisting}
+\end{minipage}
+\qquad \qquad
+\begin{minipage}[c]{.22\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* D.c */
+
+#include "A.h"
+#include "B.h"
+...
+\end{lstlisting}
+\end{minipage}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Création complète d'un module}
+Le pré-processeur transforme ces fichiers en
+\bigskip
+
+\begin{minipage}[c]{.22\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* A.h */
+...
+int f();
+...
+\end{lstlisting}
+\end{minipage}
+\enspace
+\begin{minipage}[c]{.22\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* A.c */
+
+/* Copie A.h */
+...
+\end{lstlisting}
+\end{minipage}
+\quad
+\begin{minipage}[c]{.22\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* B.h */
+...
+int f();
+...
+\end{lstlisting}
+\end{minipage}
+\enspace
+\begin{minipage}[c]{.22\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* B.c */
+
+/* Copie B.h */
+...
+\end{lstlisting}
+\end{minipage}
+\medskip
+
+\begin{minipage}[c]{.22\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* C.h */
+...
+int f();
+...
+\end{lstlisting}
+\end{minipage}
+\enspace
+\begin{minipage}[c]{.22\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* C.c */
+
+/* Copie C.h */
+...
+\end{lstlisting}
+\end{minipage}
+\qquad \qquad
+\begin{minipage}[c]{.22\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* D.c */
+
+int f();
+int f();
+...
+\end{lstlisting}
+\end{minipage}
+\medskip
+
+{\bf Problème}~: le contenu de \Code{C.h} est copié deux fois dans
+\Code{D.c}. Ceci n'est pas accepté par le compilateur car il y a
+\alert{multiple déclaration} d'un même symbole (\Code{f} ici).
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Création complète d'un module}
+La parade consiste à \alert{inclure} un fichier d'en-tête de
+\alert{manière conditionnelle}~: on procède à l'inclusion que s'il n'a
+pas déjà été inclus.
+\medskip
+
+On utilise pour cela les commandes \Code{\#define}, \Code{\#ifndef} et
+\Code{\#endif} du pré-processeur.
+\medskip
+
+Le schéma général est
+\medskip
+
+\begin{minipage}[c]{.49\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* A.h */
+#ifndef __A__
+#define __A__
+
+    /* Declaration de types */
+
+    /* Declaration de fonctions */
+
+#endif
+\end{lstlisting}
+\end{minipage}\quad
+\begin{minipage}[c]{.45\textwidth}
+    Ainsi, lors d'une inclusion de \Code{A.h}, le pré-processeur
+    vérifie si la macro \Code{\_\_A\_\_} n'existe pas.
+    \begin{itemize}
+        \item Si elle n'existe pas, alors on la définit
+        (\Code{\#define \_\_A\_\_}) et le contenu du module est pris
+        en compte~;
+        \item sinon, cela signifie que le contenu a déjà été pris en
+        compte. Celui-ci n'est pas repris en compte une 2\ieme{} fois.
+    \end{itemize}
+\end{minipage}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Squelette d'un module}
+Pour résumer, tous les modules doivent avoir le squelette suivant~:
+\begin{minipage}[c]{.42\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* A.h */
+#ifndef __A__
+#define __A__
+
+  /* Inclusions eventuelles
+   * de modules */
+
+  /* Definitions eventuelles
+   * de macros */
+
+  /* Declarations eventuelles
+   * de types */
+
+  /* Declarations eventuelles
+   * de fonctions */
+
+#endif
+\end{lstlisting}
+\end{minipage}
+\qquad
+\begin{minipage}[c]{.45\textwidth}
+\begin{lstlisting}[frame=single,numbers=none]
+/* A.c */
+#include "A.h"
+
+/* Inclusions eventuelles
+ * de modules */
+
+/* Definitions eventuelles
+ * de fonctions privees */
+
+/* Definitions de toutes les
+ * fonctions declarees dans
+ * le fichier d'en-tete */
+\end{lstlisting}
+\end{minipage}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Exemple du module {\tt Parseur}}
+\begin{minipage}[c]{.9\textwidth}
+\begin{lstlisting}[frame=single,numbers=none,basicstyle=\ttfamily\scriptsize]
+/* Parseur.h */
+#ifndef __PARSEUR__
+#define __PARSEUR__
+
+#include "Formule.h"
+
+    /* Convertit la chaine de caracteres `ch` sensee representer une formule
+     * en une variable de type `Form`, qui va etre ecrite dans `f`.
+     * Renvoie `1` si `ch` represente bien une formule et `0` sinon. */
+    int chaine_vers_form(Form *f, char *ch);
+
+#endif
+\end{lstlisting}
+\end{minipage}
+
+\begin{minipage}[c]{.5\textwidth}
+\begin{lstlisting}[frame=single,numbers=none,basicstyle=\ttfamily\scriptsize]
+/* Parseur.c */
+#include "Parseur.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+
+int chaine_vers_form(Form *f, char *ch) {
+    ...
+    assert(f != NULL);
+    ...
+}
+\end{lstlisting}
+\end{minipage}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Graphes d'inclusions}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Graphes d'inclusions}
+On rappelle qu'un module \Code{A} \alert{dépend} d'un module \Code{B} si
+le {\bf fichier d'en-tête} de \Code{A} inclut \Code{B}.
+\medskip
+
+Pour visualiser l'allure d'un projet, on trace son \alert{graphe d'inclusions}.
+On représente pour cela chacun des modules qui le composent dans des cercles
+({\bf sommets}) et on trace des flèches ({\bf arcs}) de \Code{A} vers
+\Code{B} pour tout module \Code{A} dépendant de \Code{B}.
+\medskip
+
+Par exemple, le graphe d'inclusions
+\begin{multicols}{2}
+\begin{center}
+\scalebox{.8}{\begin{tikzpicture}
+    \node[Sommet](A)at(0,0){\Code{A}};
+    \node[Sommet](B)at(3,0){\Code{B}};
+    \node[Sommet](C)at(0,-2){\Code{C}};
+    \node[Sommet](D)at(3,-2){\Code{D}};
+    \draw[Fleche](A)edge[bend left=20]node{}(B);
+    \draw[Fleche](A)edge[bend right=20]node{}(D);
+    \draw[Fleche](B)edge[bend left=20]node{}(D);
+    \draw[Fleche](C)edge[bend right=20]node{}(D);
+\end{tikzpicture}}
+\end{center}
+signifie que
+\begin{itemize}
+    \item \Code{A.h} inclut \Code{B.h} et \Code{D.h}~;
+    \item \Code{B.h} inclut \Code{D.h}~;
+    \item \Code{C.h} inclut \Code{D.h}~;
+    \item \Code{D.h} n'inclut rien.
+\end{itemize}
+\end{multicols}
+\medskip
+
+On ne mentionne pas dans les graphes d'inclusions les inclusions aux
+fichiers d'en-tête standards (\Code{stdio.h}, \Code{stdlib.h},
+\Code{assert.h}, {\em etc.}).
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Graphe d'inclusions et fichier principal}
+Le graphe d'inclusions d'un projet consistant à faire jouer l'ordinateur
+aux échecs contre un humain peut être le suivant~:
+\begin{center}
+\scalebox{.75}{\begin{tikzpicture}
+    \node[Sommet,minimum size=2cm](Piece)at(-4,0){\Code{Piece}};
+    \node[Sommet,minimum size=2cm](Case)at(-4,-4){\Code{Case}};
+    \node[Sommet,minimum size=2cm](Position)at(0,-2){\Code{Position}};
+    \node[Sommet,minimum size=2cm](IA)at(4,0){\Code{IA}};
+    \node[Sommet,minimum size=2cm](IGraph)at(4,-4){\Code{IGraph}};
+    \node[Sommet,minimum size=2cm,draw=Vert,fill=Vert!20](Main)at(7,-2){\Code{Main}};
+    \draw[Fleche](Main)edge[bend right=20]node{}(IA);
+    \draw[Fleche](Main)edge[bend left=20]node{}(IGraph);
+    \draw[Fleche](IGraph)edge[bend left=20]node{}(Case);
+    \draw[Fleche](IGraph)edge[bend left=20]node{}(Position);
+    \draw[Fleche](IGraph)edge[bend right=40]node{}(Piece);
+    \draw[Fleche](IA)edge[bend left=40]node{}(Case);
+    \draw[Fleche](IA)edge[bend right=20]node{}(Position);
+    \draw[Fleche](IA)edge[bend right=20]node{}(Piece);
+    \draw[Fleche](Position)edge[bend right=20]node{}(Case);
+    \draw[Fleche](Position)edge[bend left=20]node{}(Piece);
+\end{tikzpicture}}
+\end{center}
+\medskip
+
+Tout projet contient un fichier source \Code{Main.c},
+\alert{le fichier principal} du projet, où figure la fonction \Code{main}
+(le {\bf point d'entrée} de l'exécution du programme). Celui-ci apparaît
+dans le graphe d'inclusions.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Inclusions circulaires}
+Les graphes d'inclusions permettent d'avoir une vision globale de
+l'architecture d'un projet.
+\bigskip
+
+Ils permettent aussi de mettre en évidence des problèmes de conception
+et notamment les problèmes d'\alert{inclusion circulaire}. Ce type de
+problème s'observe par la présence d'un {\bf cycle} dans le graphe
+d'inclusions~:
+\begin{center}
+\scalebox{.8}{\begin{tikzpicture}
+    \node[Sommet](A)at(0,0){\Code{A}};
+    \node[Sommet](B)at(2,0){\Code{B}};
+    \node[Sommet](C)at(0,-2){\Code{C}};
+    \node[Sommet](D)at(2,-2){\Code{D}};
+    \node[Sommet](E)at(4,-1){\Code{E}};
+    \draw[Fleche,draw=Violet,line width=3pt](A)edge[bend left=20]node{}(B);
+    \draw[Fleche,draw=Violet,line width=3pt](B)edge[bend left=20]node{}(D);
+    \draw[Fleche,draw=Violet,line width=3pt](D)edge[bend left=20]node{}(C);
+    \draw[Fleche,draw=Violet,line width=3pt](C)edge[bend left=20]node{}(A);
+    \draw[Fleche](E)edge[bend right=20]node{}(B);
+    \draw[Fleche](E)edge[bend left=20]node{}(D);
+    \draw[Fleche](B)edge[bend left=20]node{}(C);
+\end{tikzpicture}}
+\end{center}
+\medskip
+
+{\bf Règle importante}~: il ne doit jamais y avoir de cycle dans le
+graphe d'inclusions d'un projet. S'il y a un cycle, c'est que le projet
+est mal découpé en modules.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Limiter les inclusions}
+La plupart des inclusions circulaires peuvent être évitées en
+\alert{réduisant au maximum les inclusions} de modules dans les
+\alert{fichiers d'en-tête} en les faisant plutôt si possible dans les
+fichiers source.
+\bigskip
+\bigskip
+\bigskip
+
+Par exemple, supposons que l'on dispose d'un module \Code{Tri} qui
+permet de trier des tableaux génériques. Il est de la forme~:
+\medskip
+
+\begin{minipage}[c]{.45\textwidth}
+\begin{lstlisting}[frame=single,numbers=none,basicstyle=\ttfamily\scriptsize]
+/* Tri.h */
+#ifndef __TRI__
+#define __TRI__
+
+    void trier_tab(void **t, int n,
+        int (*est_inf)(void *, void *));
+    ...
+#endif
+\end{lstlisting}
+\end{minipage}
+\quad
+\begin{minipage}[c]{.45\textwidth}
+\begin{lstlisting}[frame=single,numbers=none,basicstyle=\ttfamily\scriptsize]
+/* Tri.c */
+#include "Tri.h"
+...
+void trier_tab(void **t, int n,
+    int (*est_inf)(void *, void *)) {
+    ...
+}
+...
+\end{lstlisting}
+\end{minipage}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Limiter les inclusions}
+On souhaite maintenant écrire un module \Code{TabInt} pour gérer des
+tableaux d'entiers.
+\medskip
+
+On n'écrira pas
+
+\begin{minipage}[c]{.55\textwidth}
+\begin{lstlisting}[frame=single,numbers=none,basicstyle=\ttfamily\scriptsize]
+/* TabInt.h */
+#ifndef __TAB_INT__
+#define __TAB_INT__
+
+#include "Tri.h"
+
+    typedef struct {int n; int *tab;} TabInt;
+    int trier_tab_int(TabInt *t);
+#endif
+\end{lstlisting}
+\end{minipage}
+\quad
+\begin{minipage}[c]{.35\textwidth}
+\begin{lstlisting}[frame=single,numbers=none,basicstyle=\ttfamily\scriptsize]
+/* TabInt.c */
+#include "TabInt.h"
+
+int trier_tab_int(TabInt *t) {
+    /* Util. de `trier_tab` */
+}
+\end{lstlisting}
+\end{minipage}
+
+mais plutôt
+
+\begin{minipage}[c]{.55\textwidth}
+\begin{lstlisting}[frame=single,numbers=none,basicstyle=\ttfamily\scriptsize]
+/* TabInt.h */
+#ifndef __TAB_INT__
+#define __TAB_INT__
+
+    typedef struct {int n; int *tab;} TabInt;
+    int trier_tab_int(TabInt *t);
+#endif
+\end{lstlisting}
+\end{minipage}
+\quad
+\begin{minipage}[c]{.35\textwidth}
+\begin{lstlisting}[frame=single,numbers=none,basicstyle=\ttfamily\scriptsize]
+/* TabInt.c */
+#include "TabInt.h"
+
+#include "Tri.h"
+
+int trier_tab_int(TabInt *t) {
+    /* Util. de `trier_tab` */
+}
+\end{lstlisting}
+\end{minipage}
+\end{frame}

@@ -1,0 +1,1008 @@
+% Auteur : Samuele Giraudo
+% Création : nov. 2013
+% Modifications : juil. 2014 oct. 2014 nov. 2014, déc. 2015
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Opérateurs}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Généralités}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Caractéristiques d'un opérateur}
+Un opérateur dispose des {\bf caractéristiques structurelles} suivantes~:
+\smallskip
+
+\begin{enumerate}
+    \uncover<2->{
+    \item son \alert{arité}, qui désigne le nombre d'opérandes sur
+    lequel il agit~;
+    \medskip}
+
+    \uncover<3->{
+    \item sa \alert{précédence}, qui permet de savoir, dans une expression,
+    dans quel ordre appliquer les différents opérateurs qui la composent~;
+    \medskip}
+
+    \uncover<4->{
+    \item son \alert{sens d'associativité}, qui permet de savoir, dans
+    une expression, dans quel sens appliquer des mêmes opérateurs qui la
+    composent.}
+\end{enumerate}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Précédence et associativité des opérateurs}
+Considérons l'expression \Code{3 * 2 + 1}.
+\smallskip
+
+\uncover<2->{
+Suivant les priorités relatives des opérateurs \Code{*} et \Code{+},
+il y deux manières de l'évaluer~:
+\smallskip}
+
+\begin{enumerate}
+    \uncover<3->{
+    \item \Code{(3 * 2) + 1}, si \Code{*} est {\bf plus prioritaire}
+    que \Code{+}~;
+    \smallskip}
+
+    \uncover<4->{
+    \item \Code{3 * (2 + 1)}, si \Code{+} est {\bf plus prioritaire}
+    que \Code{*}.}
+\end{enumerate}
+\bigskip
+\bigskip
+
+\uncover<5->{
+Considérons l'expression \Code{4 - 3 - 2 - 1}.
+\smallskip}
+
+\uncover<6->{
+Suivant le sens d'associativité de \Code{-}, il y a deux manières de
+l'évaluer~:
+\smallskip}
+
+\begin{enumerate}
+    \uncover<7->{
+    \item \Code{((4 - 3) - 2) - 1}, si \Code{-} est {\bf associatif de
+    gauche à droite}~;
+    \smallskip}
+
+    \uncover<8->{
+    \item \Code{4 - (3 - (2 - 1))}, si \Code{-} est {\bf associatif de
+    droite à gauche}.}
+\end{enumerate}
+\bigskip
+\bigskip
+
+\uncover<9->{
+Tout ceci peut être rendu explicite par l'\alert{utilisation de parenthèses}.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Opérateurs d'accès}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Opérateurs de gestion la mémoire}
+
+\begin{center}
+    \begin{tabular}{c|c|c|c|c}
+        {\bf Op.} & {\bf Rôle} & {\bf Ari.} & {\bf Assoc.}
+            & {\bf Opérandes} \\ \hline \hline
+        \Code{\&} & référencement & 1 & -- & une variable \\ \hline
+        \Code{*} & déréférencement & 1 & -- & un pointeur \\ \hline
+        \Code{[\,]} & élément d'un tableau & 2 & $\longrightarrow$
+            & un pointeur et un entier \\ \hline
+        \multirow{2}{*}{\Code{.}} & \multirow{2}{*}{valeur d'un champ} &
+            \multirow{2}{*}{2} & \multirow{2}{*}{$\longrightarrow$}
+            & une var. d'un type struct. \\
+            & & & & et un id. de champ \\ \hline
+        \multirow{3}{*}{\Code{->}} & \multirow{3}{*}{valeur d'un champ} &
+            \multirow{3}{*}{2} & \multirow{3}{*}{$\longrightarrow$}
+            & une pointeur sur \\
+            & & & & une var. d'un type struct. \\
+            & & & & et un id. de champ
+    \end{tabular}
+\end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Opérateurs de calcul}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Opérateurs arithmétiques}
+
+\begin{center}
+    \begin{tabular}{c|c|c|c|c}
+        {\bf Op.} & {\bf Rôle} & {\bf Ari.} & {\bf Assoc.}
+            & {\bf Opérandes} \\ \hline \hline
+        \Code{+}, \Code{-}, \Code{*}, \Code{/} & opérations arith.
+            & 2 & $\longrightarrow$ & deux val. numériques \\ \hline
+        \Code{\%} & modulo & 2 & $\longrightarrow$ & deux entiers \\ \hline
+        \Code{+}, \Code{-} & signe  & 1 & -- & une val. numérique \\ \hline
+        \multirow{2}{*}{\Code{++}, \Code{-\,-}} &
+            \multirow{2}{*}{incr./décr.} & \multirow{2}{*}{1} &
+            \multirow{2}{*}{--} &
+            une var. d'un \\
+            & & & & type numérique
+    \end{tabular}
+\end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{L'opérateur modulo}
+L'opérateur \alert{modulo} \Code{\%} calcule le reste de la division
+euclidienne de son premier opérande par son second.
+\medskip
+
+\uncover<2->{
+D'un point de vue mathématique, si $a$ et $b$ sont deux entiers, on a
+$a / b = b \times q + r$, où $0 \leq r \leq b - 1$ et $q$ est un entier.
+$q$ est le {\bf quotient} et $r$ est le {\bf reste}, \alert{toujours positif}.
+\bigskip}
+
+\uncover<3->{
+Cependant, \Code{\%} peut produire des valeurs négatives, dans le cas où
+l'un des deux opérandes est négatif.
+\bigskip}
+
+\uncover<4->{
+Solution pour un modulo qui respecte la définition mathématique~:}
+\begin{semiverbatim}\small\uncover<4->{
+int vrai_modulo(int a, int b) \{
+    int r;
+    r = a % b;
+    if (r < 0)
+        return r + b;
+    return r;
+\}}
+\end{semiverbatim}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Les opérateurs d'incrémentation et de décrémentation}
+Les opérateurs \Code{++} et \Code{-\,-} existent en deux versions,
+suivant qu'ils soient préfixes ou suffixes~:
+\smallskip
+
+\begin{enumerate}
+    \uncover<2->{
+    \item \Code{a++}, incrémente (de un) la valeur de la variable \Code{a}
+    et est une expression dont la valeur est l'\alert{ancienne valeur}
+    de \Code{a}~;
+    \medskip}
+
+    \uncover<3->{
+    \item \Code{++a}, incrémente (de un) la valeur de la variable \Code{a}
+    et est une expression dont la valeur est la \alert{nouvelle valeur}
+    de \Code{a}.}
+\end{enumerate}
+\bigskip
+
+\begin{multicols}{2}
+\begin{semiverbatim}\uncover<4->{
+int a = 5, b;
+b = 3 + a++;}
+\end{semiverbatim}
+\uncover<4->{\Code{b} vaut \Code{8} et \Code{a} vaut \Code{6}.}
+
+\begin{semiverbatim}\uncover<5->{
+int a = 5, b;
+b = 3 + ++a;}
+\end{semiverbatim}
+\uncover<5->{\Code{b} vaut \Code{9} et \Code{a} vaut \Code{6}.}
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Les opérateurs d'incrémentation et de décrémentation}
+Attention au {\bf pièges d'utilisation} de ces opérateurs.
+\bigskip
+
+\uncover<2->{
+P.ex., les instructions}
+\begin{multicols}{3}
+\begin{semiverbatim}\uncover<2->{
+int a = 5, b;
+b = a++ + ++a;}
+\end{semiverbatim}
+\begin{semiverbatim}\uncover<2->{
+int a = 5;
+a = a++;}
+\end{semiverbatim}
+\begin{semiverbatim}\uncover<2->{
+int a = 5;
+a = ++a;}
+\end{semiverbatim}
+\end{multicols}
+\uncover<2->{ne sont pas évaluables (l'effet produit par les lignes 2
+dépend du compilateur et de ses options).
+\bigskip
+\bigskip}
+
+\uncover<3->{
+{\bf Règle}~: pour éviter ce type de piège, on s'interdit de réaliser
+plus d'une modification d'une même variable dans une même expression.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Opérateurs relationnels}
+
+\begin{center}
+    \begin{tabular}{c|c|c|c|c}
+        {\bf Op.} & {\bf Rôle} & {\bf Ari.} & {\bf Assoc.}
+            & {\bf Opérandes} \\ \hline \hline
+        \Code{<}, \Code{>} & comparaison stricte & 2 & $\longrightarrow$
+            & deux val. numériques \\ \hline
+        \Code{<=}, \Code{>=} & comparaison large & 2 & $\longrightarrow$
+            & deux val. numériques \\ \hline
+        \Code{==} & égalité & 2 & $\longrightarrow$ & deux val. numériques \\ \hline
+        \Code{!=} & différence & 2 & $\longrightarrow$ & deux val. numériques
+    \end{tabular}
+\end{center}
+\medskip
+
+\uncover<2->{
+Toutes les expressions de la forme
+\begin{center} \Code{v1 CMP v2}\end{center}
+où \Code{v1} et \Code{v2} sont des valeurs numériques et \Code{CMP} est
+un opérateur de comparaison produisent une valeur~:
+\begin{itemize}
+    \item \Code{1} si la comparaison est vraie~;
+    \item \Code{0} sinon.
+\end{itemize}}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Opérateurs relationnels}
+Un pointeur étant une adresse, et donc une valeur numérique,
+il est possible de comparer deux pointeurs.
+\medskip
+
+\begin{multicols}{2}
+\begin{semiverbatim}\footnotesize\uncover<2->{
+char *ptr1, ptr2;
+char c;
+c = 'a';
+ptr1 = &c;
+ptr2 = &c;
+if (ptr1 == ptr2)
+    printf("ok1\\n");
+if (&ptr1 == &ptr2)
+    printf("ok2\\n");}
+\end{semiverbatim}
+\uncover<2->{Ceci affiche juste \Sortie{ok1}.
+\smallskip
+
+En effet, les deux pointeurs \Code{ptr1} et \Code{ptr2}
+pointent vers le même emplacement en mémoire.
+\smallskip
+
+Le second test est faux car les adresses des variables \Code{ptr1} et
+\Code{ptr2} sont différentes.}
+\end{multicols}
+\medskip
+
+\begin{multicols}{2}
+\begin{semiverbatim}\footnotesize\uncover<3->{
+int t1[2], t2[2];
+t1[0] = 1;
+t1[2] = 2;
+t2[0] = 1;
+t2[2] = 2;
+if (t1 == t2)
+    printf("ok\\n");}
+\end{semiverbatim}
+\small
+\uncover<3->{
+Ceci compare les {\bf adresses} de \Code{t1} et \Code{t2} et non
+pas les valeurs de leurs cases.
+\smallskip
+
+Rien n'est donc affiché car les tableaux \Code{t1} et \Code{t2} sont à
+des adresses différentes.}
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Opérateurs logiques}
+
+\begin{center}
+    \begin{tabular}{c|c|c|c|c}
+        {\bf Op.} & {\bf Rôle} & {\bf Ari.} & {\bf Assoc.}
+            & {\bf Opérandes} \\ \hline \hline
+        \Code{\&\&} & et logique & 2 & $\longrightarrow$
+            & deux val. numériques \\ \hline
+        \Code{||} & ou logique & 2 & $\longrightarrow$
+            & deux val. numériques \\ \hline
+        \Code{!} & non logique & 1 & --
+            & une val. numérique
+    \end{tabular}
+\end{center}
+\medskip
+
+\uncover<2->{
+Toutes les expressions formées d'opérateurs logiques produisent une
+valeur, \Code{0} ou bien \Code{1}.
+\medskip
+
+Cette valeur est
+\begin{itemize}
+    \item \Code{1} si l'expression logique est vraie~;
+    \item \Code{0} sinon.
+\end{itemize}}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Opérateurs bit à bit}
+
+\begin{center}
+    \begin{tabular}{c|c|c|c|c}
+        {\bf Op.} & {\bf Rôle} & {\bf Ari.} & {\bf Assoc.}
+            & {\bf Opérandes} \\ \hline \hline
+        \Code{\&} & et bit à bit & 2 & $\longrightarrow$
+            & deux val. entières \\ \hline
+        \Code{|} & ou bit à bit & 2 & $\longrightarrow$
+            & deux val. entières \\ \hline
+        \Code{\textasciicircum} & xor bit à bit & 2 & $\longrightarrow$
+            & deux val. entières \\ \hline
+        \Code{$\sim$} & non bit à bit & 1 & --
+            & une val. entière \\ \hline
+        \Code{<\,<}, \Code{>\,>} & déc. g./d. bit à bit & 2
+            & $\longrightarrow$ & deux val. entières
+    \end{tabular}
+\end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Et/ou/xor/non bit à bit}
+Quelques exemples d'opérations bit à bit~:
+\bigskip
+
+\begin{multicols}{2}
+\scalebox{.75}{
+\begin{tabular}{c}
+    \Code{x} \\
+    \Code{y} \\
+    \Code{x \& y}
+\end{tabular}
+\begin{tabular}{|c|c|c|c|c|c|c|c|} \hline
+    \Code{0} & \Code{1} & \Code{1} & \Code{1}
+        & \Code{0} & \Code{1} & \Code{0} & \Code{1} \\ \hline
+    \Code{1} & \Code{0} & \Code{1} & \Code{0}
+        & \Code{1} & \Code{1} & \Code{0} & \Code{0} \\ \hline
+    \Code{0} & \Code{0} & \Code{1} & \Code{0}
+        & \Code{0} & \Code{1} & \Code{0} & \Code{0} \\ \hline
+\end{tabular}}
+\bigskip
+\bigskip
+
+\uncover<2->{
+\scalebox{.75}{
+\begin{tabular}{c}
+    \Code{x} \\
+    \Code{y} \\
+    \Code{x | y}
+\end{tabular}
+\begin{tabular}{|c|c|c|c|c|c|c|c|} \hline
+    \Code{0} & \Code{1} & \Code{1} & \Code{1}
+        & \Code{0} & \Code{1} & \Code{0} & \Code{1} \\ \hline
+    \Code{1} & \Code{0} & \Code{1} & \Code{0}
+        & \Code{1} & \Code{1} & \Code{0} & \Code{0} \\ \hline
+    \Code{1} & \Code{1} & \Code{1} & \Code{1}
+        & \Code{1} & \Code{1} & \Code{0} & \Code{1} \\ \hline
+\end{tabular}}}
+
+\uncover<3->{
+\scalebox{.75}{
+\begin{tabular}{c}
+    \Code{x} \\
+    \Code{y} \\
+    \Code{x \textasciicircum\,\! y}
+\end{tabular}
+\begin{tabular}{|c|c|c|c|c|c|c|c|} \hline
+    \Code{0} & \Code{1} & \Code{1} & \Code{1}
+        & \Code{0} & \Code{1} & \Code{0} & \Code{1} \\ \hline
+    \Code{1} & \Code{0} & \Code{1} & \Code{0}
+        & \Code{1} & \Code{1} & \Code{0} & \Code{0} \\ \hline
+    \Code{1} & \Code{1} & \Code{0} & \Code{1}
+        & \Code{1} & \Code{0} & \Code{0} & \Code{1} \\ \hline
+\end{tabular}}}
+\bigskip
+\bigskip
+
+\uncover<4->{
+\scalebox{.75}{
+\begin{tabular}{c}
+    \Code{x} \\
+    \Code{$\sim$\!\,x}
+\end{tabular}
+\begin{tabular}{|c|c|c|c|c|c|c|c|} \hline
+    \Code{0} & \Code{1} & \Code{1} & \Code{1}
+        & \Code{0} & \Code{1} & \Code{0} & \Code{1} \\ \hline
+    \Code{1} & \Code{0} & \Code{0} & \Code{0}
+        & \Code{1} & \Code{0} & \Code{1} & \Code{0} \\ \hline
+\end{tabular}}}
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Et/ou/xor/non bit à bit}
+
+Si les deux opérandes n'ont pas la même taille (en nombre de bits), le
+plus petit est complété à gauche par des
+\begin{itemize}
+    \item {\bf zéros} s'il est non signé ou bien positif~;
+    \item {\bf uns} s'il est négatif et signé.
+\end{itemize}
+\medskip
+
+\uncover<2->{
+Le signe d'un entier signé est lu sur son bit de poids fort~:
+\begin{itemize}
+    \item \Code{0} s'il est positif~;
+    \item \Code{1} s'il est négatif.
+\end{itemize}
+\bigskip}
+
+\begin{minipage}{.25\textwidth}
+\begin{semiverbatim}\small\uncover<3->{
+short x = 5;
+char y = 10;
+x = x | y;}
+\end{semiverbatim}
+\end{minipage}
+\begin{minipage}{.63\textwidth}
+\uncover<3->{
+\scalebox{.7}{
+\begin{tabular}{c}
+    \Code{x} \\
+    \Code{y} \\
+    \Code{x | y}
+\end{tabular}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|} \hline
+    \Code{0} & \Code{0} & \Code{0} & \Code{0} & \Code{0} & \Code{0} &
+    \Code{0} & \Code{0} & \Code{0} & \Code{0} & \Code{0} & \Code{0} &
+    \Code{0} & \Code{1} & \Code{0} & \Code{1} \\ \hline
+    {\bf \CRouge{\tt 0}} & {\bf \CRouge{\tt 0}} & {\bf \CRouge{\tt 0}} &
+    {\bf \CRouge{\tt 0}} & {\bf \CRouge{\tt 0}} & {\bf \CRouge{\tt 0}} &
+    {\bf \CRouge{\tt 0}} & {\bf \CRouge{\tt 0}} &
+    \Code{0} & \Code{0} & \Code{0} & \Code{0} &
+    \Code{1} & \Code{0} & \Code{1} & \Code{0} \\ \hline
+    \Code{0} & \Code{0} & \Code{0} & \Code{0} & \Code{0} & \Code{0} &
+    \Code{0} & \Code{0} & \Code{0} & \Code{0} & \Code{0} & \Code{0} &
+    \Code{1} & \Code{1} & \Code{1} & \Code{1} \\ \hline
+\end{tabular}}}
+\end{minipage}
+\bigskip
+
+\begin{minipage}{.25\textwidth}
+\begin{semiverbatim}\small\uncover<4->{
+short x = 5;
+char y = -10;
+x = x | y;}
+\end{semiverbatim}
+\end{minipage}
+\begin{minipage}{.63\textwidth}
+\uncover<4->{
+\scalebox{.7}{
+\begin{tabular}{c}
+    \Code{x} \\
+    \Code{y} \\
+    \Code{x | y}
+\end{tabular}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|} \hline
+    \Code{0} & \Code{0} & \Code{0} & \Code{0} & \Code{0} & \Code{0} &
+    \Code{0} & \Code{0} & \Code{0} & \Code{0} & \Code{0} & \Code{0} &
+    \Code{0} & \Code{1} & \Code{0} & \Code{1} \\ \hline
+    {\bf \CVert{\tt 1}} & {\bf \CVert{\tt 1}} & {\bf \CVert{\tt 1}} &
+    {\bf \CVert{\tt 1}} & {\bf \CVert{\tt 1}} & {\bf \CVert{\tt 1}} &
+    {\bf \CVert{\tt 1}} & {\bf \CVert{\tt 1}} &
+    \Code{1} & \Code{1} & \Code{1} & \Code{1} &
+    \Code{0} & \Code{1} & \Code{1} & \Code{0} \\ \hline
+    \Code{1} & \Code{1} & \Code{1} & \Code{1} & \Code{1} & \Code{1} &
+    \Code{1} & \Code{1} & \Code{1} & \Code{1} & \Code{1} & \Code{1} &
+    \Code{0} & \Code{1} & \Code{1} & \Code{1} \\ \hline
+\end{tabular}}}
+\end{minipage}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Décalage bit à bit}
+
+Si \Code{x} est non signé (déclaré avec \Code{unsigned}),
+\begin{multicols}{2}
+\uncover<2->{
+\scalebox{.7}{
+\begin{tabular}{c}
+    \Code{x} \\
+    \Code{x <\,< 3}
+\end{tabular}
+\begin{tabular}{|c|c|c|c|c|c|c|c|} \hline
+    \Code{0} & \Code{1} & \Code{1} & \Code{1}
+        & \Code{0} & \Code{1} & \Code{0} & \Code{1} \\ \hline
+    \Code{1} & \Code{0} & \Code{1} & \Code{0}
+        & \Code{1} & \CRouge{\tt 0} & \CRouge{\tt 0} & \CRouge{\tt 0} \\ \hline
+\end{tabular}}}
+
+\uncover<3->{
+\scalebox{.7}{
+\begin{tabular}{c}
+    \Code{x} \\
+    \Code{x >\,> 3}
+\end{tabular}
+\begin{tabular}{|c|c|c|c|c|c|c|c|} \hline
+    \Code{0} & \Code{1} & \Code{1} & \Code{1}
+        & \Code{0} & \Code{1} & \Code{0} & \Code{1} \\ \hline
+    \CRouge{\tt 0} & \CRouge{\tt 0} & \CRouge{\tt 0} & \Code{0}
+        & \Code{1} & \Code{1} & \Code{1} & \Code{0} \\ \hline
+\end{tabular}}}
+\end{multicols}
+\bigskip
+\bigskip
+
+\uncover<4->{
+Si \Code{x} est signé (déclaré sans \Code{unsigned}),}
+\begin{multicols}{2}
+\uncover<5->{
+\scalebox{.7}{
+\begin{tabular}{c}
+    \Code{x} \\
+    \Code{x <\,< 3}
+\end{tabular}
+\begin{tabular}{|c|c|c|c|c|c|c|c|} \hline
+    \Code{0} & \Code{1} & \Code{1} & \Code{1}
+        & \Code{0} & \Code{1} & \Code{0} & \Code{1} \\ \hline
+    \Code{1} & \Code{0} & \Code{1} & \Code{0}
+        & \Code{1} & \CRouge{\tt 0} & \CRouge{\tt 0} & \CRouge{\tt 0} \\ \hline
+\end{tabular}}}
+
+\uncover<6->{
+\scalebox{.7}{
+\begin{tabular}{c}
+    \Code{x} \\
+    \Code{x >\,> 3}
+\end{tabular}
+\begin{tabular}{|c|c|c|c|c|c|c|c|} \hline
+    \Code{0} & \Code{1} & \Code{1} & \Code{1}
+        & \Code{0} & \Code{1} & \Code{0} & \Code{1} \\ \hline
+    \CRouge{\tt 0} & \CRouge{\tt 0} & \CRouge{\tt 0} & \Code{0}
+        & \Code{1} & \Code{1} & \Code{1} & \Code{0} \\ \hline
+\end{tabular}}}
+\end{multicols}
+\medskip
+
+\begin{multicols}{2}
+\uncover<7->{
+\scalebox{.7}{
+\begin{tabular}{c}
+    \Code{x} \\
+    \Code{x <\,< 3}
+\end{tabular}
+\begin{tabular}{|c|c|c|c|c|c|c|c|} \hline
+    \Code{1} & \Code{1} & \Code{1} & \Code{1}
+        & \Code{0} & \Code{1} & \Code{0} & \Code{1} \\ \hline
+    \Code{1} & \Code{0} & \Code{1} & \Code{0}
+        & \Code{1} & \CRouge{\tt 0} & \CRouge{\tt 0} & \CRouge{\tt 0} \\ \hline
+\end{tabular}}}
+
+\uncover<8->{
+\scalebox{.7}{
+\begin{tabular}{c}
+    \Code{x} \\
+    \Code{x >\,> 3}
+\end{tabular}
+\begin{tabular}{|c|c|c|c|c|c|c|c|} \hline
+    \Code{1} & \Code{1} & \Code{1} & \Code{1}
+        & \Code{0} & \Code{1} & \Code{0} & \Code{1} \\ \hline
+    \CVert{\tt 1} & \CVert{\tt 1} & \CVert{\tt 1} & \Code{1}
+        & \Code{1} & \Code{1} & \Code{1} & \Code{0} \\ \hline
+\end{tabular}}}
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Compter le nombre de bits à un}
+{\bf But}~: écrire une fonction qui renvoie le nombre de bits à un
+de son paramètre.
+\bigskip
+
+\uncover<2->{
+On travaille sur des variables de \Code{64} bits. On considère pour cela
+le type \Code{Mot64}
+définit par}
+\begin{semiverbatim}\small\uncover<2->{
+typedef unsigned long long Mot64;}
+\end{semiverbatim}
+\bigskip
+\bigskip
+
+\uncover<3->{
+{\bf $1\iere$ méthode}~: attraper le bit de poids faible et le pousser
+à droite.}
+\begin{semiverbatim}\small
+\uncover<4->{int compter_un_1(Mot64 x) \{}
+    \uncover<5->{int res, i;
+    res = 0;}
+    \uncover<6->{for (i = 0 ; i < 64 ; ++i) \{}
+        \uncover<7->{if ((x & 1) == 1)
+            res += 1;}
+        \uncover<6->{x = x >\,> 1;
+    \}}
+    \uncover<5->{return res;}
+\uncover<4->{\}}
+\end{semiverbatim}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Compter le nombre de bits à un}
+{\bf $2\ieme$ méthode}~: on constate que pour tout entier \Code{x} non
+nul (avec au moins un bit à un), l'expression \Code{x \& -x} est l'entier
+qui contient un unique bit à un, le plus à droite de \Code{x}.
+\medskip
+
+\uncover<2->{
+Ainsi, l'instruction
+\begin{center}
+    \Code{x = x \textasciicircum\,\! (x \& -x);}
+\end{center}
+transforme le bit à un le plus à droite de \Code{x} en un zéro.
+\bigskip}
+
+\uncover<3->{L'exploitation de cette idée donne}
+\begin{semiverbatim}\small
+\uncover<4->{int compter_un_2(Mot64 x) \{}
+    \uncover<5->{int res;
+    res = 0;}
+    \uncover<6->{while (x != 0) \{
+        x = x ^ (x & -x);
+        res += 1;
+    \}}
+    \uncover<5->{return res;}
+\uncover<4->{\}}
+\end{semiverbatim}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Compter le nombre de bits à un}
+{\bf $3\ieme$ méthode}~: cette troisième méthode n'utilise pas de boucle.
+\medskip
+
+\uncover<2->{
+On commence par construire un tableau qui associe à tout entier de huit
+bits (un \Code{char}) le nombre de bits à un qu'il contient, en utilisant
+au choix l'une des deux méthodes précédentes.}
+
+\begin{semiverbatim}\small\uncover<3->{
+int nombre_un[256];
+
+void initialiser_nombre_un() \{
+    int i;
+    Mot64 x;
+    for (i = 0 ; i < 256 ; ++i) \{
+        x = (Mot64) i;
+        nombre_un[i] = compter_un_2(x);
+    \}
+\}}
+\end{semiverbatim}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Compter le nombre de bits à un}
+On isole l'octet d'indice \Code{i} d'une variable \Code{x} de type
+\Code{Mot64} par l'expression
+\begin{center}
+    \Code{0xFF \& (x >\,> (8 * i))}
+\end{center}
+\medskip
+
+\uncover<2->{
+Comme le nombre de bits à un de \Code{x} est la somme du nombre de bits
+à un de chacun des huit octets qui le constituent, on obtient}
+\begin{semiverbatim}\small
+\uncover<3->{int compter_un_3(Mot64 x) \{}
+    \uncover<4->{int res;
+    res = 0;}
+    \uncover<5->{res += nombre_un[0xFF & x];}
+    \uncover<6->{res += nombre_un[0xFF & (x >\,> 8)];}
+    \uncover<7->{res += nombre_un[0xFF & (x >\,> 16)];}
+    \uncover<8->{res += nombre_un[0xFF & (x >\,> 24)];}
+    \uncover<9->{res += nombre_un[0xFF & (x >\,> 32)];}
+    \uncover<10->{res += nombre_un[0xFF & (x >\,> 40)];}
+    \uncover<11->{res += nombre_un[0xFF & (x >\,> 48)];}
+    \uncover<12->{res += nombre_un[0xFF & (x >\,> 56)];}
+    \uncover<4->{return res;}
+\uncover<3->{\}}
+\end{semiverbatim}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Compter le nombre de bits à un}
+{\bf $4\ieme$ méthode}~: on peut pousser plus loin l'idée précédente en
+considérant des blocs de deux octets (au lieu d'un seul).
+
+\begin{semiverbatim}\small\uncover<2->{
+int nombre_un[65536]; /* 2^16 */
+
+void initialiser_nombre_un() \{
+    int i;
+    Mot64 x;
+    for (i = 0 ; i < 65536 ; ++i) \{
+        x = (Mot64) i;
+        nombre_un[i] = compter_un_2(x);
+    \}
+\}}
+\end{semiverbatim}
+\bigskip
+
+\uncover<3->{
+Taille mémoire occupée par le tableau \Code{nombre\_un}~:
+\begin{equation*}
+    2^{16} \times \Code{sizeof(int)} \:\mathrm{o}
+        \uncover<4->{\; = \; 2^{18} \:\mathrm{o}}
+        \uncover<5->{\; = \; \frac{2^{18}}{2^{10}} \:\mathrm{Kio}}
+        \uncover<6->{\; = \; 256 \:\mathrm{Kio}.}
+\end{equation*}}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Compter le nombre de bits à un}
+Ceci fournit la solution suivante.
+\begin{semiverbatim}\small
+int compter_un_4(Mot64 x) \{
+    int res;
+    res = 0;
+    res += nombre_un[0xFFFF & x];
+    res += nombre_un[0xFFFF & (x >\,> 16)];
+    res += nombre_un[0xFFFF & (x >\,> 32)];
+    res += nombre_un[0xFFFF & (x >\,> 48)];
+    return res;
+\}
+\end{semiverbatim}
+\bigskip
+
+\uncover<2->{
+Elle ne demande que quatre lectures dans le tableau \Code{nombre\_un},
+au lieu des huit de la méthode précédente.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Compter le nombre de bits à un}
+{\bf $5\ieme$ méthode}~: cette méthode est la plus compliquée. Elle se base
+sur une compréhension très fine du fonctionnement des opérateurs
+bit à bit.
+\bigskip
+
+\begin{semiverbatim}\small\uncover<2->{
+int compter_un_5(Mot64 x) \{
+    x = x - ((x >\,> 1) & 0x5555555555555555LLU);
+    x = (x & 0x3333333333333333LLU) +
+        ((x >\,> 2) & 0x3333333333333333LLU);
+    x = (x + (x >\,> 4)) & 0x0F0F0F0F0F0F0F0FLLU;
+    x = (x * 0x0101010101010101LLU) >\,> 56;
+    return (int) x;
+\}}
+\end{semiverbatim}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Mesure du temps d'exécution}
+Mesurons maintenant les efficacités des cinq méthodes.
+\medskip
+
+\uncover<2->{
+On utilise pour cela la fonction
+\begin{center}
+    \Code{clock\_t clock(void);}
+\end{center}
+de \Code{time.h}.
+\bigskip}
+
+\uncover<3->{
+Schéma général pour mesurer le temps d'exécution d'une suite
+d'instructions~:}
+\begin{semiverbatim}\small
+\uncover<5->{clock_t debut, fin;
+double temps;}
+\uncover<6->{debut = clock();}
+\uncover<4->{...
+/* Instructions */
+...}
+\uncover<7->{fin = clock();}
+\uncover<8->{temps = (double) (fin - debut) / CLOCKS_PER_SEC;}
+\uncover<9->{printf("%g s\\n", temps);}
+\end{semiverbatim}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Mesure du temps d'exécution}
+On mesure le temps d'exécution des cinq méthodes en leur donnant
+en entrée des nombres de $64$ bits générés de manière aléatoire.
+\medskip
+
+\uncover<2->{
+Pour générer un nombre de $32$ bits de manière aléatoire, on utilise
+la fonction
+\begin{center}
+    \Code{int rand(void);}
+\end{center}
+de \Code{stdlib.h}.
+\medskip}
+
+\uncover<3->{
+Le nombre de $64$ bits est construit en générant aléatoirement ses quatre
+octets de droite, puis ses quatre octets de gauche et en les associant avec
+un ou bit à bit~:}
+\begin{semiverbatim}\small
+\uncover<4->{Mot64 mot64_alea() \{}
+    \uncover<5->{Mot64 gauche, droite;}
+    \uncover<6->{droite = (Mot64) rand();}
+    \uncover<7->{gauche = ((Mot64) rand()) <\,< 32;}
+    \uncover<8->{return gauche | droite;}
+\uncover<4->{\}}
+\end{semiverbatim}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Mesure du temps d'exécution}
+Voici les temps réalisés par chacune des cinq méthodes sur $84000000$
+nombres de $64$ bits aléatoires~:
+\begin{center}
+    \begin{tabular}{c|c|c}
+        {\bf Méthode} & {\bf Caractéristique} & {\bf Temps (s)} \\ \hline
+        1 & Décalage droite & 32.9 \\
+        2 & Suppression \Code{1} droite & 9.38 \\
+        3 & Tableau \Code{256} & 2.23 \\
+        4 & Tableau \Code{65536} & 1.93 \\
+        5 & Compliquée & 1.82
+    \end{tabular}
+\end{center}
+\medskip
+
+\uncover<2->{
+La $4\ieme$ méthode est plus de $16$ fois plus rapide que la $1\iere$.
+Elle demande en revanche (tout comme la $3\ieme$) un \alert{pré-calcul}
+et une occupation mémoire (par le tableau \Code{nombre\_un}).
+\medskip}
+
+\uncover<3->{
+La $5\ieme$ méthode est la plus rapide et ne demande aucun pré-calcul.
+Elle est en revanche difficile à comprendre et très difficile à
+imaginer.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Opérateurs d'affectation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Opérateurs d'affectation}
+
+\begin{center}
+    \begin{tabular}{c|c|c|c|c}
+        {\bf Op.} & {\bf Rôle} & {\bf Ari.} & {\bf Assoc.}
+            & {\bf Opérandes} \\ \hline \hline
+        \multirow{2}{*}{\Code{=}} & \multirow{2}{*}{affect.}
+            & \multirow{2}{*}{2} & \multirow{2}{*}{$\longleftarrow$}
+            & une var. \\
+        & & & & et une val. \\ \hline
+        \multirow{2}{*}{\Code{+=}, \Code{-=}, \Code{*=}, \Code{/=}, \Code{\%=}}
+            & affect. compo.
+            & \multirow{2}{*}{2} & $\longleftarrow$ & une var. num. \\
+        & arith. & & & et une val. num \\ \hline
+        \multirow{2}{*}{\Code{\&=}, \Code{|=}, \Code{\textasciicircum=},
+        \Code{<\,<=}, \Code{>\,>=}}
+        & affect. compo.
+            & \multirow{2}{*}{2} & $\longleftarrow$ & une var. ent. \\
+        & bit à bit & & & et une val. ent.
+    \end{tabular}
+\end{center}
+\medskip
+
+\uncover<2->{
+Toute expression de la forme \Code{a X= b} est équivalente à
+\Code{a = a X b}.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Opérateurs d'affectation}
+Toutes les expressions d'affectation produisent une valeur qui est
+la valeur qui vient d'être affectée.
+\medskip
+
+\uncover<2->{Par exemple, dans}
+\begin{semiverbatim}\small\uncover<2->{
+int a, b;
+a = 2;
+b = 5;
+a *= b += 3;}
+\end{semiverbatim}
+\uncover<2->{
+à cause de l'associativité des opérateurs d'affectation, la l. 4
+s'interprète comme \Code{a *= (b += 3);}.
+\smallskip
+
+Ainsi, comme \Code{b += 3} produit la valeur \Code{8}, \Code{a} vaut
+finalement \Code{16}.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Autres opérateurs}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Autres opérateurs}
+
+\begin{center}
+    \begin{tabular}{c|c|c|c|c}
+        {\bf Op.} & {\bf Rôle} & {\bf Ari.} & {\bf Assoc.}
+            & {\bf Opérandes} \\ \hline \hline
+        \Code{sizeof} & taille & 1 & -- & une var. ou un type \\ \hline
+        \multirow{2}{*}{\Code{(T)}} & coercition & \multirow{2}{*}{1}
+            & \multirow{2}{*}{--} & \multirow{2}{*}{une val.} \\
+            & \Code{T} est un type & & & \\ \hline
+        \Code{? :} & condition & 3 & -- & une val. num. et deux val. \\ \hline
+        \Code{,}  & séquence & 2 & $\longrightarrow$ & deux val
+    \end{tabular}
+\end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{L'opérateur de séquence}
+Dans l'expression \Code{V1, V2}, où \Code{V1} et \Code{V2} sont
+des valeurs, on commence par évaluer \Code{V1} puis ensuite \Code{V2}.
+Cette expression produit la valeur \Code{V2}.
+\bigskip
+
+\uncover<2->{
+L'opérateur \Code{,} est le plus souvent utilisé dans les {\bf champs des
+boucles \Code{for}}.
+\medskip}
+
+\uncover<3->{P.ex.,}
+\begin{semiverbatim}\small\uncover<3->{
+int i, j, l;
+...
+for (i = 0, j = l - 1 ; i < j ; ++i, -\,-j) \{
+...
+\}}
+\end{semiverbatim}
+\uncover<3->{
+permet d'obtenir une boucle \Code{for} avec {\bf deux compteurs}~: \Code{i}
+croît et \Code{j} décroît dans l'intervalle allant de \Code{0} à
+\Code{l - 1}.}
+\end{frame}

@@ -1,0 +1,343 @@
+% Auteur : Samuele Giraudo
+% Création : 07/02/13
+% Modifications : jan. 2015, déc. 2015
+
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{amsmath,amsthm,amsfonts,amssymb}
+\usepackage{lmodern}
+\usepackage[top=2.4cm,bottom=2.4cm,left=2cm,right=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{fit}
+
+%\author{Samuele Giraudo}
+\date{}
+\title{{\bf Perfectionnement à la programmation en {\sf C}} \\
+    Fiche de TD 3 \\
+    {\small L2 Informatique 2015-2016} \\
+    {\it \small Programmation modulaire}}
+
+\theoremstyle{definition}
+\newtheorem{Exercice}{Exercice}
+
+\newcommand{\EnsNat}{\mathbb{N}}
+\newcommand{\La}{{\tt a}}
+\newcommand{\Lb}{{\tt b}}
+\newcommand{\Lc}{{\tt c}}
+\newcommand{\Ld}{{\tt d}}
+
+%\newcommand{\Sol}[1]{{\bf Solution~:} {\it #1}}
+\newcommand{\Sol}[1]{}
+
+\begin{document}
+
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Projets et graphes d'inclusions)} \smallskip
+
+    On considère un projet constitué de cinq modules {\tt A}, {\tt B},
+    {\tt C}, {\tt D} et {\tt E}. Ces modules sont utilisés dans un
+    fichier {\tt Main.c} qui contient la fonction {\tt main}. Dans ce
+    projet figurent les inclusions suivantes~:
+    \begin{multicols}{2}
+    \begin{itemize}
+        \item {\tt A.h} inclut {\tt B.h}, {\tt C.h} et {\tt E.h}~;
+        \item {\tt A.c} inclut {\tt D.h}~;
+        \item {\tt B.h} inclut {\tt D.h}~;
+        \item {\tt D.h} inclut {\tt A.h}~;
+        \item {\tt E.h} inclut {\tt D.h}~;
+        \item {\tt Main.c} inclut {\tt A.h} et {\tt E.h}.
+    \end{itemize}
+    \end{multicols}
+
+    \begin{enumerate}
+        \item Donner le nombre de fichiers qui constituent le projet.
+
+        \Sol{$11$ fichiers ($2 \times 5$ pour les modules et $1$ pour le
+        fichier principal).}
+        \smallskip
+
+        \item Donner la liste des commandes qui permettent de compiler
+        le projet.
+
+        \Sol{
+        {\tt gcc -c A.c} \\
+        {\tt gcc -c B.c} \\
+        {\tt gcc -c C.c} \\
+        {\tt gcc -c D.c} \\
+        {\tt gcc -c E.c} \\
+        {\tt gcc -c Main.c} \\
+        {\tt gcc Main.o A.o B.o C.o D.o E.o}}
+        \smallskip
+
+        \item Dire si l'ordre des commandes de compilation est important
+        et justifier pourquoi.
+
+        \Sol{Les six premières lignes commutent, seule la dernière est toujours
+        la dernière. C'est l'éditeur de liens qui résout les symboles
+        non encore connus, et c'est ce que fait la dernière ligne.}
+        \smallskip
+
+        \item Tracer le graphe d'inclusions du projet.
+
+        \Sol{C'est le graphe à $6$ sommet où l'on a un arc de $x$ vers $y$
+        si et seulement si il y a un include $y$ dans l'{\bf en-tête} de $x$
+        (et non pas dans le .c).}
+        \smallskip
+
+        \item Expliquer, graphe d'inclusion a l'appui, si le projet
+        est bien structuré. Mettre en évidence les éventuels problèmes
+        qu'il contient.
+
+        \Sol{Le projet est mal structuré car il y a un cycle 
+        $A \to B \to D \to A$.}
+        \smallskip
+
+        \item On suppose à présent que dans l'en-tête du module {\tt B}
+        est défini un type {\tt B\_type} et dans l'en-tête du module
+        {\tt A} est déclarée une fonction de prototype
+        {\tt void a\_fct(B\_type x)}. Parmi les commandes suivantes,
+        donner et justifier celles qui provoquent des erreurs~:
+        \begin{multicols}{2}
+            \begin{enumerate}
+                \item {\tt gcc -c A.c}
+                \item {\tt gcc -c B.c}
+                \item {\tt gcc -c C.c}
+                \item {\tt gcc -c D.c}
+                \item {\tt gcc -c E.c}
+                \item {\tt gcc -c Main.c}
+            \end{enumerate}
+        \end{multicols}
+        {\it Astuce~: pour justifier qu'une commande provoque (ou ne 
+        provoque pas) d'erreur, écrire les fichiers d'en-tête obtenus 
+        après résolution des commandes pré-processeur {\tt \#include X.h}.}
+
+        \Sol{
+        (a) marche.
+        (b) ne marche pas~: en effet, si l'on déplie les {\tt \#include}, comme
+        le fait le pré-processeur, on observe que le prototype
+        {\tt void a\_fct(B\_type x)}
+        est analysé avant la déclaration du type {\tt B\_type}, ce type
+        est donc inconnu. On a le message suivant de {\tt gcc} :
+        \begin{center}
+        {\tt
+        In file included from D.h:4:0, \\
+                 from B.h:4, \\
+                 from B.c:1: \\
+        A.h:8:12: erreur: unknown type name ‘B\_type’ \\}
+        \end{center}
+        Ceci est dû au fait que seuls les symboles de fonction ou de
+        variables peuvent ne pas être résolus avant l'édition des liens,
+        {\bf mais pas les symboles de types}.
+        (c) marche.
+        (d) marche.
+        (e) marche.
+        (f) marche.}
+        \smallskip
+
+        \item Maintenant, on suppose que {\tt D.h} n'inclut plus {\tt A.h}.
+        Écrire un {\tt Makefile} complet pour compiler le projet.
+
+        \Sol{ \\
+        {\tt
+            Projet: Main.o A.o B.o C.o D.o E.o \\
+            $\longrightarrow$ gcc -o Projet Main.o A.o B.o C.o D.o E.o \\
+
+            A.o: A.c A.h B.h C.h E.h \\
+            $\longrightarrow$ gcc -c A.c \\
+
+            B.o: B.c B.h D.h \\
+            $\longrightarrow$ gcc -c B.c \\
+
+            C.o: C.c C.h \\
+            $\longrightarrow$ gcc -c C.c \\
+
+            D.o: D.c D.h \\
+            $\longrightarrow$ gcc -c D.c \\
+
+            E.o: E.c E.h D.h \\
+            $\longrightarrow$ gcc -c E.c \\
+        }
+        }
+        \smallskip
+    \end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Découpage d'un projet en modules)}\smallskip
+
+Le but de cet exercice est de réaliser l'analyse d'un petit projet en le
+découpant en modules et en écrivant ses fichiers d'en-tête. On ne donnera
+pas l'implantation des modules.
+\smallskip
+
+Le projet consiste  à réaliser un jeu de {\em Gomoku}\footnote{En réalité,
+il  s'agit ici d'une variante du Gomoku.}. Une partie se joue à deux joueurs
+sur un plateau de $19 \times 19$ cases. À chaque tour de jeu, le joueur
+qui a le trait (Blanc ou Noir) choisit une case du plateau de jeu et y
+pose un pion de sa couleur. Le premier joueur qui réussit à aligner $5$
+pions de sa couleur gagne la partie. Si le plateau est rempli de pions
+sans aucune configuration de gain, la partie est déclarée nulle. Le joueur
+Noir commence toujours la partie.
+\smallskip
+
+Au lancement du programme, il est de possible de~:
+\begin{itemize}
+    \item commencer une nouvelle partie~;
+    \smallskip
+
+    \item charger une partie depuis un fichier~;
+    \smallskip
+
+    \item quitter le programme.
+\end{itemize}
+Au cours de la partie, il est possible de~:
+\begin{itemize}
+    \item jouer un coup (par le joueur qui possède le trait)~;
+    \smallskip
+    
+    \item abandonner la partie et céder ainsi la victoire à son 
+    adversaire~;
+    \smallskip
+
+    \item sauvegarder la partie en cours (sans quitter le programme, la
+    partie continue)~;
+    \smallskip
+
+    \item quitter la partie en cours et revenir au menu de lancement du
+    programme.
+\end{itemize}
+Lorsque la partie s'arrête (gain d'un joueur ou partie nulle), le résultat
+est affiché, suivi du menu de lancement du programme.
+\smallskip
+
+Les parties sont sauvegardées dans un fichier selon un format choisi par
+le programmeur. Ce format doit permettre de représenter toutes les
+informations d'une partie pour que, à partir d'un fichier de sauvegarde,
+le programme puisse entièrement restaurer la partie qu'il représente. De
+plus, l'interaction avec les utilisateurs se fait par le biais de l'entrée
+et de la sortie standard.
+\medskip
+
+\begin{enumerate}
+    \item Découper ce projet en modules. Ce découpage doit permettre
+    de le faire facilement évoluer. Expliquer comment prendre en compte
+    les variantes suivantes~:
+    \begin{itemize}
+        \item changement du format des fichiers de sauvegarde~;
+        \smallskip
+
+        \item changement des règles ($6$ pions alignés pour le gain au
+        lieu de $5$, taille du plateau $21 \times 21$ au lieu
+        de $19 \times 19$, trois joueurs au lieu de deux)~;
+        \smallskip
+
+        \item affichage graphique à la place d'un affichage sur la sortie
+        standard~;
+        \smallskip
+
+        \item ajout d'un mode de jeu humain {\em vs} machine.
+    \end{itemize}
+    Pour chacune des ces quatre évolutions, expliquer leur impact sur
+    l'ensemble des modules du projet.
+    \smallskip
+
+    \item Déterminer les types et les prototypes des fonctions que chaque
+    module doit contenir. En déduire les en-têtes des modules du projet.
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Modélisation d'un projet~: polynômes)} \smallskip
+
+    On souhaite réaliser un projet qui permet de manipuler des polynômes
+    sur une variable~$x$ et à coefficients flottants ({\tt double}).
+    Plus précisément, le programme doit pouvoir~:
+    \begin{itemize}
+        \item lire un polynôme à partir d'un fichier, calculer sa
+        dérivée par rapport à~$x$ et afficher le résultat sur la sortie standard~;
+        \smallskip
+
+        \item lire un polynôme à partir d'un fichier, calculer sa $n\ieme$
+        puissance et afficher le résultat sur la sortie standard~;
+        \smallskip
+
+        \item lire deux polynômes à partir d'un fichier, calculer
+        leur somme et afficher le résultat sur la sortie standard~;
+        \smallskip
+
+        \item lire deux polynômes à partir d'un fichier, calculer
+        leur produit et afficher le résultat sur la sortie standard~;
+        \smallskip
+
+        \item lire un polynôme à partir d'un fichier et afficher dans
+        une fenêtre graphique le graphe du polynôme dans un intervalle
+        d'abscisse et d'ordonnée spécifié.
+        \smallskip
+    \end{itemize}
+    L'utilisateur peut choisir l'une ou l'autre de ces fonctionnalités
+    par le biais d'une option (respectivement {\tt -d}, {\tt -p N},
+    {\tt -s}, {\tt -m}, {\tt -g}). Le dernier paramètre de l'exécutable
+    est le nom du fichier contenant le(s) polynôme(s) à traiter.
+    Dans le cas où l'option {\tt -g} est choisie, après le nom du fichier
+    figurent les paramètres {\tt X\_MIN}, {\tt X\_MAX}, {\tt Y\_MIN} et
+    {\tt Y\_MAX} qui définissent les dimensions du repère du graphique.
+    \smallskip
+
+    Le format des fichiers contenant les polynômes est spécifié par
+    l'exemple suivant~: le polynôme $-3 + 2.5x^5 - 4.7x^{11}$ est
+    codé par
+    \begin{center}
+        {\tt -3 + 2.5x\^{}5 - 4.7x\^{}11}.
+    \end{center}
+    \smallskip
+
+    \begin{enumerate}
+        \item Découper ce projet en modules.
+        \smallskip
+
+        \item Pour chacun des modules, donner les fichiers d'en-tête
+        au complet (directives du pré-processeur, définitions de types,
+        déclarations de fonctions).
+        \smallskip
+
+        \item Dessiner le graphe d'inclusions du projet.
+        \smallskip
+
+        \item Écrire le code de la fonction {\tt main} du projet.
+        \smallskip
+
+        \item Écrire un {\tt Makefile} complet pour compiler le projet.
+    \end{enumerate}
+
+    \Sol{
+    Rien n'est imposé mais je pense que le découpage suivant est adéquat~:
+    \begin{itemize}
+        \item un module pour gérer des listes de {\tt double} (pour
+        représenter les polynômes)~;
+        \item un module pour gérer les polynômes~;
+        \item un module pour gérer l'affichage du graphe~;
+        \item un module pour l'analyseur syntaxique qui permet de lire
+        un polynôme depuis un fichier.
+    \end{itemize}
+    Ensuite, le reste est sans pièges.
+    }
+\end{Exercice}
+\bigskip
+
+\end{document}
