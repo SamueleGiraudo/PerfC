@@ -1,0 +1,248 @@
+% Auteur : Samuele Giraudo
+% Création : 26-01-2016
+% Modifications : 26-01-2016
+
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{amsmath,amsthm,amsfonts,amssymb}
+\usepackage{lmodern}
+\usepackage[top=2.4cm,bottom=2.4cm,left=2cm,right=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{multicol}
+\usepackage{enumerate}
+\usepackage{listings}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tikz}
+
+%\author{Samuele Giraudo}
+\date{}
+\title{{\bf Perfectionnement à la programmation en {\sf C}} \\
+    Fiche de TP 5 \\
+    {\small L2 Informatique 2015-2016} \\
+    {\it \small Compter les mots}}
+
+\theoremstyle{definition}
+\newtheorem{Exercice}{Exercice}
+
+% Configuration de listings.
+\lstset{
+    language=c,
+    basicstyle=\ttfamily\footnotesize,
+    identifierstyle=\color{Mahogany},
+    keywordstyle=\color{NavyBlue},
+    stringstyle=\color{Emerald},
+    commentstyle=\it\color{Gray},
+    columns=flexible,
+    tabsize=4,
+    extendedchars=true,
+    showspaces=false,
+    numbers=left,
+    numberstyle=\tiny,
+    breaklines=true,
+    breakautoindent=true,
+    captionpos=b,
+    showstringspaces=true
+}
+
+\begin{document} 
+
+\maketitle
+
+Ce TP se déroule en une seule séance et est à faire par binômes.
+Le travail réalisé doit être envoyé au plus tard exactement une
+semaine après le début de la séance de TP. Il sera disposé sur
+la plate-forme prévue à cet effet et constitué des programmes
+répondant aux questions et des éventuels fichiers annexes qui
+peuvent être demandés.
+\bigskip
+\bigskip
+
+L'objectif de ce TP est d'écrire un utilitaire opérant sur des fichiers
+texte. Il utilisera des notions de manipulation de fichiers texte et de 
+chaînes de caractères. Il est voué à renforcer la maîtrise de 
+l'écriture de projets et de découpage en modules. La notion de test est 
+introduite dans ce sujet.
+\bigskip
+
+Contrairement aux sujets de TP précédents, nous donnons ici une 
+spécification du projet à lire et à mener à bien. Les définitions de types et de 
+fonctions sont laissées libres de choix.
+\bigskip
+
+Voici maintenant la spécification du projet.
+\bigskip
+
+\begin{center} *** \\ * \end{center}
+
+Il est toujours utile, lors de l'écriture d'un texte, d'éviter d'employer
+trop souvent des mêmes mots. Détecter l'usage trop fréquent d'un même 
+terme est donc utile. C'est pour cette raison qu'il nous est demandé de 
+concevoir un utilitaire {\tt clm} (\og {\em compter les mots} \fg)
+paramétré par le nom d'un fichier texte (qui ne contient que des 
+caractères ASCII). L'utilitaire compte les occurrences de chaque mot
+du fichier et produit en réponse un fichier qui contient chaque
+mot du fichier texte de départ et son nombre d'occurrences.
+\medskip
+
+Plus précisément, est considéré comme un mot toute suite de caractères
+contigüs délimitée à gauche et à droite par des espaces, des fins de lignes,
+des tabulations ou des début ou fin de fichier. Toute suite de caractères
+contigüs qui contient un chiffre ou tout autre caractère non alphabétique 
+est ignorée. Dans le comptage des occurrences d'un mot, on ne fait pas de
+différence entre majuscules et minuscules. 
+\medskip
+
+La commande {\tt clm X}, où {\tt X} est le nom d'un fichier texte, créé
+un fichier texte {\tt X.clm} où chaque ligne contient un mot 
+en minuscules suivi d'une espace suivie du nombre (en base dix) 
+d'occurrences du mot en question dans {\tt X}. Chaque mot y est 
+mentionné suivant l'ordre d'appartition de sa première
+occurrence dans le texte. Par exemple, à partir du fichier texte {\tt texte} de contenu
+\begin{verbatim}
+        TROIS Un un un1un deux DeUx 
+        deux deuxdeux un quatre4
+\end{verbatim}
+la commande {\tt clm texte} créé le fichier {\tt texte.clm} qui contient
+\begin{verbatim}
+        trois 1
+        un 3
+        deux 3
+        deuxdeux 1
+\end{verbatim}
+\medskip
+
+Il figurera une option {\tt -a} faisant en sorte de trier
+les mots du fichier de sortie dans l'ordre lexicographique. Par exemple,
+la commande {\tt clm -a texte} créé le fichier {\tt texte.clm} de contenu
+\begin{verbatim}
+        deux 3
+        deuxdeux 1
+        trois 1
+        un 3
+\end{verbatim}
+Il figurera aussi une option {\tt -n} faisant en sorte de 
+trier les mots de fichier de sortie selon leur nombre d'occurrences de 
+manière décroissante. Les mots ayant un même nombre d'occurrences apparaissent
+dans l'ordre lexicographique. Par exemple, la commande {\tt clm -n texte} créé 
+le fichier {\tt texte.clm} de contenu
+\begin{verbatim}
+        deux 3
+        un 3
+        deuxdeux 1
+        trois 1
+\end{verbatim}
+
+\begin{center} *** \\ * \end{center}
+\bigskip
+
+{\bf Conseils~:}
+\begin{itemize}
+    \item pour chaque fonction programmée, s'interroger sur les arguments
+    qui peuvent poser des problèmes. Capturer ces cas à l'aide de
+    pré-assertions~;
+    \item utiliser au maximum les fonctions déjà programmées dans les
+    nouvelles à écrire. Il faut éviter au maximum la duplication de code~;
+    \item commenter le code en évitant absolument les commentaires inutiles.
+    Il faut commenter chaque fonction écrite, juste avant son prototype.
+    Il faut y mentionner les trois points suivants~: (1) une description
+    du rôle de la fonction, (2) une description de ses paramètres et (3)
+    une description de ce qu'elle renvoie~;
+    \item préférer la concision au maximum. Un code concis et lisible
+    possède une grande valeur.
+\end{itemize}
+\bigskip
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Conception du projet)}\smallskip
+
+L'objectif de cet exercice est de concevoir une architecture viable pour
+le projet présenté.
+\begin{enumerate}
+    \item Lire attentivement l'intégralité du sujet avant de commencer
+    à répondre aux questions. Il est important de bien analyser la 
+    spécification du projet et d'en distiller le plan du travail à 
+    accomplir.
+    \smallskip
+    
+    \item Une fois ceci fait, proposer un découpage en modules cohérent 
+    du projet. Pour chaque module proposé, décrire les types qu'il apporte 
+    ainsi que ses objectifs principaux.
+    \smallskip
+    
+    \item Au fil de l'écriture du projet, il est possible de se rendre 
+    compte que le 
+    découpage initialement prévu n'est pas complet ou adapté. Si c'est 
+    le cas, mentionner l'historique de ses modifications.
+    \smallskip
+    
+    \item Maintenir un {\tt Makefile} pour compiler le projet.
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Tests)}\smallskip
+\label{exo:test}
+
+Les tests sont des éléments de première importance dans le processus 
+d'écriture d'un projet. Ils sont également primordiaux pour la maintenance
+d'un projet. Ils servent à s'assurer que chaque partie du 
+programme fonctione et sont utiles pour capturer des erreurs de 
+programmation à leur source.
+\smallskip
+
+\begin{enumerate}
+    \item Avant de commencer l'écriture du projet, créer un module 
+    {\tt Test}. Ce module va inclure tous les autres modules (exception
+    faite pour le module principal) et va servir à tester les fonctions
+    du projet. Il contient pour le moment une fonction {\tt test} de 
+    corps vide, sans paramètre et à type de retour {\tt int}.
+    \smallskip
+    
+    \item Au cours de l'écriture du projet, pour chaque fonction {\tt fct}
+    nouvellement écrite, ajouter dans le module {\tt Test} une fonction
+    {\tt test\_fct} qui réalise des tests cohérents de la fonction {\tt fct}.
+    Les tests sont construits en appelant {\tt fct} avec des 
+    arguments pour lesquels la réponse est connue. Le test consiste à 
+    vérifier si la fonction répond correctement. La fonction {\tt test\_fct}
+    renvoie {\tt 1} si tous les tests qu'elle exécute se sont bien 
+    déroulés et {\tt 0} sinon. Pour chaque test mal déroulé, la
+    fonction affiche sur la sortie standard des informations pour identifier
+    le test problématique.
+    \smallskip
+    
+    \item La fonction {\tt test} du module {\tt Test} est sa seule 
+    fonction visible depuis l'extérieur. Elle appelle chaque fonction 
+    de test et vérifie que toutes se déroulent correctement. Elle renvoie
+    ainsi {\tt 1} si toutes les fonctions de test renvoient {\tt 1} et
+    {\tt 0} sinon.
+    \smallskip
+    
+    \item Le programme dispose d'une option {\tt --test} qui exécute
+    la fonction {\tt test} du module {\tt Test}. Il est important, lors 
+    de la phase de programmation du projet ou encore lors d'une de ses 
+    mises-à-jour, de lancer ces tests pour vérifier que tout fonctionne 
+    comme attendu.
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+{\bf Remarque importante 1~:} {\it l'exercice~\ref{exo:test} compte beaucoup
+dans l'évaluation de ce TP. Il est important de proposer pour chaque 
+fonction un jeu de tests cohérent et complet.}
+\bigskip
+
+{\bf Remarque importante 2~:} {\it il n'est pas question dans ce TP 
+d'utiliser les structures de données et les algorithmes les plus efficaces
+qui répondent au problème (il est en effet possible de proposer des 
+solutions très efficaces en étant astucieux). L'objectif principal est 
+de concevoir un projet sans faille dans son architecture globale.}
+
+\end{document}

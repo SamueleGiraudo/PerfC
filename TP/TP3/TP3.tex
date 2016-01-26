@@ -1,0 +1,443 @@
+% Auteur : Grégory Châtel Samuele Giraudo
+% Création : 18/09/12
+% Modifications : 02/10/12, oct. 2013 aout 2014, janvier 2016
+
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{amsmath,amsthm,amsfonts,amssymb}
+\usepackage{lmodern}
+\usepackage[top=2.4cm,bottom=2.4cm,left=2cm,right=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[ps]{skak}
+
+\usepackage{tikz}
+
+%\author{Samuele Giraudo}
+\date{}
+\title{{\bf Perfectionnement à la programmation en {\sf C}} \\
+    Fiche de TP 3 \\
+    {\small L2 Informatique 2015-2016} \\
+    {\it \small Le problème des huit dames}}
+    
+% Couleurs.
+\definecolor{Noir}{RGB}{0,0,0}
+\definecolor{Rouge}{RGB}{205,35,38}
+\definecolor{Bleu}{RGB}{2,60,195}
+\definecolor{Bleu1}{RGB}{121,176,197}
+\definecolor{Vert}{RGB}{23,103,1}
+\definecolor{Orange}{RGB}{245,113,15}
+\definecolor{Blanc}{RGB}{255,255,255}
+\definecolor{Marron}{RGB}{193,88,50}
+\definecolor{Jaune}{RGB}{255,180,30}
+\definecolor{Violet}{RGB}{181,18,225}
+
+\theoremstyle{definition}
+\newtheorem{Exercice}{Exercice}
+
+% Configuration de listings.
+\lstset{
+    language=c,
+    basicstyle=\ttfamily\footnotesize,
+    identifierstyle=\color{Mahogany},
+    keywordstyle=\color{NavyBlue},
+    stringstyle=\color{Emerald},
+    commentstyle=\it\color{Gray},
+    columns=flexible,
+    tabsize=4,
+    extendedchars=true,
+    showspaces=false,
+    numbers=left,
+    numberstyle=\tiny,
+    breaklines=true,
+    breakautoindent=true,
+    captionpos=b,
+    showstringspaces=true
+}
+
+\begin{document}
+
+\maketitle
+
+Ce TP se déroule en deux séances et est à faire par binômes.
+Le travail réalisé doit être envoyé au plus tard exactement une
+semaine après le début de la 2\ieme{} séance de TP traitant ce sujet. Il
+sera disposé sur la plate-forme prévue à cet effet et constitué des
+programmes répondant aux questions et des éventuels fichiers annexes qui
+peuvent être demandés.
+\bigskip
+\bigskip
+
+Un célèbre problème d'échecs consiste à placer huit dames
+(aux échecs, on dit \og dame \fg{} et non pas \og reine \fg{}~!) sur un
+échiquier sans qu'aucune n'en menace une autre. Voici, par exemple, une
+configuration gagnante~:
+\fenboard{3Q4/6Q1/Q7/7Q/4Q3/1Q6/5Q2/2Q5 w - - 0 1}
+\begin{center}\showboard\end{center}
+\smallskip
+
+L'objectif de ce TP est de réaliser une interface graphique permettant
+à un utilisateur de placer à la souris des dames sur un échiquier. Le
+programme signale si le placement est gagnant ou non. Pour mener tout
+ceci à bien, il sera question de manipulation de bits et d'opérateurs
+sur les bits.
+\bigskip
+\bigskip
+
+{\bf Conseils~:}
+\begin{itemize}
+    \item pour chaque fonction programmée, s'interroger sur les arguments
+    qui peuvent poser des problèmes. Capturer ces cas à l'aide de
+    pré-assertions~;
+    \item utiliser au maximum les fonctions déjà programmées dans les
+    nouvelles à écrire. Il faut éviter au maximum la duplication de code~;
+    \item il ne suffit pas de programmer uniquement les fonctions qui sont
+    demandées. Pour mener le sujet à bien, des fonctions supplémentaires
+    et non mentionnées explicitement dans le sujet seront utiles. Soigner
+    leur nom~;
+    \item dès qu'une fonction est écrite, la tester de manière à
+    recouvrir tous les cas significatifs possibles et conserver les tests
+    (le but étant de les relancer pour vérifier l'intégrité du
+    programme lors de modifications futures)~;
+    \item commenter le code en évitant absolument les commentaires inutiles.
+    Il faut commenter chaque fonction écrite, juste avant son prototype.
+    Il faut y mentionner les trois points suivants~: (1) une description
+    du rôle de la fonction, (2) une description de ses paramètres et (3)
+    une description de ce qu'elle renvoie~;
+    \item préférer la concision au maximum. Un code concis et lisible
+    possède une grande valeur.
+\end{itemize}
+\bigskip
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Conception du projet)}\smallskip
+
+L'objectif de cet exercice est de concevoir une architecture viable pour
+le projet présenté.
+\begin{enumerate}
+    \item Lire attentivement l'intégralité du sujet avant de commencer
+    à répondre aux questions. La description du sujet constitue une 
+    spécification de projet. 
+    \smallskip
+    
+    \item Une fois ceci fait, proposer un découpage en modules cohérent 
+    du projet. Pour chaque module proposé, décrire les types qu'il apporte 
+    ainsi que ses objectifs principaux.
+    \smallskip
+    
+    \item Au fil de l'écriture du projet (dans le travail demandé par les 
+    prochains exercices), il est possible de se rendre compte que le 
+    découpage initialement prévu n'est pas complet ou adapté. Si c'est 
+    le cas, mentionner l'historique de ses modifications.
+    \smallskip
+    
+    \item Maintenir un {\tt Makefile} pour compiler le projet.
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Opérations bit à bit)}\smallskip
+\label{ex:operations}
+
+Nous utilisons dans cet exercice les opérateurs bit à bit pour
+modifier des mots binaires de façon adéquate. Ces opérateurs vont être
+utilisés de manière récurrente dans tout le TP et le but de cet exercice
+est de se familiariser avec cette nouvelle sorte d'opérateurs. 
+\smallskip
+
+À titre d'exemple, l'expression
+\begin{lstlisting}
+~(1 << 7);
+\end{lstlisting}
+a pour valeur l'entier possédant son $8\ieme$ bit à {\tt 0} et les autres 
+à {\tt 1}. En effet, la sous-expression {\tt 1 << 7} a pour valeur l'entier 
+dont le $8\ieme$ bit est à {\tt 1} et les autres à {\tt 0}. Le fait 
+de considérer son complémentaire (opérateur ${\tt \sim}$) produit 
+le résultat attendu.
+\smallskip
+
+Toutes les questions de cet exercice doivent {\bf être résolues en une ligne} 
+en {\sf C} à la manière de l'exemple donné.
+\begin{enumerate}
+    \item Créer un entier tel que son $15\ieme$ bit est à {\tt 1} et les
+    autres sont à {\tt 0}.
+    \smallskip
+
+    \item Créer un entier tel que son $14\ieme$ bit est à {\tt 0} et les
+    autres sont à {\tt 1}.
+    \smallskip
+
+    \item Mettre le $13\ieme$ bit d'un entier {\tt x} à {\tt 1}.
+    \smallskip
+
+    \item Mettre le $12\ieme$ bit d'un entier {\tt x} à {\tt 0}.
+    \smallskip
+
+    \item Tester si le $11\ieme$ bit d'un entier {\tt x} est un {\tt 1}.
+    \smallskip
+
+    \item Tester l'égalité des $10\ieme$ bits de deux entiers {\tt x} et
+    {\tt y}.
+    \smallskip
+
+    \item Tester si deux entiers {\tt x} et {\tt y} possèdent au moins
+    un bit à {\tt 1} en une même position.
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Représentations des données)}\smallskip
+\label{ex:representation}
+
+Le but de cet exercice est de définir la façon dont va être représenté
+un échiquier en mémoire. L'information contenue dans un échiquier est
+la présence ou l'absence, case par case, de dames.
+\smallskip
+
+Un échiquier est un quadrillage de taille $8 \times 8$ dont les cases
+sont, en première approche, indexées par des couples lettre/entier. Il
+est possible d'\og aplanir \fg{} un échiquier en le voyant comme un
+tableau de $64$ cases à une seule dimension. Chaque case est ainsi
+représentée par un entier de $0$ à $63$ comme le montre le schéma suivant~:
+\fenboard{8/8/8/8/8/8/8/8 w - - 0 1}
+\begin{equation*}\begin{split}
+    \begin{split}\showboard\end{split}
+    \qquad \longrightarrow \qquad
+    \renewcommand{\arraystretch}{1.35}
+    \begin{split}
+    \begin{tabular}{|c|c|c|c|c|c|c|c|} \hline
+        56 & 57 & 58 & 59 & 60 & 61 & 62 & 63 \\ \hline
+        48 & 49 & 50 & 51 & 52 & 53 & 54 & 55 \\ \hline
+        40 & 41 & 42 & 43 & 44 & 45 & 46 & 47 \\ \hline
+        32 & 33 & 34 & 35 & 36 & 37 & 38 & 39 \\ \hline
+        24 & 25 & 26 & 27 & 28 & 29 & 30 & 31 \\ \hline
+        16 & 17 & 18 & 19 & 20 & 21 & 22 & 23 \\ \hline
+        8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 \\ \hline
+        0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 \\ \hline
+    \end{tabular}
+    \end{split} \\[.75em]
+    \qquad \longrightarrow \qquad
+    \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|ccccc|c|c|} \hline
+        0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 &
+        \dots & \dots & \dots & \dots & & 62 & 63 \\ \hline
+    \end{tabular}
+\end{split}\end{equation*}
+\smallskip
+
+Toute case d'un échiquier peut prendre deux états~: occupée par une dame
+ou bien libre. On décide de représenter une position d'échecs par un entier
+de $64$ bits~: chaque bit code l'état de la case indiquée par sa position
+dans l'entier. Un bit à {\tt 1} (resp. {\tt 0}) spécifie que la case
+correspondante est occupée par une dame (resp. vide). De plus, le bit de
+poids fort de l'entier de $64$ bits code pour la case d'indice $0$. Par
+exemple, la position située en première page est codée par l'entier de
+$64$ bits suivant~:
+\begin{equation*}
+{\tt 00100000 00000100 01000000 00001000 00000001 10000000 00000010 00010000}.
+\end{equation*}
+
+\begin{enumerate}
+    \item Définir un type énuméré {\tt Case} qui contient, de {\tt A1} à
+    {\tt H8} toutes les cases d'un échiquier. Il faut que la valeur
+    numérique de la constante {\tt A1} soit {\tt 0}, celle de {\tt B1}
+    soit {\tt 1}, \dots, et finalement celle de {\tt H8} soit {\tt 63}.
+    Utiliser les fonctions rechercher/remplacer de l'éditeur de texte
+    pour ne pas perdre de temps ici.
+    \smallskip
+
+    \item Définir un type synonyme {\tt Position} qui permet de
+    représenter des positions selon la convention expliquée.
+    \smallskip
+
+    \item Définir une fonction
+\begin{lstlisting}
+int est_case_occupee(Position pos, Case c);
+\end{lstlisting}
+    qui renvoie {\tt 1} si la case {\tt c} de la position {\tt pos} est
+    occupée par une dame et {\tt 0} sinon.
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice}{\bf (C\oe ur du programme)}\smallskip
+
+Dans cet exercice, nous allons écrire les fonctions de base permettant
+de faire les différents tests nécessaires à la résolution du problème
+des huit dames. Nous utiliserons les opérations bit à bit vues dans
+l'exercice \ref{ex:operations} et la représentation d'une position
+introduite dans l'exercice \ref{ex:representation}.
+\begin{enumerate}
+    \item Écrire une fonction
+\begin{lstlisting}
+Position placer_dame(Case c);
+\end{lstlisting}
+    qui renvoie une position contenant uniquement une dame placée sur
+    la case spécifiée par {\tt c}.
+    \smallskip
+
+    \item Écrire une fonction
+\begin{lstlisting}
+void afficher_position(Position pos);
+\end{lstlisting}
+    qui réalise un affichage de la position {\tt pos} sur la sortie
+    standard. La présence d'une pièce sera notée par un {\tt '+'} et
+    l'absence, par un {\tt '.'}.
+    \smallskip
+
+    \item Une dame {\em menace} toute les cases situées sur sa même
+    ligne, sa même colonne et en diagonale. Voici par exemple les
+    cases menacées (case contenant une $\times$) par une dame placée
+    en d5~:
+    \fenboard{8/8/8/3Q4/8/8/8/8 w - - 0 1}
+    \begin{center}\showboard\end{center}
+    \highlight[x]{c4,b3,a2,e4,f3,g2,h1,c6,b7,a8,e6,f7,g8}
+    \highlight[x]{a5,b5,c5,e5,f5,g5,h5}
+    \highlight[x]{d6,d7,d8,d4,d3,d2,d1}
+
+    Écrire une fonction
+\begin{lstlisting}
+Position calculer_cases_attaquees(Case c);
+\end{lstlisting}
+    qui renvoie une position (et donc un entier de $64$ bits) qui
+    contient, pour chaque case menacée par une dame sur la case
+    {\tt c}, des bits à {\tt 1} aux endroits correspondants et des
+    bits à {\tt 0} ailleurs.
+    \smallskip
+
+    {\it Attention~: une dame ne menace pas la case sur laquelle elle
+    se trouve.}
+    \smallskip
+
+    \item On souhaite à présent, pour gagner en efficacité,
+    sauvegarder les résultats de la fonction précédente pour toutes
+    les valeurs possibles de son paramètre {\tt c}. Pour cela,
+    déclarer une variable globale
+\begin{lstlisting}
+Position tab_cases_attaquees[64];
+\end{lstlisting}
+    Ce tableau doit être initialisé à l'aide de la fonction
+    {\tt calculer\_cases\_attaquees} avant toute utilisation.
+    \smallskip
+
+    {\it Attention~: l'utilisation de variables globales est à
+    proscrire dans le cas général. Son utilisation est cependant ici
+    justifiée.}
+    \smallskip
+
+    \item Écrire une fonction
+\begin{lstlisting}
+int est_sans_menace_mutuelle(Position pos);
+\end{lstlisting}
+    qui retourne {\tt 1} si les dames de la position {\tt pos} ne se
+    menacent pas mutuellement et {\tt 0} sinon.
+    \smallskip
+
+    {\it Indication~: Il est possible d'utiliser l'algorithme
+    suivant. On commence par calculer un entier {\tt menaces} de
+    $64$ bits qui contient l'ensemble des cases menacées par toutes
+    les dames de {\tt pos}. Ensuite, comparer par le bon opérateur
+    bit à bit les entiers {\tt menaces} et {\tt pos}. De cette
+    comparaison, en déduire le résultat à renvoyer.}
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice}{\bf (Interface graphique)}\smallskip
+
+Le but de cet exercice est de réaliser une interface graphique
+utilisant la bibliothèque graphique {\sf MLV} qui permet de s'essayer
+au problème des huit dames.
+
+\begin{enumerate}
+    \item Écrire une fonction paramétrée par une position et qui
+    permet de l'afficher.
+    \smallskip
+
+    \item Écrire une fonction dont le rôle est de récupérer les
+    coordonnées de la case sélectionnée à la souris par l'utilisateur.
+    \smallskip
+
+    \item Écrire une fonction qui permet à l'utilisateur d'essayer
+    de résoudre le problème. L'interface indiquera par un moyen de
+    quelconque (visuel, sonore, {\em etc.}) si un placement
+    illégal (c.-à-d. lorsque deux dames se menacent mutuellement)
+    a été fait. Dans le cas où les huit dames ont été placées sans
+    qu'elles ne se menacent mutuellement, l'interface indiquera
+    que l'utilisateur a gagné.
+    \smallskip
+
+    {\em Optionnel}~: on permettra à l'utilisateur d'annuler un
+    nombre de coups arbitraire en utilisant un bouton {\em précédent}.
+    Cette fonction peut par exemple utiliser un tableau de huit
+    positions représentant les différentes étapes de la résolution.
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice}{\bf (Des cavaliers en plus)}\smallskip
+
+{\em Cet exercice est optionnel, il n'est a envisager que lorsque
+tout le reste fonctionne parfaitement.}
+\smallskip
+
+Un cavalier (aux échecs, on dit \og cavalier \fg{} et non pas
+\og cheval \fg{}~!) menace toutes les cases situées \og en L \fg\,
+par rapport à celle où il se trouve. Voici par exemple les cases
+menacées (cases contenant une $\times$) par un cavalier situé
+en d5~:
+\fenboard{8/8/8/3N4/8/8/8/8 w - - 0 1}
+\begin{center}\showboard\end{center}
+\highlight[x]{c7,e7,f6,f4,e3,c3,b4,b6}
+
+\begin{enumerate}
+    \item Refaire l'ensemble du projet avec des cavaliers à la place
+    de dames. Le but du jeu est maintenant de placer le maximum de
+    cavaliers sans qu'aucun ne menace un autre.
+    \smallskip
+
+    \item Mélanger maintenant les dames et les cavaliers dans une même
+    position. L'utilisateur peut placer, selon ses envies, des dames
+    et des cavaliers dans une même position. L'objectif est de
+    construire des configurations ayant un maximum de dames et de
+    cavaliers qui ne se menacent pas mutuellement.
+    \smallskip
+
+    {\it Indication~: une position est maintenant représentée non
+    pas par un seul nombre de $64$ bits mais par deux. L'un contient
+    les cases occupées par les dames tandis que l'autre contient
+    les cases occupées par les cavaliers.}
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+{\bf Pour ceux qui veulent aller plus loin}, ces entiers de $64$ bits
+que nous avons utilisés pour représenter un ensemble de pièces aux échecs
+sont connus sous le nom de {\em bitboards}. Les programmes de classe
+mondiale actuels qui jouent aux échecs utilisent des bitboards (sous
+certains détails plus ou moins sophistiqués) pour représenter des
+positions de manière extrêmement efficace.
+
+\end{document}
