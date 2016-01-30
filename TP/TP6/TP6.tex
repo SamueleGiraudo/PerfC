@@ -1,0 +1,290 @@
+% Auteur : Samuele Giraudo
+% Création : 29-01-2016
+% Modifications : 29-01-2016
+
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{amsmath,amsthm,amsfonts,amssymb}
+\usepackage{lmodern}
+\usepackage[top=2.4cm,bottom=2.4cm,left=2cm,right=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{multicol}
+\usepackage{enumerate}
+\usepackage{listings}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tikz}
+
+%\author{Samuele Giraudo}
+\date{}
+\title{{\bf Perfectionnement à la programmation en {\sf C}} \\
+    Fiche de TP 6 \\
+    {\small L2 Informatique 2015-2016} \\
+    {\it \small Le problème du voyageur de commerce}}
+
+\theoremstyle{definition}
+\newtheorem{Exercice}{Exercice}
+
+\newcommand{\Mut}{\mathrm{mut}}
+
+% Configuration de listings.
+\lstset{
+    language=c,
+    basicstyle=\ttfamily\footnotesize,
+    identifierstyle=\color{Mahogany},
+    keywordstyle=\color{NavyBlue},
+    stringstyle=\color{Emerald},
+    commentstyle=\it\color{Gray},
+    columns=flexible,
+    tabsize=4,
+    extendedchars=true,
+    showspaces=false,
+    numbers=left,
+    numberstyle=\tiny,
+    breaklines=true,
+    breakautoindent=true,
+    captionpos=b,
+    showstringspaces=true
+}
+
+\begin{document} 
+
+\maketitle
+
+Ce TP se déroule en trois séances et est à faire par binômes.
+Le travail réalisé doit être envoyé au plus tard exactement une
+semaine après le début de la séance de TP. Il sera disposé sur
+la plate-forme prévue à cet effet et constitué des programmes
+répondant aux questions et des éventuels fichiers annexes qui
+peuvent être demandés.
+\bigskip
+\bigskip
+
+Contrairement aux sujets de TP précédents, nous donnons ici une 
+spécification du projet à lire et à mener à bien. Les définitions de 
+types et de fonctions sont laissées libres de choix.
+\bigskip
+
+Voici maintenant la spécification du projet.
+\bigskip
+
+\begin{center} *** \\ * \end{center}
+Le {\em problème du voyageur de commerce} décrit une situation qui
+prend en entrée un ensemble de villes et qui fournit en réponse un ordre 
+de visite de ces villes qui soit le plus court possible.
+\medskip
+
+Plus précisément, l'utilitaire à concevoir, nommé {\tt pvc}, va prendre 
+en entrée un fichier texte dont chaque ligne est de la forme 
+\begin{verbatim}
+    VILLE_A VILLE_B DIST_A_B
+\end{verbatim}
+où {\tt VILLE\_A} et {\tt VILLE\_B} sont deux noms de villes différents
+et {\tt DIST\_A\_B} est la distance exprimée en base dix entre les villes
+{\tt VILLE\_A} et {\tt VILLE\_B}. Le nom d'une ville ne contient
+que des caractères alphabétiques ou le caractère {\tt '-'}.
+Pour décrire une sitation de manière
+exhaustive, le fichier doit renseigner, pour toute villes $x$ et $y$ y 
+intervenant, la distance entre $x$ et $y$ (ou bien pas symétrie, entre
+$y$ et $x$). Par exemple, le fichier texte de contenu
+% Mettre plutôt des villes russes, c'est plus drole.
+\begin{verbatim}
+    Paris Bordeaux 600
+    Bordeaux Lyon 400
+    Lyon Paris 700
+    Paris Rouen 160
+    Rouen Lyon 800
+    Rouen Bordeaux 700
+\end{verbatim}
+décrit de manière exhaustive une situation faisant intervenir les 
+quatre villes {\tt Paris}, {\tt Bordeaux}, {\tt Lyon} et {\tt Rouen}.
+On appelle {\em carte} la situation ainsi décrite par un tel fichier.
+\medskip
+
+Une {\em visite}
+est un ordre de parcours des villes de la carte qui minimise la distance 
+totale. Les visites sont enregistrées dans des fichiers textes sous la 
+forme d'une ligne contenant les villes à visiter dans l'ordre, séparées 
+par une espace. À la fin de la ligne, figure la longueur totale de la
+visite. Avec la carte de l'exemple précédent, le fichier de contenu
+\begin{verbatim}
+    Bordeaux Lyon Rouen Paris ??
+\end{verbatim}
+représente une visite dont la longueur totale est ??.
+\medskip
+
+Une fois lancé, l'utilitaire {\tt pvc} va calculer la meilleure visite 
+possible selon une méhtode expliquée plus loin. Dès qu'il trouve une
+visite meilleure que celle qu'il a précédemment calculée, il l'affiche
+sur la sortie standard et l'écrit dans un fichier texte de nom 
+{\tt CARTE.pvc} où {\tt CARTE} désigne le nom du fichier contenant la 
+carte. Le programme poursuit ainsi ses calculs tant qu'il n'est
+pas interrompu. Une fois que l'utilisateur considère qu'il a laissé
+suffisemment de temps de calcul au programme, il peut l'interrompre
+et lire une solution au problème du 
+voyageur de commerce sur la sortie standard ou bien dans le fichier
+ainsi créé.
+\medskip
+
+Expliquons à présent une manière efficace pour calculer une viste 
+à partir d'une carte donnée. La première chose à observer est qu'il
+n'est pas possible en pratique d'essayer toutes les visites possibles
+d'une carte et de ne garder que la meilleure. En effet, une carte 
+de taille $20$ demanderait $20!$ traitements de visites, ce qui est
+prohibitif. Nous n'allons donc pas chercher la meilleure solution mais
+seulement {\em une bonne solution}, compromis entre temps de calcul
+raisonnable et longueur faible de la visite.
+\medskip
+
+Appellons $C$ la carte sur laquelle nous travaillons. La méthode de 
+recherche d'une bonne visite sur $C$ se décrit de la manière suivante~:
+\begin{enumerate}
+    \item générer de manière aléatoire une liste $V = [v_1, \dots, v_k]$ 
+    de visites sur $C$. L'entier $k$ est fixé~;
+    \item \label{item:etape_tri}
+    trier $V$ dans l'ordre décroissant selon la longueur des visites.
+    De cette manière, la meilleure visite de $V$ est celle située en
+    tête~;
+    \item construire une nouvelle liste $V'$ de villes de la manière 
+    suivante. Placer dans $V'$~:
+    \begin{enumerate}
+        \item les villes $\Mut(v_1)$, $\Mut(v_2)$, \dots, 
+        $\Mut(v_{\alpha})$, où $\Mut$ est une opération de mutation
+        appliquée sur visite. Son fonctionnement est expliqué plus loin~;
+        \item les villes $v_1$, $v_2$, \dots, $v_\beta$ provenant de $V$~;
+        \item un nombre $\gamma$ de visites générées aléatoirement~;
+    \end{enumerate}
+    Les entiers $\alpha$, $\beta$ et $\gamma$ sont fixés et vérifient
+    $\alpha + \beta + \gamma = k$~;
+    \item la nouvelle liste de visites $V$ est la liste $V'$~;
+    \item tant que le programme n'est pas interrompu, aller à 
+    l'étape~\ref{item:etape_tri}.
+\end{enumerate}
+\medskip
+
+Décrivons à présent l'opérateur de {\em mutation} $\Mut$. L'idée
+consiste à modifier légèrement une visite pour la rendre potentiellement
+meilleure. Une visite est vue ici comme une liste de villes. Ainsi,
+si $v$ est une visite, $v = [a_1, \dots, a_n]$ où $a_1$, \dots, $a_n$
+sont les $n$ villes de la carte. La visite
+$\Mut(v)$ est la visite calculée par 
+le procédé suivant~:
+\begin{enumerate}
+    \item générer aléatoirement un entier $\ell$ compris entre $1$
+    et $\lfloor\frac{n}{2}\rfloor$~;
+    \item générer aléatoirement deux entiers $i$ et $j$ (vérifiant des
+    conditions à déterminer)~;
+    \item remplacer dans $v$ le facteur 
+    $a_i, a_{i + 1}, \dots, a_{i + \ell - 1}$ par le facteur
+    $a_j, a_{j + 1}, \dots, a_{j + \ell - 1}$. Cette nouvelle 
+    visite constitue la ville calculée par $\Mut(v)$.
+\end{enumerate}
+
+
+
+
+
+
+\begin{center} *** \\ * \end{center}
+\bigskip
+
+{\bf Conseils~:}
+\begin{itemize}
+    \item pour chaque fonction programmée, s'interroger sur les arguments
+    qui peuvent poser des problèmes. Capturer ces cas à l'aide de
+    pré-assertions~;
+    \item utiliser au maximum les fonctions déjà programmées dans les
+    nouvelles à écrire. Il faut éviter au maximum la duplication de code~;
+    \item commenter le code en évitant absolument les commentaires inutiles.
+    Il faut commenter chaque fonction écrite, juste avant son prototype.
+    Il faut y mentionner les trois points suivants~: (1) une description
+    du rôle de la fonction, (2) une description de ses paramètres et (3)
+    une description de ce qu'elle renvoie~;
+    \item préférer la concision au maximum. Un code concis et lisible
+    possède une grande valeur.
+\end{itemize}
+\bigskip
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Conception du projet)}\smallskip
+
+L'objectif de cet exercice est de concevoir une architecture viable pour
+le projet présenté.
+\begin{enumerate}
+    \item Lire attentivement l'intégralité du sujet avant de commencer
+    à répondre aux questions. Il est important de bien analyser la 
+    spécification du projet et d'en distiller le plan du travail à 
+    accomplir.
+    \smallskip
+    
+    \item Une fois ceci fait, proposer un découpage en modules cohérent 
+    du projet. Pour chaque module proposé, décrire les types qu'il apporte 
+    ainsi que ses objectifs principaux.
+    \smallskip
+    
+    \item Au fil de l'écriture du projet, il est possible de se rendre 
+    compte que le 
+    découpage initialement prévu n'est pas complet ou adapté. Si c'est 
+    le cas, mentionner l'historique de ses modifications.
+    \smallskip
+    
+    \item Maintenir un {\tt Makefile} pour compiler le projet.
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Tests)}\smallskip
+\label{exo:test}
+
+Les tests sont des éléments de première importance dans le processus 
+d'écriture d'un projet. Ils sont également primordiaux pour la maintenance
+d'un projet. Ils servent à s'assurer que chaque partie du 
+programme fonctione et sont utiles pour capturer des erreurs de 
+programmation à leur source.
+\smallskip
+
+\begin{enumerate}
+    \item Avant de commencer l'écriture du projet, créer un module 
+    {\tt Test}. Ce module va inclure tous les autres modules (exception
+    faite pour le module principal) et va servir à tester les fonctions
+    du projet. Il contient pour le moment une fonction {\tt test} de 
+    corps vide, sans paramètre et à type de retour {\tt int}.
+    \smallskip
+    
+    \item Au cours de l'écriture du projet, pour chaque fonction {\tt fct}
+    nouvellement écrite, ajouter dans le module {\tt Test} une fonction
+    {\tt test\_fct} qui réalise des tests cohérents de la fonction {\tt fct}.
+    Les tests sont construits en appelant {\tt fct} avec des 
+    arguments pour lesquels la réponse est connue. Le test consiste à 
+    vérifier si la fonction répond correctement. La fonction {\tt test\_fct}
+    renvoie {\tt 1} si tous les tests qu'elle exécute se sont bien 
+    déroulés et {\tt 0} sinon. Pour chaque test mal déroulé, la
+    fonction affiche sur la sortie standard des informations pour identifier
+    le test problématique.
+    \smallskip
+    
+    \item La fonction {\tt test} du module {\tt Test} est sa seule 
+    fonction visible depuis l'extérieur. Elle appelle chaque fonction 
+    de test et vérifie que toutes se déroulent correctement. Elle renvoie
+    ainsi {\tt 1} si toutes les fonctions de test renvoient {\tt 1} et
+    {\tt 0} sinon.
+    \smallskip
+    
+    \item Le programme dispose d'une option {\tt --test} qui exécute
+    la fonction {\tt test} du module {\tt Test}. Il est important, lors 
+    de la phase de programmation du projet ou encore lors d'une de ses 
+    mises-à-jour, de lancer ces tests pour vérifier que tout fonctionne 
+    comme attendu.
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+
+\end{document}
