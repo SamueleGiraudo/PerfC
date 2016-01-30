@@ -1,6 +1,6 @@
 % Auteur : Samuele Giraudo
 % Création : 11-12-15
-% Modifications : 11-12-15, déc. 2015
+% Modifications : 11-12-15, déc. 2015, jan. 2016
 
 \documentclass[12pt]{article}
 
@@ -189,6 +189,35 @@ return a + 1;
     \item Déterminer si les fonctions suivantes sont à effet de bord~:
     \begin{multicols}{2}
         \begin{enumerate}
+        
+            \item ~
+\begin{lstlisting}
+int addition_1(int a, int b) {
+    return a + b;
+}
+\end{lstlisting}
+        \bigskip
+        
+            \item ~
+\begin{lstlisting}
+int addition_2(int a, int b) {
+    int res;
+    
+    res = a + b;
+    return res;
+}
+\end{lstlisting}
+        \bigskip
+        
+            \item ~
+\begin{lstlisting}
+void addition_3(int a, int b, 
+        int *res) {
+    *res = a + b;
+}
+\end{lstlisting}
+        \bigskip
+        
             \item ~
 \begin{lstlisting}
 int somme(int *tab, int n) {
@@ -200,8 +229,6 @@ int somme(int *tab, int n) {
     return res
 }
 \end{lstlisting}
-            \bigskip
-            \bigskip
             \bigskip
 
             \item ~
@@ -274,6 +301,7 @@ int remplacer(char *tab, char a,
 \end{enumerate}
 \end{Exercice}
 \bigskip
+%\newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -379,6 +407,7 @@ int x;
 \end{enumerate}
 \end{Exercice}
 \bigskip
+\newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -505,7 +534,7 @@ float aire(int a, int b) {
     \end{lstlisting}
     \smallskip
 
-    \item Déclarer une fonction testant la primalité d'un entier.
+    \item {\bf Déclarer} une fonction testant la primalité d'un entier.
     \smallskip
 
     \item Déclarer une fonction paramétrée par une chaîne de caractères
@@ -565,6 +594,29 @@ int tribo(int n) {
     return tribo(n - 1) + tribo(n - 2) + tribo(n - 3);
 }
 \end{lstlisting}
+    \smallskip
+
+\item Dessiner l'arbre des appels récursifs puis schématiser l'état 
+    de la pile à chaque instant de l'exécution de l'instruction
+    \begin{lstlisting}
+flip(5);
+    \end{lstlisting}
+    avec les définitions suivantes~:
+    \begin{multicols}{2}
+\begin{lstlisting}
+void flip(int n) {
+    printf("flip %d\n", n);
+    if (n >= 1) 
+        flop(n - 1);
+}
+
+void flop(int n) {
+    printf("flop %d\n", n);
+    if (n >= 1) 
+        flip(n - 1);
+}
+\end{lstlisting}
+    \end{multicols}
 \end{enumerate}
 \end{Exercice}
 \bigskip
