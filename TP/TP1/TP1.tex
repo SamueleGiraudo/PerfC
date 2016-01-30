@@ -57,38 +57,11 @@ la plate-forme prévue à cet effet et constitué des programmes
 répondant aux questions et des éventuels fichiers annexes qui
 peuvent être demandés.
 \bigskip
-\bigskip
 
 Dans ce TP, nous révisons l'utilisation de la bibliothèque graphique
 {\sf MLV}, déjà approchée au cours des semestres précédents. Nous posons 
 aussi quelques bonnes habitudes à prendre en programmation pour le reste 
 de ces TP.
-\bigskip
-\bigskip
-
-{\bf Conseils~:}
-\begin{itemize}
-    \item pour chaque fonction programmée, s'interroger sur les arguments
-    qui peuvent poser des problèmes. Capturer ces cas à l'aide de
-    pré-assertions~;
-    \item utiliser au maximum les fonctions déjà programmées dans les
-    nouvelles à écrire. Il faut éviter au maximum la duplication de code~;
-    \item il ne suffit pas de programmer uniquement les fonctions qui sont
-    demandées. Pour mener le sujet à bien, des fonctions supplémentaires
-    et non mentionnées explicitement dans le sujet seront utiles. Soigner
-    leur nom~;
-    \item dès qu'une fonction est écrite, la tester de manière à
-    recouvrir tous les cas significatifs possibles et conserver les tests
-    (le but étant de les relancer pour vérifier l'intégrité du
-    programme lors de modifications futures)~;
-    \item commenter le code en évitant absolument les commentaires inutiles.
-    Il faut commenter chaque fonction écrite, juste avant son prototype.
-    Il faut y mentionner les trois points suivants~: (1) une description
-    du rôle de la fonction, (2) une description de ses paramètres et (3)
-    une description de ce qu'elle renvoie~;
-    \item préférer la concision au maximum. Un code concis et lisible
-    possède une grande valeur.
-\end{itemize}
 \bigskip
 \bigskip
 
@@ -98,9 +71,9 @@ de ces TP.
 \begin{Exercice} {\bf (La documentation {\tt man})}\smallskip
 
 La {\em section 3} du manuel de l'utilisateur de {\sf Linux} recense
-la documentation de la plupart des fonctions proposées par la bibliothèque
-standard. Il faut donc la consulter systématiquement pour connaître
-précisément le rôle d'une fonction. Par exemple, pour afficher
+la documentation de la plupart des fonctions proposées par la 
+bibliothèque standard. Il faut donc la consulter systématiquement pour 
+connaître précisément le rôle d'une fonction. Par exemple, pour afficher
 la documentation de la fonction {\tt putchar}, on saisit la commande
 \begin{center}
     {\tt man 3 putchar}
@@ -245,15 +218,16 @@ et la clé~$K = 3$, on obtient le texte \textit{crypté} suivant :
     {\tt Ohv WS gh surjudppdwlrq vrqw vxshu !}
 \end{center}
 Les caractères non alphabétiques ne sont pas modifiés.
-La formule qui permet de calculer, étant donné une lettre alphabétique en clair $\ell$, la
-lettre cryptée $c$ qui lui correspond est la suivante :
+La formule qui permet de calculer, étant donné une lettre alphabétique 
+en clair $\ell$, la lettre cryptée $c$ qui lui correspond est la 
+suivante~:
 \begin{equation} \label{F1}
     c := (\ell + K) ~\operatorname{mod}~ 26.
 \end{equation}
-Réciproquement, pour décrypter un texte crypté, il suffit de décrypter chacune
-des lettres alphabétiques qu'il contient. Étant donné une
-lettre cryptée~$c$, le calcul de la lettre en clair~$\ell$ qui lui
-correspond s'effectue par la formule suivante :
+Réciproquement, pour décrypter un texte crypté, il suffit de décrypter 
+chacune des lettres alphabétiques qu'il contient. Étant donné une lettre 
+cryptée~$c$, le calcul de la lettre en clair~$\ell$ qui lui
+correspond s'effectue par la formule suivante~:
 \begin{equation} \label{F2}
     \ell := (c - K) ~\operatorname{mod}~ 26.
 \end{equation}
@@ -270,13 +244,13 @@ correspond s'effectue par la formule suivante :
 \begin{lstlisting}
 int bon_modulo(int a, int b);
 \end{lstlisting}
-    qui calcule le reste de la division euclidienne de {\tt a} par {\tt b}
-    (la valeur de retour doit être toujours positive).
+    qui calcule le reste de la division euclidienne de {\tt a} par 
+    {\tt b} (la valeur de retour doit être toujours positive).
     \smallskip
 
     \item Écrire un programme {\tt Crypt}, qui accepte comme arguments
-    une valeur numérique (la clé) et un mot (le mot à crypter). Ce programme
-    affiche sur la sortie standard le mot crypté selon la clé
+    une valeur numérique (la clé) et un mot (le mot à crypter). Ce 
+    programme affiche sur la sortie standard le mot crypté selon la clé
     en suivant la formule \eqref{F1}.
     \smallskip
 
@@ -286,9 +260,10 @@ int bon_modulo(int a, int b);
     mot décrypté selon la clé en suivant la formule \eqref{F2}.
     \smallskip
 
-    \item Tester les deux programmes précédents, en particulier en vérifiant
-    que le mot obtenu en cryptant puis en décryptant successivement
-    un mot avec une même clé est bien égal au mot de départ.
+    \item Tester les deux programmes précédents, en particulier en 
+    vérifiant que le mot obtenu en cryptant puis en décryptant 
+    successivement un mot avec une même clé est bien égal au mot de 
+    départ.
 \end{enumerate}
 \end{Exercice}
 \bigskip
