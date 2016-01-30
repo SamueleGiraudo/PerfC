@@ -1,0 +1,169 @@
+% Auteur : Samuele Giraudo
+% Création : 30-01-16
+% Modifications : 30-01-16
+
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{amsmath,amsthm,amsfonts,amssymb}
+\usepackage{lmodern}
+\usepackage[top=3cm,bottom=3cm,left=3cm,right=3cm]{geometry}
+\usepackage{hyperref}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tikz}
+
+%\author{Samuele Giraudo}
+\date{}
+\title{{\bf Perfectionnement à la programmation en {\sf C}} \\
+    Fiche de TP 0 \\
+    {\small L2 Informatique 2015-2016} \\
+    {\it \small Instructions générales}}
+
+\theoremstyle{definition}
+\newtheorem{Exercice}{Exercice}
+
+% Configuration de listings.
+\lstset{
+    language=c,
+    basicstyle=\ttfamily\footnotesize,
+    identifierstyle=\color{Mahogany},
+    keywordstyle=\color{NavyBlue},
+    stringstyle=\color{Emerald},
+    commentstyle=\it\color{Gray},
+    columns=flexible,
+    tabsize=4,
+    extendedchars=true,
+    showspaces=false,
+    numbers=left,
+    numberstyle=\tiny,
+    breaklines=true,
+    breakautoindent=true,
+    captionpos=b,
+    showstringspaces=true
+}
+
+\begin{document}
+
+\maketitle
+
+Ce document décrit des éléments à respecter scrupuleusement au cours
+des TP du module. S'y référer en cas de doute ou avant de poser une
+question.
+\medskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Sur le déroulement des séances}
+La présence aux séances de TP est primordiale et un émargement aura lieu
+au début de chacune. Aucun retard non justifié n'est accepté.
+\smallskip
+
+Lors de la première séance de TP, des binômes seront constitués. Chaque
+TP est à faire ainsi à deux, les groupes restant les mêmes pour toute la
+durée du module.
+\smallskip
+
+Il est vivement conseillé d'échanger pendant les séances des informations
+avec son coéquipier. En revanche, il est seulement toléré de communiquer
+avec des étudiants d'un autre binôme. Dans tous les cas, tout échange 
+doit se faire le plus discrètement possible.
+\medskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{À propos du travail à rendre}
+Chaque TP est à réaliser en une ou plusieurs séances et certains 
+autoriseront un délai de rendu supplémentaire. Les modalités propres à
+chaque TP seront précisées.
+\smallskip
+
+Dans tous les cas, chaque rendu du TP est a déposer avant échéance du 
+temps imparti sur la plate-forme prévue à cet effet. Le rendu est 
+composé des sources (fichiers {\tt .c} et {\tt .h}), de fichiers textes 
+éventuels et de rapports au format {\tt .pdf} exclusivement. Il est 
+autorisé également de joindre des fichiers image et son si cela est 
+nécessaire au rendu. Il ne doit figurer dans le rendu aucun fichier 
+régénérable (pas de {\tt .o} ni d'exécutable). Le seul format d'archivage 
+autorisé est le format {\tt .zip}.
+\medskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{À propos du rapport}
+Un rapport doit accompagner chaque rendu de TP. Il est consitué, au 
+minimum, des parties suivantes~:
+\begin{itemize}
+    \item une introduction, présentant les objectifs du projet et ses 
+    enjeux~;
+    \smallskip
+    
+    \item le corps du rapport, présentant les moyens mis en \oe uvre,
+    les réponses aux questions posées explicitement dans les énoncés des 
+    sujets, et toute autre information jugée utile à mentionner. Cette
+    partie devra être structurée de manière adéquate en fonction de la
+    nature du TP~;
+    \smallskip
+    
+    \item une conclusion, évoquant les difficultés rencontrées, ce que 
+    le sujet a apporté~;
+    \smallskip
+    
+    \item une première annexe, contenant les instructions pour compiler
+    le projet~;
+    \smallskip
+    
+    \item une deuxième annexe, contenant la documentation pour utiliser 
+    le projet.
+\end{itemize}
+\medskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conseils à suivre}
+\begin{itemize}
+    \item lire entièrement chaque énoncé de TP avant de commencer à y
+    répondre~;
+    \smallskip
+    
+    \item pour chaque fonction programmée, s'interroger sur les arguments
+    qui peuvent poser des problèmes. Capturer ces cas à l'aide de
+    pré-assertions~;
+    \smallskip
+    
+    \item utiliser au maximum les fonctions déjà programmées dans les
+    nouvelles à écrire. Il faut éviter au maximum la duplication de code~;
+    \smallskip
+    
+    \item il ne suffit pas de programmer uniquement les fonctions qui sont
+    demandées. Pour mener le sujet à bien, des fonctions supplémentaires
+    et non mentionnées explicitement dans le sujet seront utiles. Soigner
+    leurs noms~;
+    \smallskip
+    
+    \item dès qu'une fonction est écrite, la tester de manière à
+    recouvrir tous les cas significatifs possibles et conserver les tests
+    (le but étant de les relancer pour vérifier l'intégrité du
+    programme lors de modifications futures)~;
+    \smallskip
+    
+    \item commenter le code en évitant absolument les commentaires inutiles.
+    Il faut commenter chaque fonction écrite, juste avant son prototype.
+    Il faut y mentionner les trois points suivants~: (1) une description
+    du rôle de la fonction, (2) une description de ses paramètres et (3)
+    une description de ce qu'elle renvoie~;
+    \smallskip
+    
+    \item préférer la concision au maximum. Un code concis et lisible
+    possède une grande valeur.
+\end{itemize}
+
+
+\end{document}
