@@ -99,23 +99,83 @@ Toute expression possède une \alert{valeur} et un \alert{type}. Le
 processus qui consiste à déterminer la valeur d'une expression se nomme 
 l'{\bf évaluation}.
 \bigskip}
+\end{frame}
 
-\uncover<7->{
-P.ex., \vspace{-.75em}
-\begin{multicols}{3}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}\frametitle{Expressions}
+P.ex., les entités suivantes sont des expressions~:
+\begin{multicols}{2}
 \begin{itemize}\footnotesize
     \item \Code{0}
+    \smallskip
+    
+    Valeur~: \Code{0}, type~: \Code{int}
+    \bigskip
+    
+    \uncover<2->{
     \item \Code{'a'}
+    \smallskip
+    
+    Valeur~: \Code{97}, type~: \Code{int}
+    \bigskip}
+    
+    \uncover<3->{
     \item \Code{"abc"}
+    \smallskip
+    
+    Valeur~: \Code{"abc"}, type~: \Code{char *}
+    \bigskip}
+    
+    \uncover<4->{
     \item \Code{x}
+    \smallskip
+    
+    Valeur~: \Code{x}, type~: le type de la variable \Code{x}
+    \bigskip}
+    
+    \uncover<5->{
     \item \Code{a == 2}
+    \smallskip
+    
+    Valeur~: \Code{0} ou \Code{1}, type~: \Code{int}
+    \bigskip}
+    
+    \uncover<6->{
     \item \Code{b = 3}
+    \smallskip
+    
+    Valeur~: \Code{3}, type~: \Code{int}
+    \bigskip=}
+    
+    \uncover<7->{
     \item \Code{f(5)}
-    \item \Code{(a==0) \&\& (b>=3)}
+    \smallskip
+    
+    Valeur~: la valeur renvoyée par \Code{f(5)}, type~: le type de retour
+    de \Code{f}
+    \bigskip}
+    
+    \uncover<8->{
+    \item \Code{(a == 0) \&\& ( b>= 3)}
+    \smallskip
+    
+    Valeur~: \Code{0} ou \Code{1}, type~: \Code{int}
+    \bigskip}
+    
+    \uncover<9->{
     \item \Code{a > 'a' ? a : -a}
+    \smallskip
+    
+    Valeur~: \Code{a} ou \Code{-a}, type~: le type de \Code{a}
+    \bigskip}
+    
+    \uncover<10->{
+    \item \Code{1. + 7 * 2}
+    \smallskip
+    
+    Valeur~: \Code{15.}, type~: \Code{float}}
 \end{itemize}
-\end{multicols}\vspace{-.5em}
-sont des expressions.}
+\end{multicols}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -123,7 +183,7 @@ sont des expressions.}
 Une \alert{instruction} est définie récursivement comme étant soit 
 
 \begin{enumerate}
-    \item une expression terminée par un point-virgule~;
+    \item une expression \Code{E;} terminée par un point-virgule~;
     \smallskip
     
     \item un bloc \Code{$\lbrace$ I $\rbrace$} où \Code{I} est une 
@@ -149,22 +209,45 @@ son type).
 \uncover<3->{
 En effet, une instruction peut p.ex. afficher un élément, allouer
 une zone mémoire, lire dans un fichier, {\em etc.} La valeur de
-l'expression sous-jacente à l'instruction est d'importance secondaire.
-\bigskip}
+l'expression sous-jacente à l'instruction est d'importance secondaire.}
+\end{frame}
 
-\uncover<4->{
-P.ex., \vspace{-.75em}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}\frametitle{Instructions}
+P.ex., les entités suivantes sont des instructions~:
 \begin{multicols}{2}
-\begin{itemize} \footnotesize
+\begin{itemize}
     \item \Code{;} (instruction vide)
+    \bigskip
+    
     \item \Code{1;}
+    \bigskip
+    
     \item \Code{a = b;}
+    \bigskip
+    
     \item \Code{while (1) {a += 1;}}
+    \bigskip
+    
     \item \Code{printf("abc\textbackslash n");}
+    \bigskip
+    
     \item \Code{a++;}
+    \bigskip
+    
+    \item \Code{malloc(64);}
+    \bigskip
+    
+    \item \Code{int tab[64];}
+    \bigskip
+    
+    \item \Code{tab[3] = 9;}
+    \bigskip
+    
+    \item \Code{tab[3];}
+    \bigskip
 \end{itemize}
-\end{multicols}\vspace{-.75em}
-sont des instructions.}
+\end{multicols}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -172,19 +255,36 @@ sont des instructions.}
 Une {\bf expression} est à \alert{effet de bord}
 (ou encore à \alert{effet secondaire}) si son évaluation modifie
 la mémoire.
-\medskip
+\bigskip
 
 \uncover<2->{
-P.ex., \Code{0}, \Code{'c'}, \Code{(a + 21) <\,< 3} ne sont pas a
-effet de bord.
-\smallskip}
+P.ex., 
+\begin{multicols}{2}
+\begin{itemize}
+    \item \Code{0}, 
+    \item \Code{'c'}, 
+    \item \Code{(a + 21) <\,< 3},
+    \item \Code{tab[8]},
+\end{itemize}
+\end{multicols}
+ne sont pas a effet de bord.
+\medskip}
 
 \uncover<3->{
-En revanche, \Code{a = 31}, \Code{printf("abc\textbackslash n")}
-sont à effet de bord.
-\bigskip}
+En revanche, 
+\begin{multicols}{2}
+\begin{itemize}
+    \item \Code{a = 31}, 
+    \item \Code{printf("abc\textbackslash n")},
+    \item \Code{char c},
+    \item \Code{malloc(64)},
+\end{itemize}
+\end{multicols}
+sont à effet de bord.}
+\end{frame}
 
-\uncover<4->{
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}\frametitle{Expressions à effet de bord}
 En règle générale, ce sont les éléments suivants dans les expressions
 qui produisent des effets de bord~:
 \begin{itemize}
@@ -192,9 +292,9 @@ qui produisent des effets de bord~:
     \item les allocations de mémoire~;
     \item la sollicitation au système de fichiers.
 \end{itemize}
-\medskip}
+\bigskip
 
-\uncover<5->{
+\uncover<2->{
 En revanche, les éléments suivants dans les expressions ne produisent
 pas d'effet de bord~:
 \begin{itemize}
@@ -202,21 +302,6 @@ pas d'effet de bord~:
     \item calculs arithmétiques, logiques ou bit à bit~;
     \item comparaisons.
 \end{itemize}}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile] \frametitle{Récapitulatif}
-Dans cette sous-partie, nous avons vu~:
-
-\begin{enumerate}
-    \item la notion d'expression~;
-    \smallskip
-
-    \item la notion d'instruction~;
-    \smallskip
-
-    \item la notion d'effet de bord
-\end{enumerate}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -233,34 +318,73 @@ et d'une partie consacrée aux instructions.
 \uncover<2->{
 \begin{multicols}{2}
 \Code{$\lbrace$} \\
-\quad \Code{DECLARATIONS} \\
-\quad \Code{INSTRUCTIONS} \\
+\quad \Code{DECL} \\
+\quad \Code{INST} \\
 \Code{$\rbrace$}
 \medskip
 
-Les parties \Code{DECLARATIONS} ou \Code{INSTRUCTIONS} peuvent être
-vides. Il est possible d'{\bf imbriquer} plusieurs blocs.
+\Code{DECL}~: section de {\bf déclarations}.
+\bigskip
+
+\Code{INST}~: section d'{\bf instructions}.
+\bigskip
 \end{multicols}}
-\medskip
+\bigskip
+
+\uncover<3->{
+Les parties \Code{DECL} ou \Code{INST} peuvent être vides. 
+\bigskip}
+
+\uncover<4->{
+Sachant qu'un bloc est une suite d'instructions, il est possible de
+placer un bloc dans la section d'instructions d'un bloc et ainsi
+d'{\bf imbriquer} plusieurs blocs.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]\frametitle{Blocs}
+\begin{multicols}{2}
+\begin{semiverbatim}\footnotesize
+int main() \{
+    int a;
+    scanf("%d", &b);
+    \textcolor{BrickRed}{\{
+        int a;
+        a = 1 + b;
+    \}}
+\}
+\end{semiverbatim}
+
+La partie rouge est un bloc au sein d'une fonction \Code{main}.
+\bigskip
+
+Il y a des règles concernant la visibilité des variables (que nous
+verrons plus loin).
+\bigskip
+\bigskip
+\bigskip
+\bigskip
+\end{multicols}
+\bigskip
 
 \begin{multicols}{2}
-\begin{semiverbatim}\small\uncover<3->{
+\begin{semiverbatim}\footnotesize\uncover<2->{
 \{
     int a;
     int b;
     scanf(" %d", &a);
-    \{
+    \textcolor{JungleGreen}{\{
         printf("%d\\n", a);
-    \}
+    \}}
     scanf(" %d", &b);
 \}}
 \end{semiverbatim}
-\uncover<3->{Ceci est un bloc constitué d'une partie déclarations
-et d'une partie instructions.
+\uncover<2->{Ceci est un bloc constitué d'une section de déclarations
+et d'une section d'instructions.
 \bigskip
 
-Cette dernière partie contient
-un bloc constitué uniquement d'une partie instructions.
+Cette dernière partie contient un bloc (en vert) dont la section de
+déclarations est vide.
 \bigskip
 \bigskip
 \bigskip}
@@ -561,44 +685,50 @@ L'exécution continue alors aux instructions qui suivent cette structure.
 
 \uncover<3->{
 L'instruction \Code{continue} permet à l'exécution de sauter à la fin du
-bloc \Code{BLOC} d'une structure \Code{while}, \Code{do while} ou \Code{for}.
-L'exécution continue alors à l'évaluation de l'expression test.
-\medskip}
-
-\uncover<4->{
-{\bf Note}~: dans une boucle \Code{for}, l'instruction \Code{continue}
-fait que l'expression d'incrémentation est tout de même évaluée.
-\smallskip
-
-Ce n'est pas le cas pour le \Code{break}.}
-\begin{multicols}{2}
-\begin{semiverbatim}\uncover<5->{
-for (i = 1 ; i <= 7 ; ++i) \{
-    if (i == 4)
-        break;
-\}}
-\end{semiverbatim}
-\uncover<5->{
-L'exécution de ces instructions produit quatre tours de boucle.
-Lorsque \Code{i = 4}, le \Code{break} fait sortir de la
-boucle et \Code{i} vaut \Code{4}.}
-\end{multicols}
+bloc \Code{BLOC} d'une structure \Code{while}, \Code{do while} ou 
+\Code{for}. L'exécution continue alors à l'évaluation de l'expression 
+test.}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile] \frametitle{Récapitulatif}
-Dans cette sous-partie, nous avons vu~:
+\begin{frame}[fragile]\frametitle{Instructions de court-circuit}
+Dans une boucle \Code{for}, l'instruction \Code{continue}
+fait que l'expression d'incrémentation est tout de même évaluée.
+\medskip
 
-\begin{enumerate}
-    \item les blocs d'instructions~;
-    \smallskip
+\begin{multicols}{2}
+\begin{semiverbatim}\uncover<2->{
+for (i = 1 ; i <= 7 ; ++i) \{
+    if (i == 4)
+        continue;
+    printf("%d ", i);
+\}}
+\end{semiverbatim}
+\uncover<2->{
+L'exécution de ces instructions produit sept tours de boucle et 
+l'affichage \Code{1 2 3 5 6 7}.
+Lorsque \Code{i == 4}, le \Code{continue} relance l'exécution à 
+l'incrémentation du \Code{for}.}
+\end{multicols}
+\bigskip
 
-    \item les instructions \Code{if}, \Code{switch}, \Code{while},
-    \Code{do while}, \Code{for}~;
-    \smallskip
+\uncover<3->{Ce n'est pas le cas pour le \Code{break}.
+\medskip}
 
-    \item les instructions de court-circuit.
-\end{enumerate}
+\begin{multicols}{2}
+\begin{semiverbatim}\uncover<4->{
+for (i = 1 ; i <= 7 ; ++i) \{
+    if (i == 4)
+        break;
+    printf("%d ", i);
+\}}
+\end{semiverbatim}
+\uncover<4->{
+L'exécution de ces instructions produit quatre tours de boucle
+et l'affichage \Code{1 2 3}.
+Lorsque \Code{i == 4}, le \Code{break} fait sortir de la
+boucle et \Code{i} vaut \Code{4}.}
+\end{multicols}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -627,7 +757,7 @@ Une \alert{variable} est une entité constituée des cinq éléments suivants~:
     \uncover<4->{
     \draw[fill=Bleu!30](0,0)rectangle node{\small Valeur}(2,1);}
     \uncover<5->{
-    \node(adr)at(-1.5,0){\small Adresse};
+    \node(adr)at(-2,0){\small Adresse};
     \draw(adr)edge[->,bend right=20](0,-.25);}
 \end{tikzpicture}
 \end{center}
@@ -713,6 +843,44 @@ L'occurrence de \Code{num} en l. 2 est située à gauche du \Code{=}~:
 il s'agit d'une affectation. Il y en a deux en ligne $3$~: la $1\iere$
 permet de modifier et la $2\ieme$ de lire sa valeur.}
 \end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{{\it L}-values et {\it R}-values}
+Nous rencontrons une subtilité~: un identificateur \Code{x} de variable 
+peut désigner soit~:
+\begin{enumerate}
+    \item la valeur de la variable \Code{x}, p.ex, dans 
+    \Code{x + 16}~;
+    \smallskip
+    
+    \uncover<2->{
+    \item soit la variable \Code{x} elle-même, p.ex, dans 
+    \Code{x += 8}.}
+\end{enumerate}
+\medskip
+
+\uncover<3->{
+La terminologie de \og{\it L}-value\fg{} (valeur gauche) et 
+\og{\it R}-value\fg{} (valeur droite) permet de mettre en évidence cette
+subtilité.
+\bigskip}
+
+\uncover<4->{
+Une \alert{{\it L}-value} est une expression qui peut se situer dans le 
+membre gauche d'une affectation (l'expression peut {\bf recevoir} une 
+valeur).
+\bigskip}
+
+\uncover<5->{
+Une \alert{{\it R}-value} est une expression qui peut se situer dans le 
+membre droit d'une affectation (une valeur peut être {\bf lue} depuis
+l'expression).
+\bigskip}
+
+\uncover<6->{
+{\bf Note~:} toute {\it L}-value est une {\it R}-value, mais pas 
+l'inverse.}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -941,18 +1109,6 @@ il n'y a pas de déclaration de \Code{a} dans le bloc. L'affectation
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile] \frametitle{Récapitulatif}
-Dans cette sous-partie, nous avons vu~:
-
-\begin{enumerate}
-    \item la notion de variable~;
-    \smallskip
-    
-    \item la notion de portée lexicale.
-\end{enumerate}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Fonctions et pile}
 
@@ -1143,7 +1299,11 @@ fonction et après son appel.}
 Soit la fonction 
 \begin{lstlisting}
 void fct(int a) {
-    a = a + 1;
+    int b, c;
+    
+    b = 1;
+    c = 2;
+    a = b + c;
 }
 \end{lstlisting}
 et la suite d'instructions
@@ -1247,30 +1407,6 @@ mémoire.}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile] \frametitle{Récapitulatif}
-Dans cette sous-partie, nous avons vu~:
-
-\begin{enumerate}
-    \item la notion de fonction et ses constituants~;
-    \smallskip
-
-    \item la différence entre déclaration et définition~;
-    \smallskip
-
-    \item la différence entre paramètres et arguments~;
-    \smallskip
-    
-    \item les variables locales à une fonction~;
-    \smallskip
-
-    \item la pile~;
-    \smallskip
-    
-    \item la notion d'effet de bord pour une fonction.
-\end{enumerate}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Commandes préprocesseur}
 
@@ -1300,7 +1436,10 @@ Il existe plusieurs sortes de commandes préprocesseur~:
     \item les définitions de symboles~;
     \smallskip
 
-    \item les macro-instructions à paramètres.
+    \item les macro-instructions à paramètres;
+    \smallskip
+    
+    \item les macro-instructions de contrôle de compilation.
 \end{itemize}}
 \end{frame}
 
@@ -1329,7 +1468,7 @@ Il est possible d'enchaîner les inclusions~:}
 \bigskip
 
 \uncover<4->{
-Habituellement, les inclusions sont réalisés au début du programme.}
+Habituellement, les inclusions sont réalisées au début du programme.}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1470,27 +1609,87 @@ De cette façon, \Code{5 * DOUBLE(x)} est remplacée par
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile] \frametitle{Récapitulatif}
-Dans cette sous-partie, nous avons vu~:
+\begin{frame} \frametitle{Macro-instructions de controle de compilation}
+Les \alert{macro-instructions de contrôle de compilation} permettent 
+d'ignorer, lors de la compilation, une partie du programme.
+\medskip
 
-\begin{enumerate}
-    \item la notion de commande préprocesseur~;
-    \smallskip
+Ceci est utile pour contrôler les parties compilées dans un programme.
+\bigskip
 
-    \item les commandes d'inclusion~;
-    \smallskip
+On dispose ainsi des constructions suivantes~:
+\begin{multicols}{2}
+\Code{\#ifdef SYMB} \\
+\Code{\dots} \\
+\Code{\#endif}
 
-    \item les commandes de définition~;
-    \smallskip
+\Code{\#ifndef SYMB} \\
+\Code{\dots} \\
+\Code{\#endif}
+\end{multicols}
 
-    \item les commandes de définition avec paramètres~;
-    \smallskip
+À gauche, le code \Code{\dots} n'est considéré que si l'alias \Code{SYMB}
+est défini.
+\medskip
 
-    \item la manière dont le préprocesseur résout les commandes dans
-    un programme~;
-    \smallskip
+À droite, le code \Code{\dots} n'est considéré que si l'alias \Code{SYMB}
+n'est pas défini.
+\end{frame}
 
-    \item les problèmes qui peuvent survenir lors de l'utilisation
-    de commandes avec paramètres et l'utilisation de parenthèses.
-\end{enumerate}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] 
+\frametitle{Macro-instructions de controle de compilation}
+\begin{multicols}{2}
+\begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+#include <stdio.h>
+
+
+#define GAUCHE_DROITE
+
+#ifdef GAUCHE_DROITE
+
+int rechercher(char *tab, 
+        int n, char x) {
+    int i;
+    for (i = 0 ; i <= n ; ++i)
+        if (tab[i] == x)
+            return i;
+    return -1;
+}
+
+#else
+
+
+int rechercher(char *tab, 
+        int n, char x) {
+    int i;
+    for (i = n - 1 ; i >= 0 ; --i)
+        if (tab[i] == x)
+            return i;
+    return -1;
+}
+
+#endif
+
+int main() {
+    int res;
+    char tab[] = "chaine de test";
+    
+    res = rechercher(tab, 14, 't');
+    printf("%d\n", res);
+}
+\end{lstlisting}
+\end{multicols}
+
+\begin{footnotesize}
+Ici, on donne deux algorithmes pour localiser la première occurrence
+d'une lettre dans un tableau~: de la gauche vers la droite, ou bien
+de la droite vers la gauche.
+\smallskip
+
+Ce programme affiche \Code{10}.
+\smallskip
+
+Si on commente la l. 4, il affiche \Code{13}.
+\end{footnotesize}
 \end{frame}
