@@ -13,6 +13,7 @@
 \usepackage{multicol}
 \usepackage{enumitem}
 \usepackage{listings}
+\usepackage[dvipsnames]{xcolor}
 \usepackage{tikz}
 
 %\author{Samuele Giraudo}
@@ -30,6 +31,26 @@
 \newcommand{\Lb}{{\tt b}}
 \newcommand{\Lc}{{\tt c}}
 \newcommand{\Ld}{{\tt d}}
+
+% Configuration de listings.
+\lstset{
+    language=c,
+    basicstyle=\ttfamily\footnotesize,
+    identifierstyle=\color{Mahogany},
+    keywordstyle=\color{NavyBlue},
+    stringstyle=\color{Emerald},
+    commentstyle=\it\color{Gray},
+    columns=flexible,
+    tabsize=4,
+    extendedchars=true,
+    showspaces=false,
+    numbers=left,
+    numberstyle=\tiny,
+    breaklines=true,
+    breakautoindent=true,
+    captionpos=b,
+    showstringspaces=true
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

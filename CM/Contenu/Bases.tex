@@ -1,12 +1,15 @@
 % Auteur : Samuele Giraudo
 % Création : oct. 2013
-% Modifications : août 2014 sept 2014 oct. 2014, déc. 2015
+% Modifications : août 2014 sept 2014 oct. 2014, déc. 2015, jan. 2016
+% fev. 2016
 
 \tikzstyle{PointDiag}=[rectangle,draw=Marron!100,fill=Marron!20,
     line width=1pt,minimum width=1cm]
 \tikzstyle{TestDiag}=[circle,draw=Bleu!100,fill=Bleu!20,
     line width=1pt]
 \tikzstyle{FlecheDiag}=[->,draw=Rouge!80,line width=1pt]
+\tikzstyle{CasePile}=[rectangle,draw=GreenYellow!100,fill=GreenYellow!20,
+    line width=1pt,minimum width=2.5cm, minimum height=1cm]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -145,7 +148,7 @@ P.ex., les entités suivantes sont des expressions~:
     \smallskip
     
     Valeur~: \Code{3}, type~: \Code{int}
-    \bigskip=}
+    \bigskip}
     
     \uncover<7->{
     \item \Code{f(5)}
@@ -156,7 +159,7 @@ P.ex., les entités suivantes sont des expressions~:
     \bigskip}
     
     \uncover<8->{
-    \item \Code{(a == 0) \&\& ( b>= 3)}
+    \item \Code{(a == 0) \&\& (b >= 3)}
     \smallskip
     
     Valeur~: \Code{0} ou \Code{1}, type~: \Code{int}
@@ -346,7 +349,7 @@ d'{\bf imbriquer} plusieurs blocs.}
 \begin{multicols}{2}
 \begin{semiverbatim}\footnotesize
 int main() \{
-    int a;
+    int b;
     scanf("%d", &b);
     \textcolor{BrickRed}{\{
         int a;
@@ -850,12 +853,12 @@ permet de modifier et la $2\ieme$ de lire sa valeur.}
 Nous rencontrons une subtilité~: un identificateur \Code{x} de variable 
 peut désigner soit~:
 \begin{enumerate}
-    \item la valeur de la variable \Code{x}, p.ex, dans 
+    \item la valeur de la variable \Code{x}, p.ex., dans 
     \Code{x + 16}~;
     \smallskip
     
     \uncover<2->{
-    \item soit la variable \Code{x} elle-même, p.ex, dans 
+    \item soit la variable \Code{x} elle-même, p.ex., dans 
     \Code{x += 8}.}
 \end{enumerate}
 \medskip
@@ -863,7 +866,7 @@ peut désigner soit~:
 \uncover<3->{
 La terminologie de \og{\it L}-value\fg{} (valeur gauche) et 
 \og{\it R}-value\fg{} (valeur droite) permet de mettre en évidence cette
-subtilité.
+différence.
 \bigskip}
 
 \uncover<4->{
@@ -1142,7 +1145,8 @@ est une fonction d'identificateur \Code{produit}, de signature
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile] \frametitle{Définition {\em vs} déclaration}
-La \alert{définition} d'une fonction consiste à fournir son code.
+La \alert{définition} d'une fonction consiste à fournir tous ses 
+constituants.
 \medskip
 
 \uncover<2->{
@@ -1227,7 +1231,7 @@ de l'appel.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile] \frametitle{Portée lexicale des paramètres}
 Les variables locales d'une fonction ont pour portée lexicale la
-fonction elle-même.
+fonction elle-même (déjà mentionné).
 \bigskip
 
 \uncover<2->{
@@ -1266,29 +1270,89 @@ Ce sont des variables différentes.}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame} \frametitle{Pile}
+\begin{frame}[fragile] \frametitle{Pile}
 Lors de l'appel d'une fonction, les valeurs de ses arguments sont
 \alert{recopiées} dans une zone de la mémoire appelée \alert{pile}.
+\bigskip
+
+{\bf Conséquence très importante}~: toute modification des paramètres
+dans une fonction ne modifie pas les valeurs des arguments avec lesquels
+elle a été appelée.
+\bigskip
+
+P.ex.,
+\begin{multicols}{2}
+\begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+void incr(int a) {
+    a = a + 1;
+}
+
+int f() {
+    int b;
+    
+    b = 3;
+    incr(b);
+    printf("%d\n", b);
+    return 0;
+}
+...
+f();
+\end{lstlisting}
+\small
+L'appel à \Code{f} en l. 14 produit les configurations de pile
+\begin{flushleft}
+    \begin{tabular}{ccc}
+    \scalebox{.45}{\begin{tikzpicture}
+        \node[CasePile](1)at(0,0){\Code{b} (l. 6, val. \Code{3})};
+    \end{tikzpicture}}
+    &
+    \scalebox{.45}{\begin{tikzpicture}
+        \node[CasePile,draw=SeaGreen,fill=SeaGreen!30](1)at(0,0)
+            {\Code{a} (l. 1, val. \Code{3})};
+        \node[CasePile](2)at(0,-1){\Code{b} (l. 6, val. \Code{3})};
+    \end{tikzpicture}}
+    &
+    \scalebox{.45}{\begin{tikzpicture}
+        \node[CasePile,draw=SeaGreen,fill=SeaGreen!30](1)at(0,0)
+            {\Code{a} (l. 1, val. \Code{4})};
+        \node[CasePile](2)at(0,-1){\Code{b} (l. 6, val. \Code{3})};
+    \end{tikzpicture}} \\
+    l. 8 & l. 1 & l. 2
+    \end{tabular}
+\end{flushleft}
+\begin{flushleft}
+    \begin{tabular}{cc}
+    \scalebox{.45}{\begin{tikzpicture}
+        \node[CasePile](1)at(0,0){\Code{b} (l. 6, val. \Code{3})};
+    \end{tikzpicture}}
+    &
+    \scalebox{.45}{\begin{tikzpicture}
+        \node[CasePile,draw=YellowOrange,fill=YellowOrange!30](1)at(0,0)
+            {\Code{0} (l. 11, val. ret.)};
+    \end{tikzpicture}} \\
+    l. 10 & l. 11 
+    \end{tabular}
+\end{flushleft}
+\end{multicols}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Pile}
+Les \alert{variables locales} d'une fonction (c.-à-d. les variables déclarées
+dans le corps de la fonction) se situent dans la \alert{pile}.
+\medskip
+
+De plus, la \alert{valeur renvoyée} (si son type de retour n'est pas 
+\Code{void}) se situe dans la \alert{pile}.
 \medskip
 
 \uncover<2->{
-{\bf Conséquence très importante}~: toute modification des paramètres
-dans une fonction ne modifie pas la valeur des arguments avec lesquels
-elle a été appelée.
+Après avoir appelé une fonction, c.-à-d. juste après avoir renvoyé
+la valeur de retour, la pile se trouve dans le même état qu'avant l'appel.
 \bigskip
 \bigskip}
 
 \uncover<3->{
-Les \alert{variables locales} d'une fonction (c.-à-d. les variables déclarées
-dans le corps de la fonction) se situent dans la \alert{pile}.
-\medskip}
-
-\uncover<4->{
-Après avoir appelé une fonction, c.-à-d. juste après avoir renvoyé
-la valeur de retour, la pile se trouve dans le même état qu'avant l'appel.
-\medskip}
-
-\uncover<5->{
 {\bf Conséquence très importante}~: toute variable locale à une fonction
 est non seulement invisible mais n'existe plus en mémoire hors de la
 fonction et après son appel.}
@@ -1296,33 +1360,101 @@ fonction et après son appel.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile] \frametitle{Pile}
-Soit la fonction 
+P.ex., 
+\begin{multicols}{2}
 \begin{lstlisting}
-void fct(int a) {
+
+void fct_1(int a) {
     int b, c;
-    
     b = 1;
     c = 2;
     a = b + c;
 }
-\end{lstlisting}
-et la suite d'instructions
-\begin{lstlisting}
-int x;
-x = 16;
-fct(x);
-printf("%d\n", x);
-\end{lstlisting}
 
-\begin{center}
-    \todo{Dessiner la pile au fur et à mesure de l'exécution.}
+void fct_2() {
+    int x;
+    x = 16;
+    fct(x);
+    printf("%d\n", x);
+}
+...
+fct_2();
+
+\end{lstlisting}
+\end{multicols}
+
+Configurations de pile~:
+\begin{center} \small
+\begin{tabular}{cccccccc}
+    $\emptyset$
+    &
+    \scalebox{.45}{\begin{tikzpicture}
+        \node[CasePile](1)at(0,0){\Code{x} (l. 10, val. \Code{16})};
+    \end{tikzpicture}}
+    &
+    \scalebox{.45}{\begin{tikzpicture}
+        \node[CasePile](1)at(0,0){\Code{x} (l. 10, val. \Code{16})};
+        \node[CasePile,draw=SeaGreen,fill=SeaGreen!30](2)at(0,1)
+            {\Code{a} (l. 1, val. \Code{16})};
+    \end{tikzpicture}}
+    &
+    \scalebox{.45}{\begin{tikzpicture}
+        \node[CasePile](1)at(0,0){\Code{x} (l. 10, val. \Code{16})};
+        \node[CasePile,draw=SeaGreen,fill=SeaGreen!30](2)at(0,1)
+            {\Code{a} (l. 1, val. \Code{16})};
+        \node[CasePile,draw=YellowOrange,fill=YellowOrange!30](3)at(0,2)
+            {\Code{b} (l. 2, val. \Code{?})};
+    \end{tikzpicture}}
+    &
+    \scalebox{.45}{\begin{tikzpicture}
+        \node[CasePile](1)at(0,0){\Code{x} (l. 10, val. \Code{16})};
+        \node[CasePile,draw=SeaGreen,fill=SeaGreen!30](2)at(0,1)
+            {\Code{a} (l. 1, val. \Code{16})};
+        \node[CasePile,draw=YellowOrange,fill=YellowOrange!30](3)at(0,2)
+            {\Code{b} (l. 2, val. \Code{?})};
+        \node[CasePile,draw=YellowOrange,fill=YellowOrange!30](4)at(0,3)
+            {\Code{c} (l. 2, val. \Code{?})};
+    \end{tikzpicture}}
+    &
+    \scalebox{.45}{\begin{tikzpicture}
+        \node[CasePile](1)at(0,0){\Code{x} (l. 10, val. \Code{16})};
+        \node[CasePile,draw=SeaGreen,fill=SeaGreen!30](2)at(0,1)
+            {\Code{a} (l. 1, val. \Code{3})};
+        \node[CasePile,draw=YellowOrange,fill=YellowOrange!30](3)at(0,2)
+            {\Code{b} (l. 2, val. \Code{1})};
+        \node[CasePile,draw=YellowOrange,fill=YellowOrange!30](4)at(0,3)
+            {\Code{c} (l. 2, val. \Code{2})};
+    \end{tikzpicture}}
+    &
+    \scalebox{.45}{\begin{tikzpicture}
+        \node[CasePile](1)at(0,0){\Code{x} (l. 10, val. \Code{16})};
+    \end{tikzpicture}}
+    &
+    $\emptyset$ \\
+    l. 15 & l. 11 & l. 2 & l. 3 & l. 3 & l. 6 & l. 13 & l. 17
+\end{tabular}
 \end{center}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile] \frametitle{Pile et fonctions récursives}
+Soit la fonction 
+\begin{lstlisting}
+void fibo(int a) {
+    if (a <= 1) 
+        return a;
+    return fibo(a - 1) + fibo(a - 2);
+}
+\end{lstlisting}
+et la suite d'instructions
+\begin{lstlisting}
+int x;
+x = fibo(4);
+\end{lstlisting}
+
 \begin{center}
-    \todo{À faire.}
+    \todo{Dessiner l'arbre des appels et la pile au fur et à mesure 
+    de l'exécution.}
 \end{center}
 \end{frame}
 
@@ -1330,7 +1462,8 @@ printf("%d\n", x);
 \begin{frame}[fragile]\frametitle{Fonctions à effet de bord}
 Une {\bf fonction} est à \alert{effet de bord} s'il existe au
 moins un jeu d'arguments qui fait que l'évaluation de l'appel
-à la fonction sur ce jeu d'arguments modifie la mémoire.
+à la fonction sur ce jeu d'arguments modifie la mémoire par rapport
+à son état d'avant l'appel.
 \bigskip
 
 \begin{multicols}{2}
@@ -1609,21 +1742,32 @@ De cette façon, \Code{5 * DOUBLE(x)} est remplacée par
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame} \frametitle{Macro-instructions de controle de compilation}
+\begin{frame} \frametitle{Macro-instructions de contrôle de compilation}
 Les \alert{macro-instructions de contrôle de compilation} permettent 
 d'ignorer, lors de la compilation, une partie du programme.
 \medskip
 
-Ceci est utile pour contrôler les parties compilées dans un programme.
+Ceci est utile pour {\bf sélectionner} les parties à prendre en compte 
+dans un programme, sans avoir à les (dé)commenter.
 \bigskip
 
-On dispose ainsi des constructions suivantes~:
-\begin{multicols}{2}
+On dispose ainsi des constructions
+\begin{multicols}{3}
 \Code{\#ifdef SYMB} \\
 \Code{\dots} \\
 \Code{\#endif}
+\bigskip
+\bigskip
 
 \Code{\#ifndef SYMB} \\
+\Code{\dots} \\
+\Code{\#endif}
+\bigskip
+\bigskip
+
+\Code{\#ifdef SYMB} \\
+\Code{\dots} \\
+\Code{\#else} \\
 \Code{\dots} \\
 \Code{\#endif}
 \end{multicols}
@@ -1632,13 +1776,13 @@ On dispose ainsi des constructions suivantes~:
 est défini.
 \medskip
 
-À droite, le code \Code{\dots} n'est considéré que si l'alias \Code{SYMB}
+Au centre, le code \Code{\dots} n'est considéré que si l'alias \Code{SYMB}
 n'est pas défini.
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile] 
-\frametitle{Macro-instructions de controle de compilation}
+\frametitle{Macro-instructions de contrôle de compilation}
 \begin{multicols}{2}
 \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
 #include <stdio.h>
@@ -1687,9 +1831,7 @@ d'une lettre dans un tableau~: de la gauche vers la droite, ou bien
 de la droite vers la gauche.
 \smallskip
 
-Ce programme affiche \Code{10}.
-\smallskip
-
-Si on commente la l. 4, il affiche \Code{13}.
+Ce programme affiche \Code{10}~; si on renomme \Code{GAUCHE\_DROITE}
+(en l. 4), il affiche \Code{13}.
 \end{footnotesize}
 \end{frame}

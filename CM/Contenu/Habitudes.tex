@@ -1,6 +1,6 @@
 % Auteur : Samuele Giraudo
 % Création : déc. 2015
-% Modifications : déc. 2015
+% Modifications : déc. 2015, fev. 2016
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -75,9 +75,9 @@ if (b >= 0) {
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile] \frametitle{Organisation des blocs}
-Un \alert{bloc} des une suite d'instructions délimitée par des accolades.
-Il se trouve attaché à une instruction de branchement ou de boucle. Il
-peut aussi être indépendant.
+Nous avons vu qu'une \alert{bloc} des une suite d'instructions délimitée 
+par des accolades. Il se trouve attaché à une instruction de branchement 
+ou de boucle. Il peut aussi être indépendant.
 \medskip
 
 On {\bf revient à la ligne} après une {\bf accolade ouvrante}.
@@ -198,7 +198,7 @@ On fixe la langue au {\bf français} pour leur construction.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile] \frametitle{Choix des identificateurs}
 Les seuls identificateurs d'une lettre autorisés sont \Code{i},
-\Code{j}, \Code{k} pour les indices de boucles.
+\Code{j}, \Code{k}, {\em etc.}, pour les indices de boucles.
 \medskip
 
 Les majuscules sont interdites dans les identificateurs. Dans un
@@ -246,9 +246,9 @@ On documente chaque \alert{fichier de programme}, au tout début, par
 \end{itemize}
 
 \begin{lstlisting}
-/* Auteur : S. Giraudo
- * Creation : 21-12-2015
- * Modification : 21-12-2015 */
+/* Auteur : L. W. Polsfuss
+ * Creation : 01-01-1952
+ * Modification : 12-08-2009 */
 \end{lstlisting}
 \bigskip
 
@@ -307,18 +307,6 @@ int max(int a, int b) {
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile] \frametitle{Récapitulatif}
-Dans cette sous-partie, nous avons vu~:
-
-\begin{enumerate}
-    \item des règles pour la mise en page des programmes~;
-    \smallskip
-
-    \item des règles pour la documentation des programmes.
-\end{enumerate}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Gestion d'erreurs}
 
@@ -363,8 +351,8 @@ Le \alert{code d'erreur} d'une fonction ayant un prototype standard
 suit la spécification suivante~:
 
 \begin{itemize}
-    \item une valeur nulle signifie que l'exécution de la fonction a 
-    échoué~;
+    \item une valeur nulle \Code{0} signifie que l'exécution de la 
+    fonction a échoué~;
     \smallskip
     
     \item une valeur positive signifie que l'exécution de la fonction 
@@ -502,14 +490,15 @@ if (nb_min_maj("UnDeuxTrois", &a, &b) == 0) {
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile] \frametitle{Emploi des fonctions à gestion d'erreurs}
+\begin{frame}[fragile] \frametitle{Interruption de l'exécution}
 Dans certains cas où une erreur survient, celle-ci peut être 
-irrécupérable. Il faut donc interrompre l'exécution du programme. On
-utilise pour cela la fonction
+irrécupérable. Il faut donc \alert{interrompre l'exécution} du programme. 
+On utilise pour cela la fonction
 \begin{lstlisting}
     void exit(int status);
 \end{lstlisting}
 de \Code{stdlib.h}, appelée avec l'argument \Code{EXIT\_FAILURE}.
+\medskip
 
 \begin{lstlisting}
 /* Allocation dynamique. */
@@ -517,23 +506,11 @@ tab = (int *) malloc(sizeof(int) * 1024);
 
 /* Verification de son succes. */
 if (NULL == tab)
-    /* Sur son echec, on interromp 
+    /* Sur son echec, on interrompt
      * l'execution immediatement. */
     exit(EXIT_FAILURE);
 /* Instructions suivantes. */
 \end{lstlisting}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile] \frametitle{Récapitulatif}
-Dans cette sous-partie, nous avons vu~:
-
-\begin{enumerate}
-    \item la notion de prototype standard pour les fonctions~;
-    \smallskip
-
-    \item un mécanisme pour renseigner les erreurs dans les fonctions.
-\end{enumerate}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -600,8 +577,8 @@ Elle possède deux pré-assertions~:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile] \frametitle{Conception de pré-assertions}
-Il est important de munir ses fonctions de pré-assertions les plus 
-précises et complètes possibles. Quelques règles~:
+Il est important de \alert{munir ses fonctions de pré-assertions} les 
+plus précises et complètes possibles. Quelques règles~:
 
 \begin{itemize}
     \item la condition testée ne doit dépendre que des arguments d'une 
@@ -703,19 +680,43 @@ des erreurs évidentes.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile] 
     \frametitle{Les pré-assertions pour corriger un programme}
-\begin{center} \todo{À faire.} \end{center}
+Considérons le programme
+\begin{multicols}{2}
+\begin{lstlisting}    
+#include <stdio.h>
+#include <assert.h>
+
+int div(int a, int b) {
+    assert(b != 0);
+
+    return a / b;
+}
+
+int main() {
+    int a;
+
+    a = div(17, 0);
+    printf("%d\n", a);
+
+    return 0;
+}
+\end{lstlisting}
+\begin{small}
+La compilation \Code{gcc -ansi -pedantic -Wall Prgm.c} donne 
+l'exécutable \Code{a.out}.
+\medskip
+
+Son exécution \Code{./a.out} est interrompue en l.5. Elle produit la 
+réponse 
+\smallskip
+
+\Code{a.out: Prgm.c:5: div: Assertion `b != 0' failed. \\
+Aborted (core dumped)}
+\medskip
+
+On récolte la précieuse information sur le numéro de ligne de la 
+pré-assertion non satisfaite qui produit l'arrêt précipité de 
+l'exécution.
+\end{small}
+\end{multicols}
 \end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile] \frametitle{Récapitulatif}
-Dans cette sous-partie, nous avons vu~:
-
-\begin{enumerate}
-    \item la notion de pré-assertions dans les fonctions~;
-    \smallskip
-
-    \item l'utilisation des pré-assertions pour corriger efficacement
-    un programme.
-\end{enumerate}
-\end{frame}
-
