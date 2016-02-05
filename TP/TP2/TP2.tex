@@ -1,6 +1,6 @@
 % Auteur : Samuele Giraudo
 % Création : 11-12-15
-% Modifications : 11-12-15, déc. 2015
+% Modifications : 11-12-15, déc. 2015, jan. 2016
 
 \documentclass[12pt]{article}
 
@@ -8,7 +8,7 @@
 \usepackage[french]{babel}
 \usepackage{amsmath,amsthm,amsfonts,amssymb}
 \usepackage{lmodern}
-\usepackage[top=2.4cm,bottom=2.4cm,left=2cm,right=2cm]{geometry}
+\usepackage[top=3cm,bottom=3cm,left=3cm,right=3cm]{geometry}
 \usepackage{hyperref}
 \usepackage{multicol}
 \usepackage{enumerate}
@@ -53,12 +53,11 @@ thick,inner sep=0pt,minimum size=10mm,line width=1pt,font=\Huge]
 
 \maketitle
 
-Ce TP se déroule en deux séances et est à faire par binômes.
-Le travail réalisé doit être envoyé au plus tard exactement une
-semaine après le début de la 2\ieme{} séance de TP traitant ce sujet. Il
-sera disposé sur la plate-forme prévue à cet effet et constitué des
-programmes répondant aux questions et des éventuels fichiers annexes qui
-peuvent être demandés.
+Ce TP se déroule en deux séances et est à faire par binômes. Le travail 
+réalisé doit être envoyé au plus tard exactement une semaine après le 
+début de la 2\ieme{} séance de TP traitant ce sujet. Il sera disposé sur 
+la plate-forme prévue à cet effet et constitué des programmes répondant 
+aux questions et des éventuels fichiers annexes qui peuvent être demandés.
 \bigskip
 \bigskip
 
@@ -85,7 +84,7 @@ sont des entiers supérieurs à un (voir figure~\ref{fig:Chomp3x5}).
         \node[Boite]at(3,2){};
         \node[Boite]at(4,2){};
     \end{tikzpicture}}
-    \caption{La tablette de chocolat du {\em Chomp}~$3 \times 5$
+    \caption{\footnotesize tablette de chocolat du {\em Chomp}~$3 \times 5$
     dans sa configuration initiale. Le carré empoisonné contient un
     point~$\cdot$.}
     \label{fig:Chomp3x5}
@@ -126,48 +125,22 @@ mange aussi tous les carrés qui se trouvent en bas et à sa droite
         \node[Boite]at(4,2){};
     \end{tikzpicture}}\end{split}
     \end{equation*}
-    \caption{Le joueur mange un carré de chocolat --- celui qui contient une
-    croix~$\times$. Ceci a l'effet de manger tous les carrés de chocolat
-    situés en bas et à sa droite.}
+    \caption{\footnotesize Le joueur mange un carré de chocolat --- 
+    celui qui contient une croix~$\times$. Ceci a l'effet de manger tous 
+    les carrés de chocolat situés en bas et à sa droite.}
     \label{fig:MangerCarre}
 \end{figure}
 La partie s'arrête lorsque l'un des deux joueurs mange le carré de chocolat
 en position~$(0, 0)$. Ce carré est en effet empoisonné et ce joueur perd
 la partie.
-\smallskip
-
-L'un des objectifs de ce TP est de parfaire l'utilisation de la bibliothèque
-graphique {\sf MLV} qui permet d'afficher la tablette de chocolat et
-de faire en sorte que deux joueurs puissent jouer au {\em Chomp} à la
-souris. On suit ici une approche ascendante (dit {\em bottom-up}). Celle-ci
-consiste à réaliser le projet en constituant une à une ses pièces pour
-les assembler finalement.
-\bigskip
 \bigskip
 
-{\bf Conseils~:}
-\begin{itemize}
-    \item pour chaque fonction programmée, s'interroger sur les arguments
-    qui peuvent poser des problèmes. Capturer ces cas à l'aide de
-    pré-assertions~;
-    \item utiliser au maximum les fonctions déjà programmées dans les
-    nouvelles à écrire. Il faut éviter au maximum la duplication de code~;
-    \item il ne suffit pas de programmer uniquement les fonctions qui sont
-    demandées. Pour mener le sujet à bien, des fonctions supplémentaires
-    et non mentionnées explicitement dans le sujet seront utiles. Soigner
-    leur nom~;
-    \item dès qu'une fonction est écrite, la tester de manière à
-    recouvrir tous les cas significatifs possibles et conserver les tests
-    (le but étant de les relancer pour vérifier l'intégrité du
-    programme lors de modifications futures)~;
-    \item commenter le code en évitant absolument les commentaires inutiles.
-    Il faut commenter chaque fonction écrite, juste avant son prototype.
-    Il faut y mentionner les trois points suivants~: (1) une description
-    du rôle de la fonction, (2) une description de ses paramètres et (3)
-    une description de ce qu'elle renvoie~;
-    \item préférer la concision au maximum. Un code concis et lisible
-    possède une grande valeur.
-\end{itemize}
+L'un des objectifs de ce TP est de parfaire l'utilisation de la 
+bibliothèque graphique {\sf MLV} qui permet d'afficher la tablette de 
+chocolat et de faire en sorte que deux joueurs puissent jouer au {\em Chomp} 
+à la souris. On suit dans la conception de ce projet une approche 
+ascendante (dite {\em bottom-up}). Celle-ci consiste à réaliser le projet 
+en constituant une à une ses pièces pour les assembler finalement.
 \bigskip
 \bigskip
 
@@ -191,8 +164,8 @@ la programmation modulaire.}
     \begin{enumerate}
         \item Définir un type {\tt Tablette} qui représente une tablette de
         chocolat de dimension~$n \times m$. Utiliser un tableau~$n \times m$
-        qui contient des entiers. Un contenu à {\tt 1} signifie
-        que le carré de chocolat correspondant existe encore tandis qu'un contenu
+        qui contient des entiers. Un contenu à {\tt 1} signifie que le 
+        carré de chocolat correspondant existe encore tandis qu'un contenu
         à {\tt 0} signifie qu'il a été mangé. Toute variable de type
         {\tt Tablette} connaît sa dimension, c.-à-d. les entiers~$n$
         et~$m$.
@@ -202,14 +175,15 @@ la programmation modulaire.}
         les deux joueurs.
         \smallskip
 
-        \item Définir un type {\tt Position} qui permet de représenter une
-        position de jeu de {\em Chomp}. Une position est déterminée par une tablette
-        de chocolat et le joueur dont c'est le tour de jouer.
+        \item Définir un type {\tt Position} qui permet de représenter 
+        une position de jeu de {\em Chomp}. Une position est déterminée 
+        par une tablette de chocolat et le joueur dont c'est le tour de 
+        jouer.
         \smallskip
 
-        \item Définir un type {\tt Coup} qui permet de modéliser un coup joué.
-        Un coup est entièrement spécifié par les coordonnées {\tt x} et {\tt y}
-        du carré de chocolat que le joueur souhaite manger.
+        \item Définir un type {\tt Coup} qui permet de modéliser un coup 
+        joué. Un coup est entièrement spécifié par les coordonnées {\tt x} 
+        et {\tt y} du carré de chocolat que le joueur souhaite manger.
     \end{enumerate}
 \end{Exercice}
 \bigskip
@@ -234,38 +208,40 @@ Tablette creer_tablette(int n, int m);
 \begin{lstlisting}
 void manger(Tablette *t, int x, int y);
 \end{lstlisting}
-        qui modifie la tablette {\tt t} de sorte à manger le carré de chocolat
-        en position $({\tt x}, {\tt y})$ ainsi que tous ceux qui sont en dessous de lui
-        et à sa droite.
+        qui modifie la tablette {\tt t} de sorte à manger le carré de 
+        chocolat en position $({\tt x}, {\tt y})$ ainsi que tous ceux 
+        qui sont en dessous de lui et à sa droite.
         \smallskip
 
-        \item Un coup dans une position donnée est légal s'il ordonne de manger
-        un carré de chocolat qui existe encore. Écrire une fonction
+        \item Un coup dans une position donnée est légal s'il ordonne de 
+        manger un carré de chocolat qui existe encore. Écrire une fonction
 \begin{lstlisting}
 int est_legal(Position *pos, Coup *coup);
 \end{lstlisting}
-        qui renvoie {\tt 1} si le coup {\tt coup} est légal dans la position
-        {\tt pos} et {\tt 0} sinon.
+        qui renvoie {\tt 1} si le coup {\tt coup} est légal dans la 
+        position {\tt pos} et {\tt 0} sinon.
         \smallskip
 
-        \item La partie est terminée lorsque le carré de chocolat empoisonné
-        vient d'être mangé. Dans ce cas, c'est le joueur qui vient de jouer
-        qui a perdu et l'autre qui a gagné. Écrire une fonction
+        \item La partie est terminée lorsque le carré de chocolat 
+        empoisonné vient d'être mangé. Dans ce cas, c'est le joueur qui 
+        vient de jouer qui a perdu et l'autre qui a gagné. Écrire une 
+        fonction
 \begin{lstlisting}
 int est_jeu_termine(Position *pos, Joueur *joueur_gagnant);
 \end{lstlisting}
-        qui renvoie {\tt 1} si la partie représentée par la position {\tt pos}
-        est terminée et {\tt 0} sinon. Dans le cas où la partie est terminée,
-        la fonction affecte à la variable pointée par {\tt joueur\_gagnant}
-        le joueur qui gagne la partie.
+        qui renvoie {\tt 1} si la partie représentée par la position 
+        {\tt pos} est terminée et {\tt 0} sinon. Dans le cas où la partie 
+        est terminée, la fonction affecte à la variable pointée par 
+        {\tt joueur\_gagnant} le joueur qui gagne la partie.
         \smallskip
 
         \item Écrire une fonction
 \begin{lstlisting}
 void jouer_coup(Position *pos, Coup *coup);
 \end{lstlisting}
-        qui joue le coup {\tt coup} dans la position {\tt pos}. Il ne faut pas
-        oublier de modifier le champ qui contient le joueur dont c'est le tour de jouer.
+        qui joue le coup {\tt coup} dans la position {\tt pos}. Il ne 
+        faut pas oublier de modifier le champ qui contient le joueur 
+        dont c'est le tour de jouer.
     \end{enumerate}
 \end{Exercice}
 \bigskip
@@ -281,7 +257,8 @@ void jouer_coup(Position *pos, Coup *coup);
 \begin{lstlisting}
 void afficher_position(Position *pos);
 \end{lstlisting}
-        qui affiche en utilisant la bibliothèque {\sf MLV} la position {\tt pos}.
+        qui affiche en utilisant la bibliothèque {\sf MLV} la position 
+        {\tt pos}.
         \smallskip
 
         \item Écrire une fonction
@@ -337,11 +314,11 @@ Coup lire_coup(Position *pos);
     \item Écrire un {\tt Makefile} complet pour ce projet.
     \smallskip
     
-    \item Comparer les deux version du projet, la première en un unique 
+    \item Comparer les deux versions du projet, la première en un unique 
     fichier et la seconde modularisée. Citer les avantages et les 
-    inconvénients des deux méthodes ({\it Note~: à partir de maintenant, 
+    inconvénients des deux méthodes. ({\it Note~: à partir de maintenant, 
     on adoptera uniquement l'approche de programmation par modules dans 
-    les futurs projets.}).
+    les futurs projets.})
 \end{enumerate}
 \end{Exercice}
 \bigskip
@@ -349,7 +326,7 @@ Coup lire_coup(Position *pos);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{Exercice} {\bf (Améliorations)}\smallskip
+\begin{Exercice} {\bf (Améliorations et questions)}\smallskip
 
 {\it Cet exercice est optionnel, il n'est a envisager que lorsque
 tout le reste fonctionne parfaitement. Les modifications et ajouts
@@ -357,29 +334,34 @@ proposés sont à apporter à la version modularisée du projet.}
 \smallskip
 
 \begin{enumerate}
-    \item Proposer une option au programme pour gérer des {\em matchs}.
-    Un match est une succession de parties dans laquelle le nombre
-    de victoires de chaque joueur est pris en compte. Le déroulement est
-    le suivant~: chacun des deux joueurs entre un nombre souhaité de
-    parties~; ensuite, un nombre de parties égal à la moyenne (arrondie
-    à l'entier supérieur) entre ces deux entiers sont jouées.
-    À l'issue de ces parties, le résultat du match est affiché
+    \item {\it (Facile.)} Proposer une option au programme pour gérer 
+    des {\em matchs}. Un match est une succession de parties dans 
+    laquelle le nombre de victoires de chaque joueur est pris en compte. 
+    Le déroulement est le suivant~: chacun des deux joueurs entre un 
+    nombre souhaité de parties~; ensuite, un nombre de parties égal à la 
+    moyenne (arrondie à l'entier supérieur) entre ces deux entiers sont 
+    jouées. À l'issue de ces parties, le résultat du match est affiché
     (victoire pour l'un ou l'autre des joueurs ou bien match nul).
     \smallskip
 
-    \item On souhaite concevoir un système de sauvegarde de partie. Une
-    partie est encodée par la taille du plateau et la suite des coups
-    joués depuis le début de la partie. Proposer un format de fichier pour
-    coder une partie de cette façon. Ajouter au programme la possibilité
-    de sauvegarder une partie (et donc écrire son encodage dans un fichier)
-    et la possibilité de charger une partie (et donc de lire son
-    encodage depuis un fichier).
+    \item {\it (Facile.)} On souhaite concevoir un système de sauvegarde 
+    de partie. Une partie est encodée par la taille du plateau et la suite 
+    des coups joués depuis le début de la partie. Proposer un format de 
+    fichier pour coder une partie de cette façon. Ajouter au programme 
+    la possibilité de sauvegarder une partie (et donc écrire son encodage 
+    dans un fichier) et la possibilité de charger une partie (et donc de 
+    lire son encodage depuis un fichier).
     \smallskip
 
-    \item Proposer un mode de jeu contre l'ordinateur. Suggérer plusieurs
-    niveaux de difficulté~: dans le plus facile, l'ordinateur joue
-    ses coup au hasard~; dans l'autre, imaginer un moyen de faire jouer
-    l'ordinateur avec une certaine force.
+    \item {\it (Difficile.)} Proposer un mode de jeu contre l'ordinateur. 
+    Suggérer plusieurs niveaux de difficulté~: dans le plus facile, 
+    l'ordinateur joue ses coup au hasard~; dans l'autre, imaginer un moyen 
+    de faire jouer l'ordinateur avec une certaine force.
+    \smallskip
+    
+    \item {\it (Mathématique.)} Démontrer que le joueur qui commence la
+    partie gagne contre toute défense de son adversaire (on dit que 
+    le premier joueur dispose d'une \og stratégie gagnante\fg.
 \end{enumerate}
 \end{Exercice}
 \bigskip
