@@ -559,7 +559,7 @@ void afficher_tab(int tab[], int nb) {
     assert(tab != NULL);
     assert(nb >= 0);
     for (i = 1 ; i <= nb ; ++i)
-        printf("%c\n", tab[i]);
+        printf("%d\n", tab[i]);
 }
 \end{lstlisting}
 
@@ -710,7 +710,7 @@ Son exécution \Code{./a.out} est interrompue en l.5. Elle produit la
 réponse 
 \smallskip
 
-\Code{a.out: Prgm.c:5: div: Assertion `b != 0' failed. \\
+\Sortie{a.out: Prgm.c:5: div: Assertion `b != 0' failed. \\
 Aborted (core dumped)}
 \medskip
 

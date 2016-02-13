@@ -1363,7 +1363,6 @@ fonction et après son appel.}
 P.ex., 
 \begin{multicols}{2}
 \begin{lstlisting}
-
 void fct_1(int a) {
     int b, c;
     b = 1;
@@ -1371,10 +1370,11 @@ void fct_1(int a) {
     a = b + c;
 }
 
+
 void fct_2() {
     int x;
     x = 16;
-    fct(x);
+    fct_1(x);
     printf("%d\n", x);
 }
 ...
