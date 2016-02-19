@@ -1,1 +1,0 @@
-latex TP3.tex ; dvips TP3.dvi ; ps2pdf TP3.ps
