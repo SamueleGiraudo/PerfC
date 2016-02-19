@@ -1,14 +1,14 @@
 % Auteur : Michel Landschoot, Samuele Giraudo
 % Création : 18/09/12
-% Modifications :  aout 2014, janvier 2016
+% Modifications :  aout 2014, janvier 2016, fév. 2016
 
-\documentclass[12pt]{article}
+\documentclass[11pt]{article}
 
 \usepackage[utf8]{inputenc}
 \usepackage[french]{babel}
 \usepackage{amsmath,amsthm,amsfonts,amssymb}
 \usepackage{lmodern}
-\usepackage[top=2.4cm,bottom=2.4cm,left=2cm,right=2cm]{geometry}
+\usepackage[top=3cm,bottom=3cm,left=3cm,right=3cm]{geometry}
 \usepackage{hyperref}
 \usepackage{multicol}
 \usepackage{enumerate}
@@ -19,7 +19,7 @@
 %\author{Samuele Giraudo}
 \date{}
 \title{{\bf Perfectionnement à la programmation en {\sf C}} \\
-    Fiche de TP 4 \\
+    Fiche de TP 3 \\
     {\small L2 Informatique 2015-2016} \\
     {\it \small Le jeu du serpent}}
 
@@ -71,12 +71,11 @@ thick,inner sep=0pt,minimum size=6mm,line width=1pt,font=\Huge]
 
 \maketitle
 
-Ce TP se déroule en une seule séance et est à faire par binômes.
-Le travail réalisé doit être envoyé au plus tard exactement une
-semaine après le début de la séance de TP. Il sera disposé sur
-la plate-forme prévue à cet effet et constitué des programmes
-répondant aux questions et des éventuels fichiers annexes qui
-peuvent être demandés.
+Ce TP se déroule en deux séances et est à faire par binômes. Le travail 
+réalisé doit être envoyé au plus tard exactement une semaine après le 
+début de la $2\ieme$ séance de TP. Il sera disposé sur la plate-forme 
+prévue à cet effet et constitué des programmes répondant aux questions 
+et des éventuels fichiers annexes qui peuvent être demandés.
 \bigskip
 \bigskip
 
@@ -85,7 +84,7 @@ Le principe est de piloter un serpent (vu du dessus) pour attraper des
 pommes et grandir progressivement. La difficulté principale consiste en
 ce que le serpent est perpétuellement en mouvement et le contact avec
 les bords de l'écran ou avec lui-même provoque la défaite.
-\smallskip
+\medskip
 
 Le programme à réaliser se décrit de la manière suivante. Au lancement
 du jeu, un quadrillage régulier (de dimensions modulables) est affiché
@@ -98,7 +97,7 @@ des carrés verts. Une illustration d'une situation d'une situation
 de jeu est donnée par la figure~\ref{fig:quadrillage}.
 \begin{figure}[ht]
     \centering
-    \scalebox{.6}{\begin{tikzpicture}
+    \scalebox{.7}{\begin{tikzpicture}
         \foreach \x in {0, ..., 10} {
             \foreach \y in {0, ..., 7} {
                 \node[Quadr](\x,\y)at(\x,\y){};
@@ -115,11 +114,12 @@ de jeu est donnée par la figure~\ref{fig:quadrillage}.
         \node[Corps]at(3,0){};
         \node[Corps]at(2,0){};
     \end{tikzpicture}}
-    \caption{Une situation de jeu du serpent qui respecte les conventions
-    graphiques établies. Le quadrillage est de dimensions $11 \times 8$.}
+    \caption{\footnotesize Une situation de jeu du serpent qui respecte 
+    les conventions graphiques établies. Le quadrillage est de dimensions 
+    $11 \times 8$.}
     \label{fig:quadrillage}
 \end{figure}
-\smallskip
+\medskip
 
 Le serpent se déplace à une vitesse d'une case par seconde selon
 une direction (nord, sud, est ou ouest) et l'utilisateur le pilote
@@ -131,7 +131,7 @@ figure~\ref{fig:deplacement} illustre ce mécanisme de déplacement.
     \centering
     \begin{equation*}
     \begin{split}
-    \scalebox{.6}{\begin{tikzpicture}
+    \scalebox{.7}{\begin{tikzpicture}
         \foreach \x in {0, ..., 6} {
             \foreach \y in {0, ..., 4} {
                 \node[Quadr](\x,\y)at(\x,\y){};
@@ -147,7 +147,7 @@ figure~\ref{fig:deplacement} illustre ce mécanisme de déplacement.
     \end{split}
     \begin{split} \qquad \longrightarrow \qquad \end{split}
     \begin{split}
-    \scalebox{.6}{\begin{tikzpicture}
+    \scalebox{.7}{\begin{tikzpicture}
         \foreach \x in {0, ..., 6} {
             \foreach \y in {0, ..., 4} {
                 \node[Quadr](\x,\y)at(\x,\y){};
@@ -162,12 +162,12 @@ figure~\ref{fig:deplacement} illustre ce mécanisme de déplacement.
     \end{tikzpicture}}
     \end{split}
     \end{equation*}
-    \caption{Le déplacement d'un serpent d'une case à une autre.
-    Le serpent se dirige vers l'est. Le 1\ier{} quadrillage
+    \caption{\footnotesize Le déplacement d'un serpent d'une case à une 
+    autre. Le serpent se dirige vers l'est. Le 1\ier{} quadrillage
     est la situation à un temps $t$ et le 2\ieme{}, au temps $t + 1$.}
     \label{fig:deplacement}
 \end{figure}
-\smallskip
+\medskip
 
 Lorsque le serpent arrive sur une case qui contient une pomme, celle-ci
 disparaît et le corps du serpent grandit en évitant de faire disparaître
@@ -177,7 +177,7 @@ figure~\ref{fig:croissance} illustre ce mécanisme de croissance.
     \centering
     \begin{equation*}
     \begin{split}
-    \scalebox{.6}{\begin{tikzpicture}
+    \scalebox{.7}{\begin{tikzpicture}
         \foreach \x in {0, ..., 6} {
             \foreach \y in {0, ..., 4} {
                 \node[Quadr](\x,\y)at(\x,\y){};
@@ -210,40 +210,15 @@ figure~\ref{fig:croissance} illustre ce mécanisme de croissance.
     \end{tikzpicture}}
     \end{split}
     \end{equation*}
-    \caption{La croissance d'un serpent provoquée par la consommation
-    d'une pomme. Le serpent se dirige vers l'est. Le 1\ier{} quadrillage
-    est la situation à un temps $t$ et le 2\ieme{}, au temps $t + 1$.}
+    \caption{\footnotesize La croissance d'un serpent provoquée par la
+    consommation d'une pomme. Le serpent se dirige vers l'est. Le 1\ier{}
+    quadrillage est la situation à un temps $t$ et le 2\ieme{}, au temps 
+    $t + 1$.}
     \label{fig:croissance}
 \end{figure}
 Lorsque le serpent arrive sur une case occupée par son corps ou bien
 s'il sort du quadrillage, la partie se termine et le score (qui est le
 nombre de pommes mangées) est affiché.
-\bigskip
-\bigskip
-
-{\bf Conseils~:}
-\begin{itemize}
-    \item pour chaque fonction programmée, s'interroger sur les arguments
-    qui peuvent poser des problèmes. Capturer ces cas à l'aide de
-    pré-assertions~;
-    \item utiliser au maximum les fonctions déjà programmées dans les
-    nouvelles à écrire. Il faut éviter au maximum la duplication de code~;
-    \item il ne suffit pas de programmer uniquement les fonctions qui sont
-    demandées. Pour mener le sujet à bien, des fonctions supplémentaires
-    et non mentionnées explicitement dans le sujet seront utiles. Soigner
-    leur nom~;
-    \item dès qu'une fonction est écrite, la tester de manière à
-    recouvrir tous les cas significatifs possibles et conserver les tests
-    (le but étant de les relancer pour vérifier l'intégrité du
-    programme lors de modifications futures)~;
-    \item commenter le code en évitant absolument les commentaires inutiles.
-    Il faut commenter chaque fonction écrite, juste avant son prototype.
-    Il faut y mentionner les trois points suivants~: (1) une description
-    du rôle de la fonction, (2) une description de ses paramètres et (3)
-    une description de ce qu'elle renvoie~;
-    \item préférer la concision au maximum. Un code concis et lisible
-    possède une grande valeur.
-\end{itemize}
 \bigskip
 \bigskip
 
@@ -254,10 +229,12 @@ nombre de pommes mangées) est affiché.
 
 L'objectif de cet exercice est de concevoir une architecture viable pour
 le projet présenté.
+\smallskip
+
 \begin{enumerate}
-    \item Lire attentivement l'intégralité du sujet avant de commencer
-    à répondre aux questions. La description du sujet constitue une 
-    spécification de projet. 
+    \item Lire attentivement {\bf l'intégralité du sujet} avant de 
+    commencer à répondre aux questions. La description du sujet constitue 
+    une spécification de projet. 
     \smallskip
     
     \item Une fois ceci fait, proposer un découpage en modules cohérent 
@@ -279,27 +256,32 @@ le projet présenté.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{Exercice} {\bf (Définitions des types)}\smallskip
+\begin{Exercice} {\bf (Déclarations des types)}\smallskip
+
+Les types suivants sont obligatoires (à déclarer et à utiliser). Il
+est possible de déclarer des types qui ne sont pas mentionnés ici.
+\smallskip
+
 \begin{enumerate}
-    \item Définir un type {\tt Case} qui permet de représenter une
+    \item Déclarer un type {\tt Case} qui permet de représenter une
     case d'un quadrillage.
     \smallskip
 
-    \item Définir un type {\tt Direction} qui permet de représenter
+    \item Déclarer un type {\tt Direction} qui permet de représenter
     les quatre directions cardinales.
     \smallskip
 
-    \item Définir un type {\tt Serpent} qui permet de représenter un
+    \item Déclarer un type {\tt Serpent} qui permet de représenter un
     serpent. Un serpent est codé par une suite (un tableau dynamique ou
     bien une liste) de cases, la 1\iere{} étant celle de la tête et les
     autres celles du corps et une direction.
     \smallskip
 
-    \item Définir un type {\tt Pomme}. Une pomme est codée par la
+    \item Déclarer un type {\tt Pomme}. Une pomme est codée par la
     case qui la contient.
     \smallskip
 
-    \item Définir un type {\tt Monde} qui permet de représenter une
+    \item Déclarer un type {\tt Monde} qui permet de représenter une
     situation de jeu. Elle comprend les dimensions du quadrillage, le
     serpent, les positions des pommes présentes et le nombre de pommes
     mangées.
@@ -311,6 +293,12 @@ le projet présenté.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{Exercice} {\bf (Mécaniques du jeu)}\smallskip
+
+Les fonctions suivantes sont obligatoires (à déclarer/définir et à 
+utiliser). Il est possible (et même nécessaire) de déclarer/définir des
+fonctions qui ne sont pas mentionnées ici.
+\smallskip
+
 \begin{enumerate}
     \item Écrire une fonction
 \begin{lstlisting}
@@ -394,8 +382,14 @@ int mort_serpent(Monde *mon);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{Exercice} {\bf (Graphisme)}\smallskip
 
+Les fonctions suivantes sont obligatoires (à déclarer/définir et à 
+utiliser). Il est possible (et même nécessaire) de déclarer/définir des
+fonctions qui ne sont pas mentionnées ici.
+\smallskip
+
 Toutes les fonctions d'affichage suivantes utilisent la bibliothèque
 graphique {\sf MLV} et agissent sur la fenêtre graphique ouverte.
+\smallskip
 
 \begin{enumerate}
     \item Écrire une fonction
@@ -435,9 +429,9 @@ void afficher_monde(Monde *mon);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{Exercice} {\bf (Assemblage du jeu)}\smallskip
 
-Utiliser les tout ce qui a été fait jusqu'à présent pour construire le
-programme {\tt Serpent.c} qui permet de jouer au jeu du serpent.
-L'algorithme suivant est utilisé~:
+Utiliser les tout ce qui a été fait jusqu'à présent pour construire la
+boucle d'interaction principale qui permet de jouer au jeu du serpent.
+L'algorithme suivant est mis en pratique~:
 \smallskip
 
 \begin{enumerate}[(I)]
@@ -476,12 +470,69 @@ principale \eqref{item:boucle_principale} doit durer une seconde.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{Exercice} {\bf (Améliorations)}\smallskip
 
-{\it Cet exercice est optionnel, il n'est a envisager que lorsque
-tout le reste fonctionne parfaitement.}
+Plusieurs améliorations sont proposées ici. Elles sont accompagnées 
+d'indices de difficulté ($(\star)$~: facile, $(\star\star)$~: moyen, 
+$(\star\star\star)$~: assez difficile).
+\medskip
+
+Choisir dans cette liste des améliorations à apporter au programme de
+sorte à totaliser au moins {\bf sept} $\star$. Mentionner très 
+clairement dans le rapport les choix d'amélioration effectués.
 \smallskip
 
 \begin{enumerate}
+    \item $(\star)$
+    Mettre au point un système pour mettre en pause la partie
+    en appuyant sur une touche dédiée.
+    \smallskip
+    
+    \item $(\star)$
+    Améliorer les graphismes du jeu par l'intermédiaire d'images 
+    dédiées à chaque élément (case vide du monde, tête, corps du 
+    serpent, pommes, {\em etc.}) chargées par la {\sf MLV}.
+    \smallskip
+    
+    \item $(\star)$
+    Ajouter la possibilité de générer des pommes empoisonnées
+    qui provoquent la défaite si mangées. Au moins une pomme parmi
+    celles présentes dans le monde ne doit pas être empoisonnée.
+    \smallskip
+    
+    \item $(\star)$
+    Ajouter la possibilité de générer des pommes particulières
+    qui apportent deux points au lieu d'un seul si mangées.
+    \smallskip
+    
+    \item $(\star)$
+    Ajouter un mode de jeu particulier dans lequel le joueur doit 
+    réaliser le plus grand score possible pendant une durée limitée
+    imposée (et à choisir).
+    \smallskip
+    
+    \item $(\star\star)$
+    Mettre au point un système de sauvegarde permanent des meilleurs 
+    scores. Au lancement du jeu, figurera un menu permettant de visualiser
+    les meilleurs scores, ligne par ligne. Une ligne contient le nom
+    du joueur, le score obtenu et éventuellement le nom du mode de 
+    jeu concerné.
+    \smallskip
+    
+    \item $(\star\star)$
+    Ajouter des sons qui sont joués à chaque déplacement du serpent,
+    lorsqu'il mange une pomme et lorsqu'il meurt.
+    \smallskip
+    
+    \item $(\star\star)$
+    Ajouter un mode de jeu dans lequel apparaissent de manière 
+    aléatoire des murs dans le monde. Un mur est un obstacle qui
+    provoque la perte de la partie si rencontré. Les murs ne doivent
+    évidemment pas apparaître sur le serpent ni sur les pommes, et,
+    pour ne pas rendre la partie trop compliquée, non plus sur l'une
+    des quatre cases voisines à la tête du serpent.
+    \smallskip
+
     \item \label{item:ajout_parametres}
+    $(\star\star\star)$
     Rendre le programme paramétrable~: le joueur peut choisir
     les dimensions du quadrillage, le nombre de pommes, la taille
     initiale du serpent et la durée d'un tour de boucle (exprimée
@@ -490,8 +541,8 @@ tout le reste fonctionne parfaitement.}
     Il est constitué de lignes de la forme
 \begin{small}
 \begin{verbatim}
-largeur = 32
-hauteur = 16
+largeur = 128
+hauteur = 96
 nombre_pommes = 4
 taille_serpent = 7
 duree_tour = 2500
@@ -499,24 +550,25 @@ duree_tour = 2500
 \end{small}
     \smallskip
 
-    \item Mettre au point un système pour mettre en pause la partie
-    en appuyant sur une touche dédiée.
+    \item \label{item:ajout_deux_joueurs}
+    $(\star\star\star)$
+    Concevoir un mode de jeu à deux joueurs où s'affrontent dans un 
+    même monde deux serpents pilotés chacun par un joueur. Les mêmes
+    conditions de défaite que dans le mode classique à un joueur 
+    s'appliquent, avec en plus le fait qu'arriver sur une case
+    occupée par un serpent ennemi provoque la défaite. Le joueur
+    gagnant est celui qui a réalisé le score le plus élevé une fois
+    que les deux serpents sont morts (car ils le seront nécessairement
+    si la partie dure suffisamment longtemps).
     \smallskip
-
-    \item Mettre au point un système de sauvegarde des meilleurs scores.
-    Au lancement du jeu, figurera un menu permettant de visualiser
-    les meilleurs scores, ligne par ligne. Une ligne contient le nom
-    du joueur, les paramètres de la partie (voir \ref{item:ajout_parametres})
-    et le score obtenu.
-    \smallskip
-
-    \item Ajouter la possibilité de générer des pommes empoisonnées
-    qui provoquent la défaite si mangées. Au moins une pomme parmi
-    celles présentes dans le monde ne doit pas être empoisonnée.
+    
+    \item $(\star\star\star)$
+    À la condition que l'amélioration~\ref{item:ajout_deux_joueurs} ait
+    été apportée, faire en sorte d'ajouter un mode de jeu humain contre 
+    machine dans lequel l'un des serpents est dirigé par l'ordinateur.
+    Le jeu de l'ordinateur doit être cohérent et compétitif.
 \end{enumerate}
-
 \end{Exercice}
 \bigskip
-
 
 \end{document}
