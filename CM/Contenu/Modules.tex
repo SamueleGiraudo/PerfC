@@ -175,7 +175,7 @@ signifie que le module $A$ \alert{dépend} du module $B$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Création de modules}
+\subsection{Fichiers source/d'en-tête}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]
@@ -403,7 +403,7 @@ répertoires~:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Utilisation des modules}
+\subsection{Création de modules}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]
@@ -756,8 +756,8 @@ La parade consiste à \alert{inclure} un fichier d'en-tête de
 pas déjà été inclus.
 \medskip
 
-On utilise pour cela les commandes \Code{\#define}, \Code{\#ifndef} et
-\Code{\#endif} du pré-processeur.
+On utilise pour cela les macro-instructions de contrôle de compilation
+\Code{\#ifndef} et \Code{\#endif} ainsi que \Code{\#define}.
 \medskip
 
 Le schéma général est
@@ -993,10 +993,10 @@ La plupart des inclusions circulaires peuvent être évitées en
 fichiers source.
 \bigskip
 \bigskip
-\bigskip
 
 Par exemple, supposons que l'on dispose d'un module \Code{Tri} qui
-permet de trier des tableaux génériques. Il est de la forme~:
+permet de trier des tableaux génériques (nous aborderons plus loin ce
+concept de généricité). Il est de la forme~:
 \medskip
 
 \begin{minipage}[c]{.45\textwidth}
