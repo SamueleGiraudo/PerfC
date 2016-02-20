@@ -1,5 +1,5 @@
 % Auteur : Samuele Giraudo
-% Création : fév. 2014, jan 2015, mars 2015, déc. 2015
+% Création : fév. 2014, jan 2015, mars 2015, déc. 2015, fév. 2016
 
 \tikzstyle{Module}=[rectangle,draw=Violet!100,fill=Violet!20,
     line width=1pt,font=\scriptsize\tt]
@@ -82,8 +82,12 @@ Il procède en
     (copie/colle les fichiers \Code{.h} inclus)~;
     \smallskip
 
-    \item traitant les autres directives pré-processeur
-    (\Code{\#define}, \Code{\#ifndef}, {\em etc.}).
+    \item traitant les définitions de symboles par un
+    mécanisme de substitution (\Code{\#define})~;
+    \smallskip
+
+    \item traitant les macro-instructions de contrôle de compilation
+    (\Code{\#ifndef}, \Code{\#endif}, {\em etc.}).
 \end{enumerate}
 \medskip
 
@@ -413,12 +417,12 @@ Pour compiler un module \Code{A}, il n'est pas nécessaire que \Code{A}
 ait connaissance des définitions des symboles qu'il utilise.
 \medskip
 
-Seule leurs déclarations sont suffisantes. Celles-ci se trouvent
+Seules {\bf leurs déclarations sont suffisantes}. Celles-ci se trouvent
 dans les fichiers d'en-tête inclus dans \Code{A}.
 \bigskip
 
-On dit qu'un symbole n'est pas \alert{résolu} si sa définition n'est pas
-encore connue.
+On dit qu'un symbole n'est pas \alert{résolu} à un stade donné de la
+compilation si sa définition n'est pas encore connue.
 \bigskip
 
 \begin{minipage}[c]{.3\textwidth}
@@ -437,7 +441,7 @@ Par exemple, ce fichier permet de produire un fichier objet sur la commande
 le moment.
 \smallskip
 
-Sa déclaration (dans le fichier même ou dans un fichier inclus) est
+Sa déclaration (dans le fichier lui-même ou dans un fichier inclus) est
 cependant nécessaire.
 \end{minipage}
 \end{frame}
@@ -453,10 +457,12 @@ et du module principal \Code{Main.o}.
 \bigskip
 
 Cette étape \alert{lie à chaque symbole sa définition}.
-\medskip
+\bigskip
+\bigskip
 
 Tous les symboles utilisés dans le projet doivent être résolus (sinon,
-un message d'erreur est produit).
+un message d'erreur est produit et l'exécutable ne peut pas être
+construit).
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -604,14 +610,27 @@ uns dans les autres. Le schéma de compilation est toujours le même.
 \subsection{{\tt Makefile}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]
-\frametitle{Compilation séparée --- exemple introductif}
-Étant donné que pour compiler un module, il n'est pas nécessaire
-d'avoir les fichiers objets des autres modules du projet, il est
-\alert{inutile de compiler} les modules que l'on a \alert{pas modifiés}
-depuis la dernière compilation.
-\medskip
+\begin{frame}\frametitle{Compilation séparée --- intuition}
+{\bf Fait}~: pour compiler un module \Code{A}, il n'est pas nécessaire
+d'avoir les fichiers objets des autres modules du projet dont
+\Code{A} ne dépend pas (de manière étendue ou non).
+\bigskip
 
+\uncover<2->{%
+{\bf Conséquence}~: si un module \Code{B} est modifié, il n'est nécessaire
+de recompiler que \Code{B} et l'ensemble des modules qui dépendent
+(de manière étendue) à \Code{B}.
+\bigskip
+\bigskip}
+
+\uncover<3->{%
+Attention à ne pas oublier de recompiler le module principal \Code{Main}
+si celui-ci dépend de manière étendue à des modules modifiés.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Compilation séparée --- exemple introductif}
 Considérons par exemple le projet suivant~:
 \begin{multicols}{2}
 \begin{center}
@@ -620,9 +639,9 @@ Considérons par exemple le projet suivant~:
     \node[Sommet](B)at(0,-1){\Code{B}};
     \node[Sommet](C)at(0,-2){\Code{C}};
     \node[Sommet](Main)at(2,-1){\Code{Main}};
-    \draw[Fleche](Main)edge[bend right=20]node{}(A);
-    \draw[Fleche](Main)--(B);
-    \draw[Fleche](Main)edge[bend left=20]node{}(C);
+    \draw[Fleche](Main)edge[bend right=20,dashed,draw=Vert]node{}(A);
+    \draw[Fleche](Main)edge[bend left=0,dashed,draw=Vert](B);
+    \draw[Fleche](Main)edge[bend left=20,dashed,draw=Vert]node{}(C);
     \draw[Fleche](B)--(A);
     \draw[Fleche](A)edge[bend right=60]node{}(C);
 \end{tikzpicture}}
@@ -638,53 +657,74 @@ On le compile pour la 1\iere{} fois par \\
 \end{multicols}
 \medskip
 
-Si on modifie par la suite le module \Code{A}, il suffit d'exécuter les commandes
+\uncover<2->{%
+Si on modifie par la suite le module \Code{A}, il suffit d'exécuter les
+commandes
 \begin{multicols}{2}
     \Code{gcc -c A.c} \\
+    \Code{gcc -c B.c} \\
+    \Code{gcc -c Main.c} \\
     \Code{gcc Main.o A.o B.o C.o} \\
     pour mettre à jour l'exécutable du projet.
+    \smallskip
+
+    {\bf Note}~: les $3$ premières lignes commutent.
 \end{multicols}
 \medskip
 
-Il est inutile de recompiler \Code{B}, \Code{C} et \Code{Main}
-car leur code n'a pas été modifié.
-\smallskip
-
-({\it Ceci est à nuancer, voir plus loin.})
+Il est inutile de recompiler \Code{C} car il ne dépend pas (de manière
+étendue) à~\Code{A}.}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]
+\begin{frame}
 \frametitle{Schéma opérationnel de la compilation d'un projet}
 À l'appui de cette observation, la compilation d'un projet
-s'organise de la manière suivante~:
-\smallskip
+s'organise de la manière suivante.
+\medskip
 
 \begin{enumerate}[(1)]
-    \item pour chaque module \Code{A} du projet~:
+    \uncover<2->{%
+    \item Pour chaque module \Code{A} du projet~:
+    \smallskip}
+
     \begin{enumerate}[(a)] \normalsize
-        \item si \Code{A.c} ou \Code{A.h} ont été modifiés {\bf après}
-        \Code{A.o} ou bien si \Code{A.o} n'existe pas, (re)compiler le
-        module \Code{A}~;
+        \uncover<3->{%
+        \item compiler \Code{A} si au moins l'une des conditions
+        suivante est vérifiée~:
+        \smallskip}
+
+        \begin{itemize} \normalsize
+            \uncover<4->{%
+            \item \Code{A.o} n'existe pas~;
+            \smallskip}
+
+            \uncover<5->{%
+            \item \Code{A.c} ou \Code{A.h} ont été modifiés {\bf après}
+            \Code{A.o}~;
+            \smallskip}
+
+            \uncover<6->{%
+            \item il existe un module \Code{B} dont \Code{A} dépend
+            (de manière étendue) et tel que \Code{B.h} a été modifié
+            {\bf après} \Code{A.o}~;}
+        \end{itemize}
     \end{enumerate}
+    \smallskip
+
+    \uncover<7->{%
     \item si au moins un module du projet a été (re)compilé, reconstruire
-    l'exécutable.
+    l'exécutable.}
 \end{enumerate}
 \bigskip
 
+\uncover<8->{%
 Nous allons utiliser l'utilitaire \alert{\Code{make}} et les fichiers
-\alert{\Code{Makefile}} pour rendre cette procédure automatique.
-\bigskip
-\bigskip
-
-({\it Dans la suite, nous prendrons en plus compte des fichiers
-d'en-tête des modules dont dépend \Code{A} qui, s'ils sont modifiés,
-doivent entraîner une recompilation de \Code{A}.})
+\alert{\Code{Makefile}} pour rendre cette procédure automatique.}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]
-\frametitle{Fichiers {\tt Makefile}}
+\begin{frame}\frametitle{Fichiers {\tt Makefile}}
 L'utilitaire \Code{make} est paramétré par un fichier dont le nom est
 imposé~:
 \begin{center}
@@ -720,8 +760,8 @@ Considérons le projet et le \Code{Makefile} suivants.
     \node[Sommet](A)at(0,0){\Code{A}};
     \node[Sommet](B)at(0,-2){\Code{B}};
     \node[Sommet](Main)at(2,-1){\Code{Main}};
-    \draw[Fleche](Main)edge[bend right=20]node{}(A);
-    \draw[Fleche](Main)edge[bend left=20]node{}(B);
+    \draw[Fleche,dashed,draw=Vert](Main)edge[bend right=20]node{}(A);
+    \draw[Fleche,dashed,draw=Vert](Main)edge[bend left=20]node{}(B);
 \end{tikzpicture}}
 \end{center}
 \bigskip
@@ -752,8 +792,7 @@ Une fois qu'ils le sont, il suffit de procéder à l'édition des liens
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]
-\frametitle{Fichiers {\tt Makefile} et fonctionnement}
+\begin{frame}\frametitle{Fichiers {\tt Makefile} et fonctionnement}
 Pour savoir si une cible est à jour, \Code{make} regarde les dépendances
 de la règle et~:
 \begin{itemize}
@@ -779,23 +818,10 @@ règle dont la cible est \Code{CIBLE} par
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]
-\frametitle{Dépendance aux fichiers d'en-tête}
-Supposons que l'on dispose de deux modules \Code{A} et \Code{B} tels que
-\begin{center}
-\scalebox{.8}{\begin{tikzpicture}
-    \node[Sommet](A)at(0,0){\Code{A}};
-    \node[Sommet](B)at(2,0){\Code{B}};
-    \draw[Fleche](B)--(A);
-\end{tikzpicture}}
-\end{center}
-
-Ceci signifie qu'il y a un \Code{\#include "A.h"} dans le fichier
-\Code{B.h}.
-\smallskip
-
-Supposons qu'un type \Code{T} ait été déclaré dans \Code{A} et que \Code{B}
-utilise ce type.
+\begin{frame}[fragile]\frametitle{Déclarations de types et dépendances}
+Soient \Code{A} et \Code{B} deux modules tels que
+\Code{B} dépend (de manière étendue) à \Code{A}, qu'un type \Code{T}
+soit déclaré dans \Code{A} et que \Code{B} utilise ce type.
 \bigskip
 
 Toute modification de \Code{A.h} doit être suivie d'une nouvelle
@@ -812,6 +838,7 @@ B.o: B.c B.h A.h
 pour déclarer que la construction de \Code{B.o} {\bf dépend aussi}
 de \Code{A.h}.
 \end{multicols}
+\bigskip
 
 {\bf Attention}~: ceci ne s'applique pas aux modifications de l'implantation
 des fonctions de \Code{A} dans \Code{A.c} (comme nous l'avons déjà vu).
@@ -825,14 +852,20 @@ que des {\bf déclarations} du module \Code{A} (et donc de \Code{A.h}).
 \begin{multicols}{2}
 \begin{center}
 \scalebox{.4}{\begin{tikzpicture}[scale=.8]
-    \node[Sommet,minimum size=2cm,font=\Large](Piece)at(-4,0){\Code{Piece}};
-    \node[Sommet,minimum size=2cm,font=\Large](Case)at(-4,-4){\Code{Case}};
-    \node[Sommet,minimum size=2cm,font=\Large](Position)at(0,-2){\Code{Position}};
-    \node[Sommet,minimum size=2cm,font=\Large](IA)at(4,0){\Code{IA}};
-    \node[Sommet,minimum size=2cm,font=\Large](IGraph)at(4,-4){\Code{IGraph}};
-    \node[Sommet,minimum size=2cm,draw=Vert,fill=Vert!20,font=\Large](Main)at(7,-2){\Code{Main}};
-    \draw[Fleche](Main)edge[bend right=20]node{}(IA);
-    \draw[Fleche](Main)edge[bend left=20]node{}(IGraph);
+    \node[Sommet,minimum size=2cm,font=\Large](Piece)at(-4,0)
+        {\small \Code{Piece}};
+    \node[Sommet,minimum size=2cm,font=\Large](Case)at(-4,-4)
+        {\small \Code{Case}};
+    \node[Sommet,minimum size=2cm,font=\Large](Position)at(0,-2)
+        {\small \Code{Position}};
+    \node[Sommet,minimum size=2cm,font=\Large](IA)at(4,0)
+        {\small \Code{IA}};
+    \node[Sommet,minimum size=2cm,font=\Large](IGraph)at(4,-4)
+        {\small \Code{IGraph}};
+    \node[Sommet,minimum size=2cm,draw=Vert,fill=Vert!20,font=\Large]
+        (Main)at(7,-2){\small \Code{Main}};
+    \draw[Fleche,dashed,draw=Vert](Main)edge[bend right=20]node{}(IA);
+    \draw[Fleche,dashed,draw=Vert](Main)edge[bend left=20]node{}(IGraph);
     \draw[Fleche](IGraph)edge[bend left=20]node{}(Case);
     \draw[Fleche](IGraph)edge[bend left=20]node{}(Position);
     \draw[Fleche](IGraph)edge[bend right=40]node{}(Piece);
@@ -888,7 +921,8 @@ An.o: An.c An.h EXTRAn
 \end{lstlisting}
 où \Code{EXTRAmain} est la suite des noms des fichiers \Code{.h} que
 \Code{Main.c} inclut et pour tout \Code{$1 \leq k \leq n$}, \Code{EXTRAk}
-est la suite des noms des fichiers \Code{.h} dont le module \Code{Ak} dépend.
+est la suite des noms des fichiers \Code{.h} dont le module \Code{Ak}
+dépend (de manière étendue).
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1086,14 +1120,20 @@ EXEC: DEP1 ... DEPn
 \begin{multicols}{2}
 \begin{center}
 \scalebox{.35}{\begin{tikzpicture}[scale=.8]
-    \node[Sommet,minimum size=2cm,font=\Large](Piece)at(-4,0){\Code{Piece}};
-    \node[Sommet,minimum size=2cm,font=\Large](Case)at(-4,-4){\Code{Case}};
-    \node[Sommet,minimum size=2cm,font=\Large](Position)at(0,-2){\Code{Position}};
-    \node[Sommet,minimum size=2cm,font=\Large](IA)at(4,0){\Code{IA}};
-    \node[Sommet,minimum size=2cm,font=\Large](IGraph)at(4,-4){\Code{IGraph}};
-    \node[Sommet,minimum size=2cm,draw=Vert,fill=Vert!20,font=\Large](Main)at(7,-2){\Code{Main}};
-    \draw[Fleche](Main)edge[bend right=20]node{}(IA);
-    \draw[Fleche](Main)edge[bend left=20]node{}(IGraph);
+    \node[Sommet,minimum size=2cm,font=\Large](Piece)at(-4,0)
+        {\small \Code{Piece}};
+    \node[Sommet,minimum size=2cm,font=\Large](Case)at(-4,-4)
+        {\small \Code{Case}};
+    \node[Sommet,minimum size=2cm,font=\Large](Position)at(0,-2)
+        {\small \Code{Position}};
+    \node[Sommet,minimum size=2cm,font=\Large](IA)at(4,0)
+        {\small \Code{IA}};
+    \node[Sommet,minimum size=2cm,font=\Large](IGraph)at(4,-4)
+        {\small \Code{IGraph}};
+    \node[Sommet,minimum size=2cm,draw=Vert,fill=Vert!20,font=\Large]
+        (Main)at(7,-2){\small \Code{Main}};
+    \draw[Fleche,dashed,draw=Vert](Main)edge[bend right=20]node{}(IA);
+    \draw[Fleche,dashed,draw=Vert](Main)edge[bend left=20]node{}(IGraph);
     \draw[Fleche](IGraph)edge[bend left=20]node{}(Case);
     \draw[Fleche](IGraph)edge[bend left=20]node{}(Position);
     \draw[Fleche](IGraph)edge[bend right=40]node{}(Piece);
@@ -1209,14 +1249,20 @@ sont les \Code{.h} dont le module \Code{M} dépend.
 \begin{multicols}{2}
 \begin{center}
 \scalebox{.35}{\begin{tikzpicture}[scale=.8]
-    \node[Sommet,minimum size=2cm,font=\Large](Piece)at(-4,0){\Code{Piece}};
-    \node[Sommet,minimum size=2cm,font=\Large](Case)at(-4,-4){\Code{Case}};
-    \node[Sommet,minimum size=2cm,font=\Large](Position)at(0,-2){\Code{Position}};
-    \node[Sommet,minimum size=2cm,font=\Large](IA)at(4,0){\Code{IA}};
-    \node[Sommet,minimum size=2cm,font=\Large](IGraph)at(4,-4){\Code{IGraph}};
-    \node[Sommet,minimum size=2cm,draw=Vert,fill=Vert!20,font=\Large](Main)at(7,-2){\Code{Main}};
-    \draw[Fleche](Main)edge[bend right=20]node{}(IA);
-    \draw[Fleche](Main)edge[bend left=20]node{}(IGraph);
+    \node[Sommet,minimum size=2cm,font=\Large](Piece)at(-4,0)
+        {\small \Code{Piece}};
+    \node[Sommet,minimum size=2cm,font=\Large](Case)at(-4,-4)
+        {\small \Code{Case}};
+    \node[Sommet,minimum size=2cm,font=\Large](Position)at(0,-2)
+        {\small \Code{Position}};
+    \node[Sommet,minimum size=2cm,font=\Large](IA)at(4,0)
+        {\small \Code{IA}};
+    \node[Sommet,minimum size=2cm,font=\Large](IGraph)at(4,-4)
+        {\small \Code{IGraph}};
+    \node[Sommet,minimum size=2cm,draw=Vert,fill=Vert!20,font=\Large]
+        (Main)at(7,-2){\small \Code{Main}};
+    \draw[Fleche,dashed,draw=Vert](Main)edge[bend right=20]node{}(IA);
+    \draw[Fleche,dashed,draw=Vert](Main)edge[bend left=20]node{}(IGraph);
     \draw[Fleche](IGraph)edge[bend left=20]node{}(Case);
     \draw[Fleche](IGraph)edge[bend left=20]node{}(Position);
     \draw[Fleche](IGraph)edge[bend right=40]node{}(Piece);
@@ -1329,67 +1375,83 @@ l'exécutable du projet, ainsi que le répertoire \Code{bin} le contenant.
 \subsection{Bibliothèques}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]
-\frametitle{Principes généraux}
+\begin{frame}\frametitle{Principes généraux}
 Une \alert{bibliothèque} est un regroupement de modules offrant des
 fonctionnalités allant vers un même objectif.
-\medskip
+\bigskip
 
+\uncover<2->{%
 Par exemple, la bibliothèque graphique {\sf MLV} est un ensemble de
 plusieurs modules (\Code{MLV\_audio}, \Code{MLV\_keyboard},
 \Code{MLV\_image}, {\em etc.}) réunis dans le but d'offrir des fonctions
 d'affichage graphique et de gérer les entrées/sorties
 (son, clavier, souris, {\em etc.}).
-\medskip
+\bigskip}
 
+\uncover<3->{%
 L'intérêt des bibliothèques est double~:
 \begin{enumerate}
     \item il suffit de ne réaliser qu'{\bf une seule inclusion} pour
     bénéficier des fonctionnalités d'une bibliothèque, plutôt que
     plusieurs inclusions sans être sûr du fichier d'en-tête à inclure~;
-    \smallskip
+    \smallskip}
 
+    \uncover<4->{%
     \item sous réserve de savoir comment créer des bibliothèques, il est
     possible de {\bf partager et réutiliser} son propre code entre
-    plusieurs de ses projets, sans avoir à le recompiler.
+    plusieurs de ses projets, sans avoir à le recompiler.}
 \end{enumerate}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]
-\frametitle{Bibliothèques statiques/dynamiques}
+\begin{frame} \frametitle{Bibliothèques statiques}
 Une \alert{bibliothèque statique} est un fichier d'extension \Code{.a}.
-\medskip
+\bigskip
 
+\uncover<2->{%
 Lors de son utilisation, son code est inclus dans l'exécutable pendant
 l'édition des liens.
+\bigskip}
+
 \begin{itemize}
+    \uncover<3->{%
     \item {\bf Avantage}~: tout projet qui utilise une bibliothèque
     statique peut être exécuté sur une machine où la bibliothèque n'est
     pas installée.
-    \item {\bf Inconvénient}~: l'exécutable est plus volumineux.
-\end{itemize}
-\bigskip
-\bigskip
+    \medskip}
 
-Une \alert{bibliothèque dynamique} est un fichier d'extension \Code{.so}.
-\medskip
-
-Lors de son utilisation, son code n'est pas inclus dans l'exécutable.
-C'est lors de l'exécution que les symboles provenant de la bibliothèque
-sont résolus au moyen de l'éditeur de liens dynamique.
-\begin{itemize}
-    \item {\bf Avantages}~: l'exécutable est moins volumineux. Il n'y a
-    pas de duplication du code de la bibliothèque sur un même système si
-    plusieurs projets l'utilisent.
-    \item {\bf Inconvénient}~: tout projet qui utilise une bibliothèque
-    dynamique ne peut être exécuté que sur un système où cette
-    dernière est installée.
+    \uncover<4->{%
+    \item {\bf Inconvénient}~: l'exécutable est plus volumineux.}
 \end{itemize}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]
+\begin{frame} \frametitle{Bibliothèques dynamiques}
+Une \alert{bibliothèque dynamique} est un fichier d'extension \Code{.so}.
+\bigskip
+
+\uncover<2->{%
+Lors de son utilisation, son code n'est pas inclus dans l'exécutable.
+C'est lors de l'exécution que les symboles provenant de la bibliothèque
+sont résolus au moyen de l'éditeur de liens dynamique.
+\bigskip}
+
+\begin{itemize}
+    \uncover<3->{%
+    \item {\bf Avantages}~: l'exécutable est moins volumineux. Il n'y a
+    pas de duplication du code de la bibliothèque sur un même système si
+    plusieurs projets l'utilisent.
+    \medskip}
+
+    \uncover<4->{%
+    \item {\bf Inconvénient}~: tout projet qui utilise une bibliothèque
+    dynamique ne peut être exécuté que sur un système où cette
+    dernière est installée.}
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
 \frametitle{Compilation d'un projet utilisant des bibliothèques}
 On suppose que l'on travaille sur un projet constitué de deux modules
 \Code{A} et \Code{B} et d'un fichier principal \Code{Main.c}.
@@ -1412,10 +1474,14 @@ est nécessaire de {\bf signaler les bibliothèques utilisées}.
         \node[Bib](libm)at(6,.7){libm.a};
         \node[Bib](libMLV)at(8,.7){libMLV.a};
         \node[Exec](Ex)at(10,-1){a.out};
-        \node[font=\scriptsize \tt](edliens)at(7,-1){gcc Main.o A.o B.o -lm -lMLV};
-        \draw(A)edge[->,anchor=south,font=\scriptsize \tt] node{gcc -c A.c}(Ao);
-        \draw(B)edge[->,anchor=south,font=\scriptsize \tt] node{gcc -c B.c}(Bo);
-        \draw(Main)edge[->,anchor=south,font=\scriptsize \tt] node{gcc -c Main.c}(Maino);
+        \node[font=\scriptsize \tt](edliens)at(7,-1)
+            {gcc Main.o A.o B.o -lm -lMLV};
+        \draw(A)edge[->,anchor=south,font=\scriptsize \tt] node
+            {gcc -c A.c}(Ao);
+        \draw(B)edge[->,anchor=south,font=\scriptsize \tt] node
+            {gcc -c B.c}(Bo);
+        \draw(Main)edge[->,anchor=south,font=\scriptsize \tt] node
+            {gcc -c Main.c}(Maino);
         \draw[->](Ao)edge[bend left=20]node{}(edliens);
         \draw[->](Bo)--(edliens);
         \draw[->](Maino)edge[bend right=20]node{}(edliens);
@@ -1449,11 +1515,11 @@ ci-contre, un \Code{Makefile} possible est
     \node[Sommet](B)at(0,-1.5){\Code{B}};
     \node[Sommet](Main)at(2,-1){\Code{Main}};
     \draw[Fleche](B)--(A);
-    \draw[Fleche](Main)edge[bend right=20]node{}(A);
-    \draw[Fleche](Main)edge[bend left=20]node{}(B);
+    \draw[Fleche,dashed,draw=Vert](Main)edge[bend right=20]node{}(A);
+    \draw[Fleche,dashed,draw=Vert](Main)edge[bend left=20]node{}(B);
 \end{tikzpicture}}
 \end{center}
-\end{multicols}
+\end{multicols}\vspace{-1.5em}
 \begin{multicols}{2}
 \begin{lstlisting}[language=make,basicstyle=\scriptsize\tt]
 CC=colorgcc

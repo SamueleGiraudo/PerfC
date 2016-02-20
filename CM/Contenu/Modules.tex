@@ -1,5 +1,5 @@
 % Auteur : Samuele Giraudo
-% Création : jan. 2014, jan. 2015, fév. 2015 , déc. 2015
+% Création : jan. 2014, jan. 2015, fév. 2015 , déc. 2015, fév. 2016
 
 \tikzstyle{Module}=[rectangle,draw=Violet!100,fill=Violet!20,
     line width=1pt,font=\scriptsize\tt]
@@ -930,8 +930,8 @@ aux échecs contre un humain peut être le suivant~:
     \node[Sommet,minimum size=2cm](IA)at(4,0){\Code{IA}};
     \node[Sommet,minimum size=2cm](IGraph)at(4,-4){\Code{IGraph}};
     \node[Sommet,minimum size=2cm,draw=Vert,fill=Vert!20](Main)at(7,-2){\Code{Main}};
-    \draw[Fleche](Main)edge[bend right=20]node{}(IA);
-    \draw[Fleche](Main)edge[bend left=20]node{}(IGraph);
+    \draw[Fleche](Main)edge[bend right=20,dashed,draw=Vert]node{}(IA);
+    \draw[Fleche](Main)edge[bend left=20,dashed,draw=Vert]node{}(IGraph);
     \draw[Fleche](IGraph)edge[bend left=20]node{}(Case);
     \draw[Fleche](IGraph)edge[bend left=20]node{}(Position);
     \draw[Fleche](IGraph)edge[bend right=40]node{}(Piece);
@@ -1086,4 +1086,187 @@ int trier_tab_int(TabInt *t) {
 }
 \end{lstlisting}
 \end{minipage}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Dépendances étendues}
+Nous serons amenés dans la suite (dans le cadre de la compilation séparée)
+---~étant donné un fichier \Code{A.c}~--- à considérer l'ensemble des fichiers
+d'en-tête qu'il inclut.
+\medskip
+
+\uncover<2->{%
+Si \Code{A.c} inclut un fichier d'en-tête \Code{B.h}, alors le module
+\Code{A} \alert{dépend de manière étendue} au module \Code{B}.
+\bigskip}
+
+\uncover<3->{%
+Le \alert{graphe d'inclusions étendu} d'un projet consiste en le graphe
+d'inclusions du projet dans lequel son ajoutées des
+{\bf flèches en pointillés} pour symboliser les dépendances étendues.
+\bigskip
+\bigskip}
+
+\uncover<4->{%
+{\bf Note 1.}~: les flèches qui partent du module principal \Code{Main}
+représentent des inclusions étendues.
+\bigskip}
+
+\uncover<5->{%
+{\bf Note 2.}~: les cycles dans lesquels intervient au moins une flèche en
+pointillés ne pose pas de problème de structure du projet.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Dépendances étendues}
+Par exemple, le graphe d'inclusions étendu
+\begin{center}
+\scalebox{.8}{\begin{tikzpicture}
+    \node[Sommet](A)at(0,0){\Code{A}};
+    \node[Sommet](B)at(2,0){\Code{B}};
+    \node[Sommet](C)at(0,-2){\Code{C}};
+    \node[Sommet](D)at(2,-2){\Code{D}};
+    \node[Sommet](E)at(4,-1){\Code{E}};
+    \node[Sommet](F)at(-2,-1){\Code{F}};
+    \draw[Fleche,dashed,draw=Vert](A)edge[bend left=20]node{}(B);
+    \draw[Fleche](F)edge[bend right=20]node{}(C);
+    \draw[Fleche](D)edge[bend left=20]node{}(C);
+    \draw[Fleche](C)edge[bend left=20]node{}(A);
+    \draw[Fleche](E)edge[bend right=20]node{}(B);
+    \draw[Fleche](E)edge[bend left=20]node{}(D);
+    \draw[Fleche,dashed,draw=Vert](B)edge[bend left=20]node{}(C); 
+    \draw[Fleche,dashed,draw=Vert](F)edge[bend left=20]node{}(A);
+\end{tikzpicture}}
+\end{center}
+nous renseigne sur le fait que
+\begin{multicols}{3} \footnotesize
+\begin{itemize}
+    \item \Code{A.h} n'inclut rien~;
+    \item \Code{A.c} inclut \Code{B.h}~;
+    \item \Code{B.h} n'inclut rien~;
+    \item \Code{B.c} inclut \Code{C.h}~;
+    \item \Code{C.h} inclut \Code{A.h}~;
+    \item \Code{C.c} n'inclut rien~;
+    \item \Code{D.h} inclut \Code{C.h}~;
+    \item \Code{D.c} n'inclut rien~;
+    \item \Code{E.h} inclut \Code{B.h} et \Code{D.h}
+    \item \Code{E.c} n'inclut rien~;
+    \item \Code{F.h} inclut \Code{C.h}~;
+    \item \Code{F.c} inclut \Code{A.h}.
+\end{itemize}
+\end{multicols}
+\smallskip
+
+On observe que ce projet n'est pas mal structuré car il ne possède pas
+de cycle formé uniquement par des flèches de dépendance.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Erreurs courantes}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Erreur~: le fichier d'en-tête général}
+Une \alert{erreur} consiste, pour un projet donné, à développer un fichier
+\Code{Types.h} et plusieurs fichiers source \Code{F1.c}, \Code{F2.c},
+\dots, \Code{Fn.c}.
+\medskip
+
+\uncover<2->{%
+Ici le fichier d'en-tête \Code{Types.h} contient les déclarations de
+tous les types et fonctions nécessaires au projet et les fichiers sources
+\Code{Fi.c} implantent chacun un sous-ensemble des fonctions
+déclarées.
+\medskip}
+
+\uncover<3->{%
+Cette conception est erronée puisque~:
+\begin{enumerate}
+    \item il n'y a plus de notion de module~;
+    \smallskip
+
+    \item il est impossible de réutiliser du code du projet pour un
+    nouveau (il faudrait copier/coller les types et fonctions importantes,
+    ce qui n'est pas abordable)~;
+    \smallskip
+
+    \item le fichier \Code{Types.h} peut contenir des déclarations de
+    types et de fonctions qui n'ont pas grand chose à voir.
+\end{enumerate}}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Erreur~: économie d'inclusions}
+Une \alert{erreur} consiste à éviter de réaliser des inclusions de modules
+dans d'autres si l'inclusion est déjà réalisée de manière transitive.
+\medskip
+
+\uncover<2->{%
+Plus explicitement, soient trois modules \Code{A}, \Code{B} et \Code{C}
+tels que \Code{B} inclut \Code{C}, \Code{A} inclut \Code{B} et \Code{A}
+inclut \Code{C}~:
+\begin{center}
+\scalebox{.8}{\begin{tikzpicture}
+    \node[Sommet](A)at(0,0){\Code{A}};
+    \node[Sommet](B)at(2,0){\Code{B}};
+    \node[Sommet](C)at(4,0){\Code{C}};
+    \draw[Fleche](B)edge[bend left=30]node{}(C);
+    \draw[Fleche](A)edge[bend left=30]node{}(B);
+    \draw[Fleche](A)edge[bend right=20]node{}(C);
+\end{tikzpicture}}
+\end{center}}
+
+\uncover<3->{%
+On peut être tenté de n'inclure que \Code{B} dans \Code{A} et \Code{C}
+dans \Code{B} car par transitivité, ceci entraîne que \Code{C} est
+inclut dans \Code{A}. Ceci fonctionne en pratique.
+\medskip}
+
+\uncover<4->{%
+Cette conception est cependant erronée puisque~:
+\begin{enumerate}
+    \item savoir de quels modules dépend \Code{A} juste en lisant
+    son fichier d'en-tête, sans avoir de surprise sur les modules qui
+    peuvent être inclus de manière cachée par transitivité, est un
+    avantage~;
+    \smallskip
+
+    \item le jour où l'on modifie \Code{B} de sorte qu'il n'ait plus
+    besoin de dépendre de \Code{C} provoque le fait que \Code{C} n'est
+    plus inclut dans \Code{A}, ce qui est problématique.
+\end{enumerate}}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Erreur~: surabondance de modules}
+Une \alert{erreur} consiste à créer un module pour chaque type nécessaire à
+l'écriture d'un projet.
+\medskip
+
+\uncover<2->{%
+Avec ce point de vue, il y a dans chaque \Code{A.h} une déclaration
+de type unique (dont le nom est \Code{A}, celui du module) et des
+déclarations de fonctions qui agissent sur des éléments de
+type \Code{A}.
+\medskip}
+
+\uncover<3->{%
+Cette conception est erronée puisque~:
+\begin{enumerate}
+    \item elle dispense d'une reflexion approfondie sur un bon découpage
+    en modules du projet~;
+    \smallskip
+
+    \item des \og types de travail \fg{} ne méritent pas de créer
+    un nouveau module dédié~;
+    \smallskip
+
+    \item un projet compterait ainsi trop de modules.
+\end{enumerate}
+\medskip}
+
+\uncover<4->{%
+Cependant, cette erreur est moins grave que les autre. En fait,
+commencer la réflexion d'un découpage en modules d'un projet en fonction
+des types nécessaires est souvent un bon point de départ.}
 \end{frame}
