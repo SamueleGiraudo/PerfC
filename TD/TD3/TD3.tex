@@ -1,6 +1,6 @@
 % Auteur : Samuele Giraudo
 % Création : 07/02/13
-% Modifications : jan. 2015, déc. 2015
+% Modifications : jan. 2015, déc. 2015, mars 2016
 
 \documentclass[12pt]{article}
 
@@ -52,123 +52,55 @@
     \begin{itemize}
         \item {\tt A.h} inclut {\tt B.h}, {\tt C.h} et {\tt E.h}~;
         \item {\tt A.c} inclut {\tt D.h}~;
-        \item {\tt B.h} inclut {\tt D.h}~;
+        \item {\tt B.h} inclut {\tt C.h}~;
         \item {\tt D.h} inclut {\tt A.h}~;
-        \item {\tt E.h} inclut {\tt D.h}~;
+        \item {\tt E.c} inclut {\tt D.h}~;
         \item {\tt Main.c} inclut {\tt A.h} et {\tt E.h}.
     \end{itemize}
     \end{multicols}
 
     \begin{enumerate}
         \item Donner le nombre de fichiers qui constituent le projet.
-
-        \Sol{$11$ fichiers ($2 \times 5$ pour les modules et $1$ pour le
-        fichier principal).}
         \smallskip
 
         \item Donner la liste des commandes qui permettent de compiler
         le projet.
-
-        \Sol{
-        {\tt gcc -c A.c} \\
-        {\tt gcc -c B.c} \\
-        {\tt gcc -c C.c} \\
-        {\tt gcc -c D.c} \\
-        {\tt gcc -c E.c} \\
-        {\tt gcc -c Main.c} \\
-        {\tt gcc Main.o A.o B.o C.o D.o E.o}}
         \smallskip
 
         \item Dire si l'ordre des commandes de compilation est important
         et justifier pourquoi.
-
-        \Sol{Les six premières lignes commutent, seule la dernière est toujours
-        la dernière. C'est l'éditeur de liens qui résout les symboles
-        non encore connus, et c'est ce que fait la dernière ligne.}
         \smallskip
 
-        \item Tracer le graphe d'inclusions du projet.
-
-        \Sol{C'est le graphe à $6$ sommet où l'on a un arc de $x$ vers $y$
-        si et seulement si il y a un include $y$ dans l'{\bf en-tête} de $x$
-        (et non pas dans le .c).}
+        \item Tracer le graphe d'inclusions (étendues) du projet.
         \smallskip
 
-        \item Expliquer, graphe d'inclusion a l'appui, si le projet
-        est bien structuré. Mettre en évidence les éventuels problèmes
-        qu'il contient.
-
-        \Sol{Le projet est mal structuré car il y a un cycle 
-        $A \to B \to D \to A$.}
+        \item Expliquer, graphe d'inclusions (étendues) à l'appui, si le
+        projet est bien structuré. Mettre en évidence les éventuels
+        problèmes qu'il contient.
         \smallskip
 
-        \item On suppose à présent que dans l'en-tête du module {\tt B}
-        est défini un type {\tt B\_type} et dans l'en-tête du module
-        {\tt A} est déclarée une fonction de prototype
-        {\tt void a\_fct(B\_type x)}. Parmi les commandes suivantes,
-        donner et justifier celles qui provoquent des erreurs~:
-        \begin{multicols}{2}
-            \begin{enumerate}
-                \item {\tt gcc -c A.c}
-                \item {\tt gcc -c B.c}
-                \item {\tt gcc -c C.c}
-                \item {\tt gcc -c D.c}
-                \item {\tt gcc -c E.c}
-                \item {\tt gcc -c Main.c}
-            \end{enumerate}
-        \end{multicols}
-        {\it Astuce~: pour justifier qu'une commande provoque (ou ne 
-        provoque pas) d'erreur, écrire les fichiers d'en-tête obtenus 
-        après résolution des commandes pré-processeur {\tt \#include X.h}.}
-
-        \Sol{
-        (a) marche.
-        (b) ne marche pas~: en effet, si l'on déplie les {\tt \#include}, comme
-        le fait le pré-processeur, on observe que le prototype
-        {\tt void a\_fct(B\_type x)}
-        est analysé avant la déclaration du type {\tt B\_type}, ce type
-        est donc inconnu. On a le message suivant de {\tt gcc} :
-        \begin{center}
-        {\tt
-        In file included from D.h:4:0, \\
-                 from B.h:4, \\
-                 from B.c:1: \\
-        A.h:8:12: erreur: unknown type name ‘B\_type’ \\}
-        \end{center}
-        Ceci est dû au fait que seuls les symboles de fonction ou de
-        variables peuvent ne pas être résolus avant l'édition des liens,
-        {\bf mais pas les symboles de types}.
-        (c) marche.
-        (d) marche.
-        (e) marche.
-        (f) marche.}
+        \item Supposons (uniquement pour cette question) que {\tt B.h}
+        inclut {\tt D.h}. Expliquer, graphe d'inclusions (étendues) à
+        l'appui, si le projet est bien structuré. Mettre en évidence les
+        éventuels problèmes qu'il contient.
         \smallskip
 
-        \item Maintenant, on suppose que {\tt D.h} n'inclut plus {\tt A.h}.
-        Écrire un {\tt Makefile} complet pour compiler le projet.
-
-        \Sol{ \\
-        {\tt
-            Projet: Main.o A.o B.o C.o D.o E.o \\
-            $\longrightarrow$ gcc -o Projet Main.o A.o B.o C.o D.o E.o \\
-
-            A.o: A.c A.h B.h C.h E.h \\
-            $\longrightarrow$ gcc -c A.c \\
-
-            B.o: B.c B.h D.h \\
-            $\longrightarrow$ gcc -c B.c \\
-
-            C.o: C.c C.h \\
-            $\longrightarrow$ gcc -c C.c \\
-
-            D.o: D.c D.h \\
-            $\longrightarrow$ gcc -c D.c \\
-
-            E.o: E.c E.h D.h \\
-            $\longrightarrow$ gcc -c E.c \\
-        }
-        }
+        \item Supposons (uniquement pour cette question) que {\tt B.c}
+        inclut {\tt D.h}. Expliquer, graphe d'inclusions (étendues) à
+        l'appui, si le projet est bien structuré. Mettre en évidence les
+        éventuels problèmes qu'il contient.
         \smallskip
+
+        \item Supposons (uniquement pour cette question) que {\tt B.h}
+        inclut {\tt D.h}. On suppose également que dans l'en-tête du
+        module {\tt B} est déclaré un type {\tt B\_type} et que dans
+        l'en-tête du module {\tt A} est déclarée une fonction de prototype
+        {\tt void a\_fct(B\_type x)}. Expliquer pourquoi la commande
+        {\tt gcc -c B.c} provoque une erreur. Expliquer pourquoi la
+        commande {\tt gcc -c A.c} produit bien un fichier objet.
+        \smallskip
+
+        \item Écrire un {\tt Makefile} complet pour compiler le projet.
     \end{enumerate}
 \end{Exercice}
 \bigskip
@@ -176,7 +108,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{Exercice} {\bf (Découpage d'un projet en modules)}\smallskip
+\begin{Exercice} {\bf (Découpage d'un projet en modules~: le Gomoku)}\smallskip
 
 Le but de cet exercice est de réaliser l'analyse d'un petit projet en le
 découpant en modules et en écrivant ses fichiers d'en-tête. On ne donnera
@@ -207,8 +139,8 @@ Au cours de la partie, il est possible de~:
 \begin{itemize}
     \item jouer un coup (par le joueur qui possède le trait)~;
     \smallskip
-    
-    \item abandonner la partie et céder ainsi la victoire à son 
+
+    \item abandonner la partie et céder ainsi la victoire à son
     adversaire~;
     \smallskip
 
