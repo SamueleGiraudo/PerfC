@@ -19,7 +19,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Étapes}
+\subsection{Étapes de compilation}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]
@@ -407,7 +407,8 @@ On utilisera donc de préférence cette 2\ieme{} commande.
 \bigskip
 \bigskip
 
-Chaque module est ainsi \alert{compilé séparément}.
+Chaque module est ainsi \alert{compilé séparément} et dans un
+\alert{ordre quelconque}.
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -421,7 +422,7 @@ Seules {\bf leurs déclarations sont suffisantes}. Celles-ci se trouvent
 dans les fichiers d'en-tête inclus dans \Code{A}.
 \bigskip
 
-On dit qu'un symbole n'est pas \alert{résolu} à un stade donné de la
+On dit qu'un \alert{symbole n'est pas résolu} à un stade donné de la
 compilation si sa définition n'est pas encore connue.
 \bigskip
 
@@ -607,7 +608,7 @@ uns dans les autres. Le schéma de compilation est toujours le même.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{{\tt Makefile}}
+\subsection{Compilation séparée}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}\frametitle{Compilation séparée --- intuition}
@@ -724,6 +725,10 @@ Nous allons utiliser l'utilitaire \alert{\Code{make}} et les fichiers
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{{\tt Makefile} simples}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}\frametitle{Fichiers {\tt Makefile}}
 L'utilitaire \Code{make} est paramétré par un fichier dont le nom est
 imposé~:
@@ -731,7 +736,8 @@ imposé~:
     \og \Code{Makefile} \fg{} ou \og \Code{makefile} \fg.
 \end{center}
 Il doit se trouver dans le répertoire de travail (là où se trouvent les
-autres fichiers du projet).
+autres fichiers du projet ou au niveau des répertoires \Code{include}
+et \Code{src}).
 \medskip
 
 Ce fichier fait partie intégrante du projet.
@@ -769,7 +775,7 @@ Considérons le projet et le \Code{Makefile} suivants.
 \begin{lstlisting}[language=make]
 Prog: A.o B.o Main.o
     gcc -o Prog Main.o A.o B.o
-Main.o: Main.c
+Main.o: Main.c A.h B.h
     gcc -c Main.c
 A.o: A.c A.h
     gcc -c A.c
@@ -876,8 +882,8 @@ que des {\bf déclarations} du module \Code{A} (et donc de \Code{A.h}).
     \draw[Fleche](Position)edge[bend left=20]node{}(Piece);
 \end{tikzpicture}}
 \end{center}
-Le \Code{Makefile} du projet dont le graphe d'inclusions est donné
-ci-contre est
+Le \Code{Makefile} du projet dont le graphe d'inclusions (étendues) est
+donné ci-contre est
 \end{multicols}
 
 \begin{lstlisting}[language=make,basicstyle=\footnotesize\tt]
@@ -924,6 +930,10 @@ où \Code{EXTRAmain} est la suite des noms des fichiers \Code{.h} que
 est la suite des noms des fichiers \Code{.h} dont le module \Code{Ak}
 dépend (de manière étendue).
 \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{{\tt Makefile} avancés}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]
@@ -1507,8 +1517,8 @@ est le nom de la bibliothèque.
 
 \begin{multicols}{2}
 \footnotesize
-En supposant que le graphe d'inclusions du projet précédent est celui
-ci-contre, un \Code{Makefile} possible est
+En supposant que le graphe d'inclusions (étendues) du projet précédent
+est celui ci-contre, un \Code{Makefile} possible est
 \begin{center}
 \scalebox{.6}{\begin{tikzpicture}
     \node[Sommet](A)at(0,-.5){\Code{A}};

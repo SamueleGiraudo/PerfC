@@ -1134,7 +1134,7 @@ Par exemple, le graphe d'inclusions étendu
     \draw[Fleche](C)edge[bend left=20]node{}(A);
     \draw[Fleche](E)edge[bend right=20]node{}(B);
     \draw[Fleche](E)edge[bend left=20]node{}(D);
-    \draw[Fleche,dashed,draw=Vert](B)edge[bend left=20]node{}(C); 
+    \draw[Fleche,dashed,draw=Vert](B)edge[bend left=20]node{}(C);
     \draw[Fleche,dashed,draw=Vert](F)edge[bend left=20]node{}(A);
 \end{tikzpicture}}
 \end{center}
@@ -1181,14 +1181,16 @@ déclarées.
 
 \uncover<3->{%
 Cette conception est erronée puisque~:
+\smallskip
+
 \begin{enumerate}
     \item il n'y a plus de notion de module~;
-    \smallskip
+    \medskip
 
     \item il est impossible de réutiliser du code du projet pour un
     nouveau (il faudrait copier/coller les types et fonctions importantes,
     ce qui n'est pas abordable)~;
-    \smallskip
+    \medskip
 
     \item le fichier \Code{Types.h} peut contenir des déclarations de
     types et de fonctions qui n'ont pas grand chose à voir.
@@ -1197,8 +1199,9 @@ Cette conception est erronée puisque~:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame} \frametitle{Erreur~: économie d'inclusions}
-Une \alert{erreur} consiste à éviter de réaliser des inclusions de modules
-dans d'autres si l'inclusion est déjà réalisée de manière transitive.
+Une \alert{erreur} consiste à éviter volontairement de réaliser des
+inclusions de modules dans d'autres si l'inclusion est déjà réalisée de
+manière transitive.
 \medskip
 
 \uncover<2->{%
@@ -1218,18 +1221,20 @@ inclut \Code{C}~:
 
 \uncover<3->{%
 On peut être tenté de n'inclure que \Code{B} dans \Code{A} et \Code{C}
-dans \Code{B} car par transitivité, ceci entraîne que \Code{C} est
-inclut dans \Code{A}. Ceci fonctionne en pratique.
+dans \Code{B} car ---~par transitivité~--- ceci entraîne que \Code{C}
+est inclut dans \Code{A}. Ceci fonctionne en pratique.
 \medskip}
 
 \uncover<4->{%
 Cette conception est cependant erronée puisque~:
-\begin{enumerate}
-    \item savoir de quels modules dépend \Code{A} juste en lisant
+\smallskip
+
+\begin{enumerate} \small
+    \item savoir de quels modules dépend \Code{A} simplement en lisant
     son fichier d'en-tête, sans avoir de surprise sur les modules qui
     peuvent être inclus de manière cachée par transitivité, est un
     avantage~;
-    \smallskip
+    \medskip
 
     \item le jour où l'on modifie \Code{B} de sorte qu'il n'ait plus
     besoin de dépendre de \Code{C} provoque le fait que \Code{C} n'est
@@ -1252,14 +1257,16 @@ type \Code{A}.
 
 \uncover<3->{%
 Cette conception est erronée puisque~:
+\smallskip
+
 \begin{enumerate}
     \item elle dispense d'une reflexion approfondie sur un bon découpage
     en modules du projet~;
-    \smallskip
+    \medskip
 
     \item des \og types de travail \fg{} ne méritent pas de créer
     un nouveau module dédié~;
-    \smallskip
+    \medskip
 
     \item un projet compterait ainsi trop de modules.
 \end{enumerate}

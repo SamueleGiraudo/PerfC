@@ -1,6 +1,6 @@
 % Auteur : Samuele Giraudo
 % Création : oct. 2013
-% Modifications : août 2014, oct. 2014, déc. 2015
+% Modifications : août 2014, oct. 2014, déc. 2015, mars 2016
 
 \tikzstyle{Case}=[rectangle,draw=black,line width=1pt, minimum size=2cm,
 minimum height=1cm]
@@ -74,23 +74,23 @@ Un \alert{pointeur} est une entité constituée des deux éléments suivants~:
 \begin{enumerate}
     \item une adresse vers une zone de la mémoire~;
     \smallskip
-    
+
     \item un type.
 \end{enumerate}}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame} \frametitle{Pointeurs}
-{\bf Intuitivement}, un pointeur est une \alert{flèche} munie d'un mode 
+{\bf Intuitivement}, un pointeur est une \alert{flèche} munie d'un mode
 d'emploi, le tout pointant vers une zone de la mémoire.
 \smallskip
 
-Le \alert{mode d'emploi} décrit le type de la zone de la mémoire ainsi 
+Le \alert{mode d'emploi} décrit le type de la zone de la mémoire ainsi
 adressée en renseignant sur la taille de la zone.
 \medskip
 
 \begin{multicols}{2}
-\uncover<2->{Si \Code{ptr\_1} est un pointeur sur une donnée de type 
+\uncover<2->{Si \Code{ptr\_1} est un pointeur sur une donnée de type
 \Code{int} ($4$ octets)~:
 \begin{center}
     \scalebox{.5}{\begin{tikzpicture}
@@ -115,7 +115,7 @@ adressée en renseignant sur la taille de la zone.
     \end{tikzpicture}}
 \end{center}}
 
-\uncover<3->{Si \Code{ptr\_2} est un pointeur sur une donnée de type 
+\uncover<3->{Si \Code{ptr\_2} est un pointeur sur une donnée de type
 \Code{char} ($2$ octets)~:
 \begin{center}
     \scalebox{.5}{\begin{tikzpicture}
@@ -282,7 +282,7 @@ type \Code{T} par
     \node[Bloc](4)at(5,0){};
     \node[Bloc](5)at(6,0){};
     \node at(7,0){$\dots$};
-    \node[Bloc](6)at(8,0){};    
+    \node[Bloc](6)at(8,0){};
     \node at(9,0){\Large $\dots$};
     \node[Bloc](7)at(10,0){};
     \node at(11,0){$\dots$};
@@ -344,22 +344,23 @@ Considérons les instructions suivantes~:
 \begin{semiverbatim}\small
 int tab[2];
 char *ptr;
+
 tab[0] = 300;
 tab[1] = 60;
-printf("%p %p\\n", tab + 0,
-  tab + 1);
-printf("%d %d\\n", tab[0],
-  tab[1]);
-ptr = (char *) tab;
-printf("%p %p\\n", ptr + 0,
-  ptr + 1);
-printf("%d %d\\n", ptr[0],
-  ptr[1]);
-\end{semiverbatim}
-\uncover<2->{
-\begin{center} \todo{Faire les dessins de la mémoire.} \end{center}}
 
-\uncover<3->{
+printf("%p %p\\n",
+    tab + 0, tab + 1);
+printf("%d %d\\n",
+    tab[0], tab[1]);
+
+ptr = (char *) tab;
+printf("%p %p\\n",
+    ptr + 0, ptr + 1);
+printf("%d %d\\n",
+    ptr[0], ptr[1]);
+\end{semiverbatim}
+
+\uncover<2->{
 Elles affichent \\
 \Sortie{\small 0x7fffc38b5d60 0x7fffc38b5d64 \\
 300 60 \\
@@ -367,34 +368,38 @@ Elles affichent \\
 44 1}
 \smallskip}
 
-\uncover<4->{
+\uncover<3->{{\footnotesize
 Le pointeur \Code{ptr} interprète les éléments du tableau \Code{tab}
 comme des valeurs de taille $1$ octet (= \Code{sizeof(char)}).}
+\begin{center}
+\scalebox{.6}{\begin{tikzpicture}
+    \node[Bloc](1)at(0,0){};
+    \node[Bloc](2)at(1,0){};
+    \node[Bloc](3)at(2,0){};
+    \node[Bloc](4)at(3,0){};
+    \node[Bloc](5)at(4,0){};
+    \node[Bloc](6)at(5,0){};
+    \node[Bloc](7)at(6,0){};
+    \node[Bloc](8)at(7,0){};
+    \draw(6.5,0.75)edge[anchor=south,<->,line width=1.5pt]
+        node{\small 1 octet}(7.5,0.75);
+    \draw(-0.5,-0.75)edge[anchor=north,<->,line width=1.5pt]
+        node{\small \Code{tab[0]}}(3.5,-0.75);
+    \draw(3.5,-0.75)edge[anchor=north,<->,line width=1.5pt]
+        node{\small \Code{tab[1]}}(7.5,-0.75);
+    %
+    \node(tab0)at(0, 1){\Code{tab + 0}};
+    \node(tab1)at(4, 1){\Code{tab + 1}};
+    \draw(tab0)edge[thick,->,bend left=-15](1);
+    \draw(tab1)edge[thick,->,bend left=-15](5);
+    %
+    \node(ptr0)at(0, 2){\Code{ptr + 0}};
+    \node(ptr1)at(2, 2){\Code{ptr + 1}};
+    \draw(ptr0)edge[thick,->,bend left=-75](1);
+    \draw(ptr1)edge[thick,->,bend left=-15](2);
+\end{tikzpicture}}
+\end{center}}
 \end{multicols}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile] 
-    \frametitle{Pointeurs et tableaux statiques --- exemple}
-
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile] \frametitle{Récapitulatif}
-Dans cette sous-partie, nous avons vu~:
-
-\begin{enumerate}
-    \item la mémoire et sa segmentation en plusieurs parties~;
-    \smallskip
-
-    \item la notion d'adresse et de pointeur~;
-    \smallskip
-
-    \item les tableaux statiques~;
-    \smallskip
-
-    \item l'accès à une partie d'un tableau (statique) via son adresse.
-\end{enumerate}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -402,14 +407,14 @@ Dans cette sous-partie, nous avons vu~:
 \subsection{Passage par adresse}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile] \frametitle{Passage par valeur}
+\begin{frame}[fragile] \frametitle{Passage par valeur --- rappel}
 Nous savons qu'il est impossible de modifier la valeur d'un argument
 passé à une fonction car celle-ci travaille sur une {\bf copie de sa
 valeur}.
 \bigskip
 
 \begin{multicols}{2}
-\begin{semiverbatim}\uncover<2->{
+\begin{semiverbatim}\small\uncover<2->{
 void incrementer(int nb) \{
     nb = nb + 1;
 \}
@@ -418,10 +423,11 @@ num = 5;
 incrementer(num);
 printf("%d\\n", num);}
 \end{semiverbatim}
+\bigskip
+
 \uncover<2->{
-\begin{center} \todo{Dessiner le contenu de la pile.} \end{center}
 Ces instructions affichent \Sortie{5}.
-\smallskip}
+\medskip}
 
 \uncover<3->{
 En ligne 6, c'est la {\bf valeur} de \Code{num} qui est transmise et
@@ -447,14 +453,15 @@ num = 5;
 incrementer(&num);
 printf("%d\\n", num);}
 \end{semiverbatim}
+\bigskip
+
 \uncover<2->{
-\begin{center} \todo{Dessiner le contenu de la pile.} \end{center}
 Ces instructions affichent \Sortie{6}.
-\smallskip}
+\medskip}
 
 \uncover<3->{
 En ligne 6, c'est (la valeur de) l'{\bf adresse} de \Code{num} qui est
-transmise.}
+transmise. Celle-ci universelle (visible partout).}
 \vspace{3em}
 \end{multicols}
 \bigskip
@@ -586,23 +593,6 @@ Voici un exemple qui illustre les quatre cas de figure~:}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile] \frametitle{Récapitulatif}
-Dans cette sous-partie, nous avons vu~:
-
-\begin{enumerate}
-    \item la différence entre le passage par valeur et le passage par
-    adresse des arguments d'une fonction~;
-    \smallskip
-
-    \item le qualificateur \Code{const} pour les adresses figurant en
-    paramètre d'une fonction~;
-    \smallskip
-
-    \item les quatre moyens d'utiliser ce qualificateur.
-\end{enumerate}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Allocation dynamique}
 
@@ -690,7 +680,7 @@ son bon déroulement. On procède de la manière suivante~:}
 \begin{semiverbatim}\small\uncover<3->{
 char *ptr;
 ptr = (char *) malloc(sizeof(char) * 1);
-if (ptr == NULL) exit(EXIT_FAILURE);}
+if (NULL == ptr) exit(EXIT_FAILURE);}
 \end{semiverbatim}
 \uncover<4->{
 De cette manière, si l'allocation s'est mal passée, on interrompt
@@ -763,34 +753,6 @@ type \Code{long}, initialisées à \Code{0}.}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile] \frametitle{Récapitulatif}
-Dans cette sous-partie, nous avons vu~:
-
-\begin{enumerate}
-    \item la notion de donnée persistante en mémoire~;
-    \smallskip
-
-    \item le principe de l'allocation dynamique~;
-    \smallskip
-
-    \item le pointeur générique \Code{void *}~;
-    \smallskip
-
-    \item la fonction \Code{malloc}~;
-    \smallskip
-
-    \item la fonction \Code{calloc}~;
-    \smallskip
-
-    \item la fonction \Code{exit} et le test d'erreur de demande
-    d'allocation~;
-    \smallskip
-
-    \item la fonction \Code{free}.
-\end{enumerate}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Tableaux dynamiques}
 
@@ -835,32 +797,129 @@ entiers situés à partir de l'adresse \Code{tab}).}
     \frametitle{Création d'un tableau dynamique à deux dimensions}
 Un \alert{tableau à deux dimensions} est un tableau dont chaque case est
 elle-même un tableau. \uncover<2->{Un tableau dynamique à deux dimensions
-est donc un pointeur sur un pointeur.} \uncover<3->{Ceci se généralise
-dans le cas des tableaux à plus de deux dimensions.}
+est donc un {\bf pointeur sur un pointeur}.} \uncover<3->{Ceci se
+généralise dans le cas des tableaux à plus de deux dimensions.}
 \medskip
 
 \uncover<4->{
 Les instructions}
 \begin{semiverbatim}\small\uncover<4->{
 int i, j, **tab;
-tab = (int **) malloc(sizeof(int *) * 12);
+tab = (int **) malloc(sizeof(int *) * 4);
 if (tab == NULL) exit(EXIT_FAILURE);
-for (i = 0 ; i < 12 ; ++i) \{
-    tab[i] = (int *) malloc(sizeof(int) * 25);
+for (i = 0 ; i < 4 ; ++i) \{
+    tab[i] = (int *) malloc(sizeof(int) * 3);
     if (tab[i] == NULL) exit(EXIT_FAILURE);
-    for (j = 0 ; j < 25 ; ++j)
+    for (j = 0 ; j < 3 ; ++j)
         tab[i][j] = 0;
 \}}
 \end{semiverbatim}
 \uncover<4->{
 permettent de créer un tableau dynamique à deux dimensions de taille \\
-\Code{12} $\times$ \Code{25} de valeurs de type \Code{int} initialisées
+\Code{4} $\times$ \Code{3} de valeurs de type \Code{int} initialisées
 à \Code{0}.}
+\end{frame}
 
-\uncover<5->{
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+    \frametitle{Création d'un tableau dynamique à deux dimensions}
+\begin{multicols}{2}
 \begin{center}
-    \todo{Dessiner la mémoire au fur et à mesure de la création.}
-\end{center}}
+    \scalebox{.8}{\begin{tikzpicture}
+        \node(0)at(0,0){\Code{tab}};
+        \node[right of=0,node distance=1.5cm](X0)
+            {\begin{math}\times\end{math}};
+        \draw[thick,->](0)--(X0);
+    \end{tikzpicture}}
+\end{center}
+\small
+Initialement, \Code{tab} est pointeur vers une zone indéterminée de la
+mémoire.
+\end{multicols}
+\smallskip
+
+\uncover<2->{%
+\begin{multicols}{2}
+\begin{center}
+    \scalebox{.4}{\begin{tikzpicture}
+        \node[Case,fill=Gray!20](1)at(0,-1){};
+        \node[Case,fill=Gray!20](2)at(0,-2){};
+        \node[Case,fill=Gray!20](3)at(0,-3){};
+        \node[Case,fill=Gray!20](4)at(0,-4){};
+        \node[right of=1,node distance=2cm](X1)
+            {\begin{math}\times\end{math}};
+        \node[right of=2,node distance=2cm](X2)
+            {\begin{math}\times\end{math}};
+        \node[right of=3,node distance=2cm](X3)
+            {\begin{math}\times\end{math}};
+        \node[right of=4,node distance=2cm](X4)
+            {\begin{math}\times\end{math}};
+        \draw[thick,->](1)--(X1);
+        \draw[thick,->](2)--(X2);
+        \draw[thick,->](3)--(X3);
+        \draw[thick,->](4)--(X4);
+        \node[left of=1,node distance=2cm]{\Code{tab[0]}};
+        \node[left of=2,node distance=2cm]{\Code{tab[1]}};
+        \node[left of=3,node distance=2cm]{\Code{tab[2]}};
+        \node[left of=4,node distance=2cm]{\Code{tab[3]}};
+        %
+        \node(0)at(-2,0){\Code{tab}};
+        \draw(0)edge[thick,->,bend left=20](1);
+    \end{tikzpicture}}
+\end{center}
+Juste après la 1\iere{} allocation dynamique, \Code{tab} est dans cet
+état. L'espace de mémoire de \Code{4} pointeurs sur des entiers à
+été réservé.
+\end{multicols}
+\smallskip}
+
+\uncover<3->{%
+\begin{multicols}{2}
+\begin{center}
+    \scalebox{.4}{\begin{tikzpicture}
+        \node[Case,fill=Gray!20](1)at(0,-1){};
+        \node[Case,fill=Gray!20](2)at(0,-2){};
+        \node[Case,fill=Gray!20](3)at(0,-3){};
+        \node[Case,fill=Gray!20](4)at(0,-4){};
+        %
+        \node[left of=1,node distance=2cm]{\Code{tab[0]}};
+        \node[left of=2,node distance=2cm]{\Code{tab[1]}};
+        \node[left of=3,node distance=2cm]{\Code{tab[2]}};
+        \node[left of=4,node distance=2cm]{\Code{tab[3]}};
+        %
+        \node[Case,fill=BrickRed!40](11)at(4,.5){\Code{0}};
+        \node[Case,fill=BrickRed!40](12)at(6,.5){\Code{0}};
+        \node[Case,fill=BrickRed!40](13)at(8,.5){\Code{0}};
+        %
+        \node[Case,fill=BrickRed!40](21)at(4,-1.5){\Code{0}};
+        \node[Case,fill=BrickRed!40](22)at(6,-1.5){\Code{0}};
+        \node[Case,fill=BrickRed!40](23)at(8,-1.5){\Code{0}};
+        %
+        \node[Case,fill=BrickRed!40](31)at(4,-3.5){\Code{0}};
+        \node[Case,fill=BrickRed!40](32)at(6,-3.5){\Code{0}};
+        \node[Case,fill=BrickRed!40](33)at(8,-3.5){\Code{0}};
+        %
+        \node[Case,fill=BrickRed!40](41)at(4,-5.5){\Code{0}};
+        \node[Case,fill=BrickRed!40](42)at(6,-5.5){\Code{0}};
+        \node[Case,fill=BrickRed!40](43)at(8,-5.5){\Code{0}};
+        %
+        \node[above of=11,node distance=.75cm]{\Code{tab[0][0]}};
+        \node[above of=13,node distance=.75cm]{\Code{tab[0][2]}};
+        \node[above of=32,node distance=.75cm]{\Code{tab[2][1]}};
+        %
+        \draw(1)edge[thick,->,bend right=10](11);
+        \draw(2)edge[thick,->,bend right=0](21);
+        \draw(3)edge[thick,->,bend left=0](31);
+        \draw(4)edge[thick,->,bend left=10](41);
+        %
+        \node(0)at(-2,0){\Code{tab}};
+        \draw(0)edge[thick,->,bend left=20](1);
+    \end{tikzpicture}}
+\end{center}
+Après les allocations dynamiques des tableaux à une dimension de taille
+\Code{3} et des initialisations des cases d'entiers, \Code{tab} est dans
+cet état.
+\end{multicols}}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -873,7 +932,7 @@ plusieurs fois la fonction \Code{free}.
 \uncover<2->{
 Les instructions}
 \begin{semiverbatim}\small\uncover<2->{
-for (i = 0 ; i < 12 ; ++i) \{
+for (i = 0 ; i < 4 ; ++i) \{
     free(tab[i]);
     tab[i] = NULL;
 \}
@@ -882,14 +941,15 @@ tab = NULL;}
 \end{semiverbatim}
 \uncover<2->{
 permettent de libérer l'espace mémoire occupé par un tableau \Code{tab}
-à deux dimensions de taille \Code{12} $\times$ \Code{N} de valeurs
+à deux dimensions de taille \Code{4} $\times$ \Code{N} de valeurs
 de type \Code{T} où \Code{N} est un entier strictement positif
-quelconque et \Code{T} est un type.}
+quelconque et \Code{T} est un type.
+\medskip}
 
 \uncover<3->{
-\begin{center}
-    \todo{Dessiner la mémoire au fur et à mesure de la destruction.}
-\end{center}}
+{\bf Remarque}~: la connaissance de la seconde dimension du tableau
+(\Code{N}) n'est pas utile et n'intervient pas dans la suite
+d'instructions ci-dessus.}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -947,25 +1007,4 @@ un tableau dynamique. La lecture s'arrête sur lecture de \Code{'!'}.
 \uncover<15->{chaine = (char *) realloc(chaine, t_reelle + 1); /* Diminution. */}
 \uncover<16->{printf("%s\\n", chaine);}
 \end{semiverbatim}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile] \frametitle{Récapitulatif}
-Dans cette sous-partie, nous avons vu~:
-
-\begin{enumerate}
-    \item la notion de tableau dynamique~;
-    \smallskip
-
-    \item l'allocation de tableaux dynamiques de dimension un, deux et au
-    delà~;
-    \smallskip
-
-    \item la libération de tableaux dynamiques de dimension un, deux et
-    au delà~;
-    \smallskip
-
-    \item la fonction \Code{realloc} pour modifier la taille d'une
-    zone de mémoire allouée.
-\end{enumerate}
 \end{frame}
