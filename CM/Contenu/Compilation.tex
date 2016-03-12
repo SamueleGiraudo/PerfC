@@ -1,5 +1,6 @@
 % Auteur : Samuele Giraudo
-% Création : fév. 2014, jan 2015, mars 2015, déc. 2015, fév. 2016
+% Création : fév. 2014, jan 2015, mars 2015, déc. 2015, fév. 2016,
+% mars 2016
 
 \tikzstyle{Module}=[rectangle,draw=Violet!100,fill=Violet!20,
     line width=1pt,font=\scriptsize\tt]
@@ -1386,8 +1387,8 @@ l'exécutable du projet, ainsi que le répertoire \Code{bin} le contenant.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}\frametitle{Principes généraux}
-Une \alert{bibliothèque} est un regroupement de modules offrant des
-fonctionnalités allant vers un même objectif.
+Une \alert{bibliothèque} est un {\bf regroupement de modules} offrant
+des fonctionnalités allant vers un même objectif.
 \bigskip
 
 \uncover<2->{%
@@ -1465,7 +1466,7 @@ sont résolus au moyen de l'éditeur de liens dynamique.
 \frametitle{Compilation d'un projet utilisant des bibliothèques}
 On suppose que l'on travaille sur un projet constitué de deux modules
 \Code{A} et \Code{B} et d'un fichier principal \Code{Main.c}.
-Ce projet utilise deux bibliothèques statiques~: \Code{libc.a} et
+Ce projet utilise deux bibliothèques statiques~: \Code{libm.a} et
 \Code{libMLV.a}.
 \medskip
 

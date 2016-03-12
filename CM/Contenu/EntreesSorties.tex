@@ -1,6 +1,6 @@
 % Auteur : Samuele Giraudo
 % Création : oct. 2013
-% Modifications : aout 2014 oct. 2014, déc. 2015
+% Modifications : aout 2014 oct. 2014, déc. 2015, mars 2016
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -22,8 +22,8 @@ permet de réaliser une \alert{écriture formatée} sur la sortie standard
 \medskip
 
 \uncover<2->{
-Cette fonction renvoie le nombre de caractères affichés. Si une erreur
-a lieu, elle renvoie un entier négatif.
+{\bf Rappel~:} cette fonction renvoie le nombre de caractères affichés.
+Si une erreur a lieu, elle renvoie un entier négatif.
 \medskip}
 
 \begin{multicols}{2}
@@ -160,9 +160,8 @@ char chaine[128];
 chaine[0] = '\\0';
 ret = scanf("%d W %s",
   &num, chaine);
-printf("%d\\n", ret);
-printf("%d %s\\n",
-  num, chaine);}
+printf("%d %d %s\\n",
+  ret, num, chaine);}
 \end{semiverbatim}
 \small
 \uncover<3->{
@@ -171,22 +170,28 @@ Ces instructions lisent sur l'entrée standard un entier, un caractère
 \medskip}
 
 \uncover<4->{
-Que font les entrées suivantes~?
 \begin{multicols}{2}
 \begin{enumerate} \footnotesize
-    \item \Sortie{25\textvisiblespace W\textvisiblespace abc\textbackslash n}}
+    \item \Code{25\textvisiblespace W\textvisiblespace abc\textbackslash n} \\
+    $\to$ \Sortie{2 25 abc}}
     \uncover<5->{
-    \item \Sortie{25\textvisiblespace W%
-        \textvisiblespace\textvisiblespace abc\textbackslash n}}
+    \item \Code{25\textvisiblespace W%
+        \textvisiblespace\textvisiblespace abc\textbackslash n} \\
+    $\to$ \Sortie{2 25 abc}}
     \uncover<6->{
-    \item \Sortie{25Wabc\textbackslash n}}
+    \item \Code{25Wabc\textbackslash n} \\
+    $\to$ \Sortie{2 25 abc}}
+    \bigskip
+
     \uncover<7->{
-    \item \Sortie{25\textvisiblespace abc\textbackslash n}}
+    \item \Code{25\textvisiblespace abc\textbackslash n} \\
+    $\to$ \Sortie{1 25}}
     \uncover<8->{
-    \item \Sortie{xy\textvisiblespace W\textvisiblespace abc\textbackslash n}}
+    \item \Code{xy\textvisiblespace W\textvisiblespace abc\textbackslash n} \\
+    $\to$ \Sortie{0 ?}}
     \uncover<9->{
-    \item \Sortie{25\textvisiblespace w\textvisiblespace abc\textbackslash n}
-    }
+    \item \Code{25\textvisiblespace w\textvisiblespace abc\textbackslash n} \\
+    $\to$ \Sortie{1 25}}
 \end{enumerate}
 \end{multicols}
 \end{multicols}
@@ -282,35 +287,93 @@ de caractères.
 \subsection{Fichiers}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame} \frametitle{Tête de lecture / écriture}
-\todo{À faire.}
+\begin{frame} \frametitle{Descripteurs de fichiers et tête de lecture/écriture}
+Tout fichier est manipulé par un pointeur sur une variable de type
+\Code{FILE}.
+\medskip
+
+C'est un type structuré déclaré dans \Code{stdio.h} qui contient diverses
+informations nécessaires et relatives au fichier qu'il adresse.
+\medskip
+
+Toute variable de type \Code{FILE *} est un \alert{descripteur de fichier}.
+\bigskip
+
+\uncover<2->{%
+La lecture écriture dans un fichier se fait par l'intermédiaire d'une
+\alert{tête de lecture}.
+\medskip
+
+Celle-ci désigne un caractère du fichier considéré comme le
+{\bf caractère observé} à un instant donné.
+\medskip
+
+Les fonctions de lecture/écriture ont pour effet (en particulier) de
+mettre à jour cette tête de lecture en avançant dans leur positionnement
+dans le fichier.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Tête de lecture/écriture}
+Il existe trois fonctions de \Code{stdio.h} pour
+\alert{déplacer manuellement la tête de lecture}~:
+
+\begin{itemize}
+    \item \Code{int ftell(FILE *f);} qui renvoie l'indice de la tête
+    de lecture du fichier pointé par \Code{f}.
+    \smallskip
+
+    Cette fonction est sans effet de bord~;
+    \medskip
+
+    \uncover<2->{%
+    \item \Code{int fseek(FILE *f, int decalage, int mode);} qui décale
+    la tête de lecture du fichier pointé par \Code{f} de \Code{decalage}
+    caractères selon \Code{mode}.
+    \smallskip
+
+    Ce paramètre explique à quoi le décalage est relatif
+    (\Code{SEEK\_SET}~: début du fichier, \Code{SEEK\_CUR}~: position
+    courante, \Code{SEEK\_END}~: fin du fichier).
+    \smallskip
+
+    Cette fonction renvoie \Code{0} si elle s'est bien exécutée et
+    \Code{-1} sinon~;
+    \medskip}
+
+    \uncover<3->{%
+    \item \Code{void rewind(FILE *f)}; place la tête de lecture au début
+    du fichier. L'appel \Code{void rewind(f)}; est ainsi équivalent à
+    \Code{int fseek(f, O, SEEK\_SET);}.}
+\end{itemize}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame} \frametitle{Ouverture de fichiers}
 La fonction
 \begin{center}
-    \Code{FILE *fopen(const char *path, const char *mode);}
+    \Code{FILE *fopen(const char *chemin, const char *mode);}
 \end{center}
 permet d'\alert{ouvrir un fichier}.
 \medskip
 
-\uncover<2->{
-Cette fonction renvoie un pointeur sur une variable de type \Code{FILE}
-qui est un type structuré.
+\uncover<2->{%
+Cette fonction renvoie un descripteur de fichier sur le fichier de chemin
+\Code{chemin} (relatif par rapport à l'exécutable).
+\medskip}
+
+\uncover<3->{%
+La tête de lecture est positionnée sur son 1\ier{} caractère.
+\medskip}
+
+\uncover<4->{%
+Le paramètre \Code{mode} désigne le mode d'ouverture désiré.
 \bigskip}
 
-\uncover<3->{
+\uncover<5->{
 {\bf Attention}~: \Code{fopen} renvoie \Code{NULL} si l'ouverture s'est
 mal passée. Il faut donc toujours tester la valeur de retour de \Code{fopen}.
 \medskip}
-
-\uncover<4->{
-\Code{path} désigne le chemin relatif par rapport à l'exécutable du fichier
-à ouvrir.
-\smallskip
-
-\Code{mode} désigne le mode d'ouverture désiré.}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -348,15 +411,15 @@ particulier~:
 \begin{frame} \frametitle{Fermeture de fichiers}
 La fonction
 \begin{center}
-    \Code{int fclose(FILE *fp);}
+    \Code{int fclose(FILE *f);}
 \end{center}
 permet de \alert{fermer un fichier}.
 \bigskip
 
 \uncover<2->{
-Cette fonction permet de mettre à jour le fichier pointé par \Code{fp}
+Cette fonction permet de mettre à jour le fichier pointé par \Code{f}
 de sorte que toutes les modifications effectuées soient prisent en compte.
-Le pointeur \Code{fp} n'est plus alors utilisable pour accéder au fichier.
+Le pointeur \Code{f} n'est plus alors utilisable pour accéder au fichier.
 \bigskip}
 
 \uncover<3->{
@@ -373,10 +436,10 @@ fichier en question.}
 \begin{frame}[fragile] \frametitle{Écriture dans un fichier}
 La fonction
 \begin{center}
-    \Code{int fprintf(FILE *stream, char *format, V\_1, ..., V\_N);}
+    \Code{int fprintf(FILE *f, char *format, V\_1, ..., V\_N);}
 \end{center}
 permet de réaliser une \alert{écriture formatée} dans le fichier pointé
-par \Code{stream}.
+par \Code{f}.
 \medskip
 
 \uncover<2->{
@@ -411,10 +474,10 @@ et écrivent \Code{"abc"} dans \Code{fic.txt}.}
 \begin{frame} \frametitle{Lecture dans un fichier}
 La fonction
 \begin{center}
-    \Code{int fscanf(FILE *stream, char *format, V\_1, ..., V\_N);}
+    \Code{int fscanf(FILE *f, char *format, V\_1, ..., V\_N);}
 \end{center}
 permet de réaliser une \alert{lecture formatée} depuis le fichier pointé
-par \Code{stream}.
+par \Code{f}.
 \bigskip
 
 \uncover<2->{
@@ -462,16 +525,16 @@ pour signaler l'ouverture en binaire.
 \begin{frame} \frametitle{Écriture dans un fichier binaire}
 On utilise la fonction
 \begin{center}
-    \Code{size\_t fwrite(void *ptr, size\_t size, size\_t nmemb, \\ FILE *stream);}
+    \Code{int fwrite(void *ptr, int taille, int nb, FILE *f);}
 \end{center}
-pour \alert{écrire} dans un fichier pointé par \Code{stream} ouvert
+pour \alert{écrire} dans un fichier pointé par \Code{f} ouvert
 en \alert{mode binaire}.
 \bigskip
 
 \uncover<2->{
-Cette fonction écrit les \Code{nmemb} valeurs de taille \Code{size} octets
+Cette fonction écrit les \Code{nb} valeurs de taille \Code{taille} octets
 pointées par le pointeur \Code{ptr} dans le fichier pointé
-par \Code{stream}.
+par \Code{f}.
 \bigskip}
 
 \uncover<3->{
@@ -511,15 +574,15 @@ typedef struct \{
 \begin{frame} \frametitle{Lecture dans un fichier binaire}
 On utilise la fonction
 \begin{center}
-    \Code{size\_t fread(void *ptr, size\_t size, size\_t nmemb, \\ FILE *stream);}
+    \Code{int fread(void *ptr, int taille, int nb, FILE *f);}
 \end{center}
-pour \alert{lire} dans un fichier pointé par \Code{stream} ouvert
+pour \alert{lire} dans un fichier pointé par \Code{f} ouvert
 en \alert{mode binaire}.
 \bigskip
 
 \uncover<2->{
-Cette fonction lit \Code{nmemb} valeurs de taille \Code{size} octets
-dans le fichier pointé par \Code{stream} et les place à l'adresse pointée
+Cette fonction lit \Code{nb} valeurs de taille \Code{taille} octets
+dans le fichier pointé par \Code{f} et les place à l'adresse pointée
 par le pointeur \Code{ptr}.
 \bigskip}
 

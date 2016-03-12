@@ -116,7 +116,7 @@ adressée en renseignant sur la taille de la zone.
 \end{center}}
 
 \uncover<3->{Si \Code{ptr\_2} est un pointeur sur une donnée de type
-\Code{char} ($2$ octets)~:
+\Code{short} ($2$ octets)~:
 \begin{center}
     \scalebox{.5}{\begin{tikzpicture}
         \node[Case,fill=Gray!20](1)at(0,-1){};
@@ -136,7 +136,7 @@ adressée en renseignant sur la taille de la zone.
         \node(p)at(-3,-4){\Code{ptr\_2}};
         \draw(p)edge[thick,->,bend right=-20](3);
         \node(p_val)at(-3,-4.5){valeur : {\tt 1002}};
-        \node(p_type)at(-3,-5){type : \Code{char *}};
+        \node(p_type)at(-3,-5){type : \Code{short *}};
     \end{tikzpicture}}
 \end{center}}
 \end{multicols}

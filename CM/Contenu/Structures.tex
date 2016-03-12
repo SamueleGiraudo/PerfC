@@ -1,5 +1,5 @@
 % Auteur : Samuele Giraudo
-% Création : jan. 2014, jan. 2015, fév 2015, déc. 2015
+% Création : jan. 2014, jan. 2015, fév 2015, déc. 2015, mars 2016
 
 \tikzstyle{Bloc}=[rectangle,draw=Vert!100,fill=Vert!20,
     line width=1pt,minimum width=1cm,minimum height=0.75cm]
@@ -12,39 +12,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Déclaration}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]
-\frametitle{Déclaration de types structurés}
-La syntaxe
-\smallskip
-
-\Code{typedef struct ALIAS $\lbrace$} \\
-\qquad \Code{TYPE\_1 CHAMP\_1;} \\
-\qquad \Code{TYPE\_2 CHAMP\_2;} \\
-\qquad \Code{\dots} \\
-\Code{$\rbrace$ NOM;}
-\smallskip
-
-permet de \alert{déclarer un type structuré} \Code{NOM}.
-\bigskip
-
-L'{\bf alias} \Code{ALIAS} est facultatif.
-\bigskip
-
-Par exemple, \vspace{-1em}
-\begin{multicols}{2}
-\begin{lstlisting}
-typedef struct {
-    int x;
-    int y;
-} Couple;
-\end{lstlisting}
-déclare un type structuré \Code{Couple} qui permet de représenter des
-couples d'entiers.
-\end{multicols}
-\end{frame}
+\subsection{Déclaration et initialisation}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]
@@ -257,7 +225,7 @@ Chaque appel de fonction
 \begin{center}
     \Code{init(s, r);}
 \end{center}
-provoque la recopie de trois valeurs (ce qui est acceptable) mais
+provoque la recopie de trois valeurs (ce qui est encore acceptable) mais
 \og modifie \fg\, les valeurs pointées par le champ \Code{tab} de \Code{s},
 malgré le passage par valeur.
 \bigskip
@@ -315,7 +283,7 @@ typdef struct {
     float y;
 } Point;
 
-void somme_points(Point *p1, Point *p2,
+void somme_points(const Point *p1, const Point *p2,
         float coeff1, float coeff2,
         Point *res) {
 
@@ -445,8 +413,8 @@ définition de la fonction
 \begin{lstlisting}
 void copier_T(T *v1, T *v2) {
     int i;
-    assert(v1 != NULL); /* Test arg. */
-    assert(v2 != NULL); /* Test arg. */
+    assert(v1 != NULL);
+    assert(v2 != NULL);
     v2->n = v1->n;
     v2->t = (char *) malloc(sizeof(char) * v1->n);
     if (v2->t == NULL) exit(EXIT_FAILURE);
@@ -454,6 +422,9 @@ void copier_T(T *v1, T *v2) {
         v2->t[i] = v1->t[i];
 }
 \end{lstlisting}
+
+Il est possible de munir cette fonction du mécanisme habituel de
+gestion d'erreurs.
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -483,10 +454,10 @@ Le compilateur n'accepte pas la comparaison de variables d'un type
 structuré.
 \smallskip
 
-\Sortie{invalid operands to binary == (have 'A' and 'A')}
+\Sortie{\small invalid operands to binary == (have 'A' and 'A')}
 \smallskip
 
-\Sortie{invalid operands to binary != (have 'A' and 'A')}
+\Sortie{\small invalid operands to binary != (have 'A' and 'A')}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -571,20 +542,27 @@ types structurés~:
 \begin{enumerate}
     \item on utilise l'{\bf alias} lors de la déclaration de types structurés
     {\bf récursifs} et/ou {\bf mutuellement récursifs}~;
-    \medskip
+    \bigskip
 
     \item on ne {\bf renvoie jamais} de valeur d'un type structuré~;
-    \medskip
+    \bigskip
 
     \item on passe les {\bf paramètres} d'un type structuré {\bf par adresse}~;
-    \medskip
+    \bigskip
 
     \item toute {\bf déclaration d'un type structuré} s'accompagne de la
     définition des quatre fonctions suivantes~:
+
     \begin{itemize} \normalsize
         \item une fonction de {\bf copie}~;
+        \smallskip
+
         \item une fonction de {\bf test d'égalité}~;
+        \smallskip
+
         \item une fonction de {\bf test d'inégalité}~;
+        \smallskip
+
         \item une fonction de {\bf destruction}.
     \end{itemize}
 \end{enumerate}
@@ -601,9 +579,9 @@ L'\alert{alignement en mémoire} d'une donnée est la façon dont celle-ci
 est organisée dans la mémoire.
 \bigskip
 
-Par exemple, les {\bf tableaux} de taille \Code{n} d'éléments d'un type
-\Code{T} sont organisés en un segment contigu de \Code{sizeof(T) * n}
-octets.
+Par exemple, nous avons déjà vu que les {\bf tableaux} de taille
+\Code{n} d'éléments d'un type \Code{T} sont organisés en un segment
+contigu de \Code{sizeof(T) * n} octets.
 \medskip
 
 Ainsi, un tableau \Code{t} de \Code{3} éléments de type \Code{short}
@@ -952,6 +930,7 @@ beaucoup de paramètres, notamment~:
 
     \item du compilateur ayant compilé le programme.
 \end{itemize}
+\bigskip
 \bigskip
 
 Il est donc important de savoir que le calcul de la {\bf taille} d'une
