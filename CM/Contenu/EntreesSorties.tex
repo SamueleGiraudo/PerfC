@@ -309,14 +309,15 @@ Celle-ci désigne un caractère du fichier considéré comme le
 \medskip
 
 Les fonctions de lecture/écriture ont pour effet (en particulier) de
-mettre à jour cette tête de lecture en avançant dans leur positionnement
+mettre à jour cette tête de lecture en avançant dans son positionnement
 dans le fichier.}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame} \frametitle{Tête de lecture/écriture}
 Il existe trois fonctions de \Code{stdio.h} pour
-\alert{déplacer manuellement la tête de lecture}~:
+\alert{déplacer manuellement la tête de lecture} ou obtenir des
+informations à son sujet~:
 
 \begin{itemize}
     \item \Code{int ftell(FILE *f);} qui renvoie l'indice de la tête
@@ -428,8 +429,8 @@ Cette fonction renvoie \Code{0} si la fermeture s'est bien déroulée et
 \bigskip}
 
 \uncover<4->{{\bf Attention}~: toute ouverture d'un fichier lors de
-l'exécution d'un programme s'accompagne de la fermeture future du
-fichier en question.}
+l'exécution d'un programme doit s'accompagner tôt ou tard de la
+fermeture future du fichier en question.}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

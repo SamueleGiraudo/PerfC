@@ -1,0 +1,214 @@
+% Auteur : Samuele Giraudo
+% Création : 20-03-16
+% Modifications : 20-03-16
+
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{amsmath,amsthm,amsfonts,amssymb}
+\usepackage{lmodern}
+\usepackage[top=2.4cm,bottom=2.4cm,left=2cm,right=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tikz}
+
+%\author{Samuele Giraudo}
+\date{}
+\title{{\bf Perfectionnement à la programmation en {\sf C}} \\
+    Fiche de TD 5 \\
+    {\small L2 Informatique 2015-2016} \\
+    {\it \small Pointeurs génériques et allocation dynamique}}
+
+\theoremstyle{definition}
+\newtheorem{Exercice}{Exercice}
+
+\newcommand{\EnsNat}{\mathbb{N}}
+\newcommand{\La}{{\tt a}}
+\newcommand{\Lb}{{\tt b}}
+\newcommand{\Lc}{{\tt c}}
+\newcommand{\Ld}{{\tt d}}
+
+% Configuration de listings.
+\lstset{
+    language=c,
+    basicstyle=\ttfamily\footnotesize,
+    identifierstyle=\color{Mahogany},
+    keywordstyle=\color{NavyBlue},
+    stringstyle=\color{Emerald},
+    commentstyle=\it\color{Gray},
+    columns=flexible,
+    tabsize=4,
+    extendedchars=true,
+    showspaces=false,
+    numbers=left,
+    numberstyle=\tiny,
+    breaklines=true,
+    breakautoindent=true,
+    captionpos=b,
+    showstringspaces=true
+}
+
+\begin{document}
+
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Test d'égalité de zones de la mémoire)}\smallskip
+\begin{enumerate}
+    \item Écrire une fonction qui permet de tester l'égalité entre deux
+    variables d'un type quelconque. La fonction admet le prototype
+\begin{lstlisting}
+int sont_egales(int nb_octets, void *var1, void *var2);
+\end{lstlisting}
+    et elle renvoie {\tt 1} si les {\tt nb\_octets} lus à partir des adresses
+    {\tt var1} et {\tt var2} sont égaux deux à deux et {\tt 0} sinon.
+    \smallskip
+
+    \item On suppose que {\tt num1} et {\tt num2} sont deux variables
+    de type {\tt short}. Écrire l'appel à la fonction {\tt sont\_egales}
+    pour comparer les valeurs de ces variables.
+    \smallskip
+
+    \item On suppose que {\tt res} est une variable de type {\tt int}.
+    Pour chacune des suites d'instructions suivantes, expliquer la
+    valeur de {\tt res} à la fin de leur exécution.
+    \begin{multicols}{2}
+        \begin{enumerate}[label = ({\alph*})]
+            \item ~
+\begin{lstlisting}
+int a;
+char b;
+
+a = 3;
+b = 3;
+res = sont_egales(1, &a, &b);
+\end{lstlisting}
+
+            \item ~
+\begin{lstlisting}
+int a;
+int b;
+
+a = (1 << 8) + 32;
+b = 32;
+res = sont_egales(1, &a, &b);
+\end{lstlisting}
+        \end{enumerate}
+    \end{multicols}
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Tableaux statiques)}\smallskip
+
+On souhaite manipuler une fonction paramétrée par un entier {\tt n} qui
+renvoie un pointeur sur un tableau de {\tt n} entiers initialisés à {\tt 0}.
+Expliquer pourquoi la fonction suivante ne répond pas à cette spécification.
+Expliquer en particulier ce qu'il se passe lorsque cette fonction est
+appelée (faire des dessins de mémoire).
+\begin{lstlisting}
+int *creer_tableau(int n) {
+    int tab[n];
+    int i;
+
+    for (i = 0 ; i < n ; ++i)
+        tab[i] = 0;
+    return tab;
+}
+\end{lstlisting}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Tableaux dynamiques à une dimension)}\smallskip
+
+Dans toutes les fonctions suivantes, on prendra soin de vérifier que
+les allocations dynamiques (et donc les appels à la fonction {\tt malloc})
+ne produisent pas d'erreur.
+\begin{enumerate}
+    \item Écrire une fonction {\tt creer\_tab} paramétrée par un entier
+    {\tt n} et qui renvoie un pointeur sur un tableau de {\tt n} entiers
+    initialisés à {\tt 0}.
+    \smallskip
+
+    \item Écrire une fonction {\tt detruire\_tab} paramétrée par un
+    pointeur {\tt tab} sur un tableau d'entiers et qui libère la place
+    mémoire occupée par {\tt tab}.
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Tableaux dynamiques à deux dimensions)}\smallskip
+
+Dans toutes les fonctions suivantes, on prendra soin de vérifier que
+les allocations dynamiques (et donc les appels à la fonction {\tt malloc})
+ne produisent pas d'erreur.
+\begin{enumerate}
+    \item Écrire une fonction {\tt creer\_tab\_2d} paramétrée par des
+    entiers {\tt n} et {\tt m} et qui renvoie un pointeur sur un tableau
+    à deux dimensions de {\tt n} $\times$ {\tt m} entiers initialisés
+    à {\tt 0}.
+    \smallskip
+
+    \item Écrire une fonction {\tt detruire\_tab\_2d} paramétrée par un
+    entier {\tt n} et un pointeur {\tt tab} sur un tableau à deux
+    dimensions de {\tt n} $\times$ {\tt m} entiers (il n'est pas
+    nécessaire de connaître {\tt m} ici). Cette fonction doit libérer la
+    place mémoire occupée par {\tt tab}.
+    \smallskip
+
+    \item Dessiner l'état de la mémoire étape par étape et de manière
+    très précise lors de l'exécution des instructions
+\begin{lstlisting}
+int **tab = creer_tab_2d(2, 3);
+detruire_tab_2d(tab, 2);
+\end{lstlisting}
+    \smallskip
+
+    \item Expliquer comment représenter et gérer un tableau à deux
+    dimensions par un tableau à une seule dimension.
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Tableaux dynamiques en dents de scie)}\smallskip
+
+Dans toutes les fonctions suivantes, on prendra soin de vérifier que
+les allocations dynamiques (et donc les appels à la fonction {\tt malloc})
+ne produisent pas d'erreur.
+
+\begin{enumerate}
+    \item Écrire une fonction {\tt creer\_scie} paramétrée par un entier
+    {\tt n} et qui renvoie un pointeur sur un tableau à deux dimensions
+    de caractères. Pour tout $0 \leq i \leq {\tt n} - 1$, la $i\ieme$
+    case du tableau à construire contient un tableau à une dimension de
+    $i$ modulo $5$ plus un caractères {\tt '*'}.
+    \smallskip
+
+    \item Écrire une fonction {\tt detruire\_scie} paramétrée par un
+    entier {\tt n} et un pointeur {\tt scie} sur un tableau à deux
+    dimensions de caractères (pouvant être construit par un appel à
+    {\tt creer\_scie}). Cette fonction doit libérer la place mémoire
+    occupée par {\tt scie}.
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+\end{document}
