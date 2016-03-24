@@ -1,0 +1,1 @@
+latex TP5.tex ; dvips TP5.dvi ; ps2pdf TP5.ps

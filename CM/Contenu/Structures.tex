@@ -399,8 +399,8 @@ Seule l'adresse d'un tableau dynamique est recopiée. C'est une
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]
 \frametitle{Affectation de variables d'un type structuré}
-{\bf Règle générale}~: pour chaque définition d'un type structuré \Code{X},
-on définit une fonction de prototype
+{\bf Règle générale}~: pour chaque déclaration d'un type structuré
+\Code{X}, on définit une fonction de prototype
 \begin{center}
     \Code{void copier\_X(X *v1, X *v2);}
 \end{center}
@@ -463,8 +463,8 @@ structuré.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]
 \frametitle{Comparaison de variables d'un type structuré}
-{\bf Règle générale}~: pour chaque définition d'un type structuré \Code{X},
-on définit deux fonctions de prototypes
+{\bf Règle générale}~: pour chaque déclaration d'un type structuré
+\Code{X}, on définit deux fonctions de prototypes
 \begin{center}
     \Code{int sont\_ega\_X(X *v1, X *v2);} \smallskip
 
@@ -501,8 +501,8 @@ fonction de comparaison \Code{sont\_ega\_Y}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]
 \frametitle{Destruction de variables d'un type structuré}
-{\bf Règle générale}~: pour chaque définition d'un type structuré \Code{X},
-on définit une fonction de prototype
+{\bf Règle générale}~: pour chaque déclaration d'un type structuré
+\Code{X}, on définit une fonction de prototype
 \begin{center}
     \Code{void detruire\_X(X *v);}
 \end{center}
