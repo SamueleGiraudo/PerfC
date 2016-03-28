@@ -1,6 +1,6 @@
 % Auteur : Samuele Giraudo
 % Création : nov. 2013
-% Modifications : juil. 2014 oct. 2014 nov. 2014, déc. 2015
+% Modifications : juil. 2014 oct. 2014 nov. 2014, déc. 2015, mars 2016
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -20,7 +20,7 @@ Un opérateur dispose des {\bf caractéristiques structurelles} suivantes~:
 \begin{enumerate}
     \uncover<2->{
     \item son \alert{arité}, qui désigne le nombre d'opérandes sur
-    lequel il agit~;
+    lesquelles il agit~;
     \medskip}
 
     \uncover<3->{
@@ -621,9 +621,100 @@ Si \Code{x} est signé (déclaré sans \Code{unsigned}),}
 \end{multicols}
 \end{frame}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Exemple --- ensembles finis}
+Les opérateurs bit à bit sont adaptés pour représenter des ensembles
+finis et réaliser des opérations ensemblistes de manière simple et
+efficace.
+\bigskip
+
+\uncover<2->{%
+Soit $E$ un ensemble à $32$ éléments.
+\smallskip
+
+On considère que $E$ est muni d'une relation d'ordre totale de sorte
+que ses éléments puissent être indexés de $0$ à $31$. Ainsi,
+\begin{equation*}
+    E = \{e_0, e_1, e_2, \dots, e_{31}\}.
+\end{equation*}}
+
+\uncover<3->{%
+Cette indexation permet de représenter tout \alert{sous-ensemble} $S$ de
+$E$ par un mot de $32$ bit dont le $i\ieme$ bit code la présence
+(\Code{1}) ou l'absence (\Code{0}) de $e_i$ dans~$S$.
+\medskip}
+
+\uncover<4->{%
+P.ex., l'entier dont l'écriture binaire est
+\begin{equation*}
+    {\tt 00010000 10000000 00000011 00000101}
+\end{equation*}
+code le sous ensemble $\{e_0, e_2, e_8, e_9, e_{23}, e_{28}\}$ de $E$.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Exemple --- ensembles finis}
+Ceci mène à la déclaration du type
+\begin{lstlisting}
+typedef unsigned int SousEnsemble;
+\end{lstlisting}
+\medskip
+
+Pour tester si $e_i$ appartient à $S$, il suffit de réaliser un et bit
+à bit entre l'entier représentant $S$ et le mot binaire constitué d'un
+unique \Code{1} en $i\ieme{}$ position.
+\smallskip
+
+Cette expression vaut \Code{0} si $e_i \notin S$ et une valeur non nulle
+sinon.
+\medskip
+
+Ainsi,
+\begin{lstlisting}
+int appartient_e_i(SousEnsemble s, int i) {
+    assert(0 <= i);
+    assert(i <= 31);
+
+    return (1 << i) & s;
+}
+\end{lstlisting}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile] \frametitle{Exemple --- ensembles finis}
+Pour réaliser l'union de deux sous-ensembles $S_1$ et $S_2$ de $E$,
+il suffit de réaliser un ou bit à bit des deux entiers représentant
+$S_1$ et $S_2$. En effet, pour tout $i$, $e_i \in S_1 \cup S_2$ si
+$e_i \in S_1$ ou $e_i \in S_2$.
+\medskip
+
+Ainsi,
+\begin{lstlisting}
+SousEnsemble union(SousEnsemble s_1, SousEnsemble s_2) {
+    return s_1 | s_2;
+}
+\end{lstlisting}
+\bigskip
+
+Pour réaliser l'intersection de deux sous-ensembles $S_1$ et $S_2$ de $E$,
+il suffit de réaliser un et bit à bit des deux entiers représentant
+$S_1$ et $S_2$. En effet, pour tout $i$, $e_i \in S_1 \cap S_2$ si
+$e_i \in S_1$ et $e_i \in S_2$.
+\medskip
+
+Ainsi,
+\begin{lstlisting}
+SousEnsemble union(SousEnsemble s_1, SousEnsemble s_2) {
+    return s_1 & s_2;
+}
+\end{lstlisting}
+\end{frame}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]
-\frametitle{Compter le nombre de bits à un}
+\frametitle{Exemple --- Compter le nombre de bits à un}
 {\bf But}~: écrire une fonction qui renvoie le nombre de bits à un
 de son paramètre.
 \bigskip
@@ -657,7 +748,7 @@ typedef unsigned long long Mot64;}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]
-\frametitle{Compter le nombre de bits à un}
+\frametitle{Exemple --- Compter le nombre de bits à un}
 {\bf $2\ieme$ méthode}~: on constate que pour tout entier \Code{x} non
 nul (avec au moins un bit à un), l'expression \Code{x \& -x} est l'entier
 qui contient un unique bit à un, le plus à droite de \Code{x}.
@@ -687,7 +778,7 @@ transforme le bit à un le plus à droite de \Code{x} en un zéro.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]
-\frametitle{Compter le nombre de bits à un}
+\frametitle{Exemple --- Compter le nombre de bits à un}
 {\bf $3\ieme$ méthode}~: cette troisième méthode n'utilise pas de boucle.
 \medskip
 
@@ -712,7 +803,7 @@ void initialiser_nombre_un() \{
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]
-\frametitle{Compter le nombre de bits à un}
+\frametitle{Exemple --- Compter le nombre de bits à un}
 On isole l'octet d'indice \Code{i} d'une variable \Code{x} de type
 \Code{Mot64} par l'expression
 \begin{center}
@@ -742,7 +833,7 @@ Comme le nombre de bits à un de \Code{x} est la somme du nombre de bits
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]
-\frametitle{Compter le nombre de bits à un}
+\frametitle{Exemple --- Compter le nombre de bits à un}
 {\bf $4\ieme$ méthode}~: on peut pousser plus loin l'idée précédente en
 considérant des blocs de deux octets (au lieu d'un seul).
 
@@ -772,7 +863,7 @@ Taille mémoire occupée par le tableau \Code{nombre\_un}~:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]
-\frametitle{Compter le nombre de bits à un}
+\frametitle{Exemple --- Compter le nombre de bits à un}
 Ceci fournit la solution suivante.
 \begin{semiverbatim}\small
 int compter_un_4(Mot64 x) \{
@@ -794,7 +885,7 @@ au lieu des huit de la méthode précédente.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]
-\frametitle{Compter le nombre de bits à un}
+\frametitle{Exemple --- Compter le nombre de bits à un}
 {\bf $5\ieme$ méthode}~: cette méthode est la plus compliquée. Elle se base
 sur une compréhension très fine du fonctionnement des opérateurs
 bit à bit.
