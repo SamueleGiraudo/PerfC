@@ -402,7 +402,7 @@ Seule l'adresse d'un tableau dynamique est recopiée. C'est une
 {\bf Règle générale}~: pour chaque déclaration d'un type structuré
 \Code{X}, on définit une fonction de prototype
 \begin{center}
-    \Code{void copier\_X(X *v1, X *v2);}
+    \Code{void copier\_X(const X *v1, X *v2);}
 \end{center}
 qui \alert{copie en profondeur} les champs de \Code{v1} dans les champs
 de \Code{v2}.
@@ -411,7 +411,7 @@ de \Code{v2}.
 Par exemple, la définition du type \Code{T} précédent s'accompagne de la
 définition de la fonction
 \begin{lstlisting}
-void copier_T(T *v1, T *v2) {
+void copier_T(const T *v1, T *v2) {
     int i;
     assert(v1 != NULL);
     assert(v2 != NULL);
@@ -466,9 +466,9 @@ structuré.
 {\bf Règle générale}~: pour chaque déclaration d'un type structuré
 \Code{X}, on définit deux fonctions de prototypes
 \begin{center}
-    \Code{int sont\_ega\_X(X *v1, X *v2);} \smallskip
+    \Code{int sont\_ega\_X(const X *v1, const X *v2);} \smallskip
 
-    \Code{int sont\_dif\_X(X *v1, X *v2);}
+    \Code{int sont\_dif\_X(const X *v1, const X *v2);}
 \end{center}
 qui \alert{testent l'égalité} et \alert{l'inégalité} entre \Code{v1}
 et \Code{v2}.

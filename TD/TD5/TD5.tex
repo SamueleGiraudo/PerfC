@@ -1,6 +1,6 @@
 % Auteur : Samuele Giraudo
 % Création : 20-03-16
-% Modifications : 20-03-16
+% Modifications : 20-03-16 01-04-16
 
 \documentclass[12pt]{article}
 
@@ -99,8 +99,34 @@ a = (1 << 8) + 32;
 b = 32;
 res = sont_egales(1, &a, &b);
 \end{lstlisting}
+
+            \item ~
+\begin{lstlisting}
+int a;
+int b;
+
+a = (1 << 8) + 32;
+b = 32;
+res = sont_egales(2, &a, &b);
+\end{lstlisting}
+
+            \item ~
+\begin{lstlisting}
+int a;
+int b;
+
+a = 0xAE00BBAA
+b = 0xEA00BBAA;
+res = sont_egales(3, &a, &b);
+\end{lstlisting}
         \end{enumerate}
     \end{multicols}
+    \smallskip
+
+    \item Expliquer comment utiliser la fonction {\tt sont\_egales}
+    pour tester si deux variables d'un type structuré~{\tt T} quelconque
+    sont égales. Expliquer ce qu'il se passe si certains champs de {\tt T}
+    sont des pointeurs.
 \end{enumerate}
 \end{Exercice}
 \bigskip
@@ -112,9 +138,8 @@ res = sont_egales(1, &a, &b);
 
 On souhaite manipuler une fonction paramétrée par un entier {\tt n} qui
 renvoie un pointeur sur un tableau de {\tt n} entiers initialisés à {\tt 0}.
-Expliquer pourquoi la fonction suivante ne répond pas à cette spécification.
-Expliquer en particulier ce qu'il se passe lorsque cette fonction est
-appelée (faire des dessins de mémoire).
+
+\begin{multicols}{2}
 \begin{lstlisting}
 int *creer_tableau(int n) {
     int tab[n];
@@ -125,6 +150,17 @@ int *creer_tableau(int n) {
     return tab;
 }
 \end{lstlisting}
+
+Expliquer pourquoi la fonction ci-contre ne répond pas à cette
+spécification en donnant deux raisons bien précises. En supposant que
+cette fonction est acceptée par le compilateur, expliquer aussi ce
+qu'il se passe lorsqu'elle est appelée (faire des dessins de
+mémoire).
+\end{multicols}
+
+\noindent
+{\it Indice~: tenir compte du fait que la taille du tableau statique
+n'est pas connue à la compilation mais seulement à l'exécution.}
 \end{Exercice}
 \bigskip
 
@@ -133,9 +169,6 @@ int *creer_tableau(int n) {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{Exercice} {\bf (Tableaux dynamiques à une dimension)}\smallskip
 
-Dans toutes les fonctions suivantes, on prendra soin de vérifier que
-les allocations dynamiques (et donc les appels à la fonction {\tt malloc})
-ne produisent pas d'erreur.
 \begin{enumerate}
     \item Écrire une fonction {\tt creer\_tab} paramétrée par un entier
     {\tt n} et qui renvoie un pointeur sur un tableau de {\tt n} entiers
@@ -154,9 +187,6 @@ ne produisent pas d'erreur.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{Exercice} {\bf (Tableaux dynamiques à deux dimensions)}\smallskip
 
-Dans toutes les fonctions suivantes, on prendra soin de vérifier que
-les allocations dynamiques (et donc les appels à la fonction {\tt malloc})
-ne produisent pas d'erreur.
 \begin{enumerate}
     \item Écrire une fonction {\tt creer\_tab\_2d} paramétrée par des
     entiers {\tt n} et {\tt m} et qui renvoie un pointeur sur un tableau
@@ -189,10 +219,6 @@ detruire_tab_2d(tab, 2);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{Exercice} {\bf (Tableaux dynamiques en dents de scie)}\smallskip
-
-Dans toutes les fonctions suivantes, on prendra soin de vérifier que
-les allocations dynamiques (et donc les appels à la fonction {\tt malloc})
-ne produisent pas d'erreur.
 
 \begin{enumerate}
     \item Écrire une fonction {\tt creer\_scie} paramétrée par un entier

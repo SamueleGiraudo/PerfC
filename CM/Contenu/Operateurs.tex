@@ -148,7 +148,7 @@ euclidienne de son premier opérande par son second.
 
 \uncover<2->{
 D'un point de vue mathématique, si $a$ et $b$ sont deux entiers, on a
-$a / b = b \times q + r$, où $0 \leq r \leq b - 1$ et $q$ est un entier.
+$a = b \times q + r$, où $0 \leq r \leq b - 1$ et $q$ est un entier.
 $q$ est le {\bf quotient} et $r$ est le {\bf reste}, \alert{toujours positif}.
 \bigskip}
 
@@ -276,7 +276,7 @@ il est possible de comparer deux pointeurs.
 
 \begin{multicols}{2}
 \begin{semiverbatim}\footnotesize\uncover<2->{
-char *ptr1, ptr2;
+char *ptr1, *ptr2;
 char c;
 c = 'a';
 ptr1 = &c;
@@ -302,9 +302,9 @@ Le second test est faux car les adresses des variables \Code{ptr1} et
 \begin{semiverbatim}\footnotesize\uncover<3->{
 int t1[2], t2[2];
 t1[0] = 1;
-t1[2] = 2;
+t1[1] = 2;
 t2[0] = 1;
-t2[2] = 2;
+t2[1] = 2;
 if (t1 == t2)
     printf("ok\\n");}
 \end{semiverbatim}
@@ -706,7 +706,7 @@ $e_i \in S_1$ et $e_i \in S_2$.
 
 Ainsi,
 \begin{lstlisting}
-SousEnsemble union(SousEnsemble s_1, SousEnsemble s_2) {
+SousEnsemble intersection(SousEnsemble s_1, SousEnsemble s_2) {
     return s_1 & s_2;
 }
 \end{lstlisting}

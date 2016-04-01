@@ -184,35 +184,35 @@ printf("%x\n", *ptr_int);
 
     \item ~
 \begin{lstlisting}
-ptr_short = (short *) &a;
+ptr_short = (unsigned short *) &a;
 printf("%x\n", *ptr_short);
 \end{lstlisting}
     \smallskip
 
     \item ~
 \begin{lstlisting}
-ptr_char = (char *) &a;
+ptr_char = (unsigned char *) &a;
 printf("%x\n", *ptr_char);
 \end{lstlisting}
     \smallskip
 
     \item ~
 \begin{lstlisting}
-ptr_short = (short *) &a;
+ptr_short = (unsigned short *) &a;
 printf("%x\n", *(ptr_short + 1));
 \end{lstlisting}
     \smallskip
 
     \item ~
 \begin{lstlisting}
-ptr_char = (char *) &a;
+ptr_char = (unsigned char *) &a;
 printf("%x\n", *(ptr_char + 1));
 \end{lstlisting}
     \smallskip
 
     \item ~
 \begin{lstlisting}
-ptr_char = (char *) &a;
+ptr_char = (unsigned char *) &a;
 printf("%x\n", *(ptr_char + 2));
 \end{lstlisting}
     \end{enumerate}
@@ -250,21 +250,21 @@ printf("%x\n", *ptr_char);
 
     \item ~
 \begin{lstlisting}
-ptr_short = (short *) tab;
+ptr_short = (unsigned short *) tab;
 printf("%x\n", *ptr_short);
 \end{lstlisting}
     \smallskip
 
     \item ~
 \begin{lstlisting}
-ptr_int = (int *) tab;
+ptr_int = (unsigned int *) tab;
 printf("%x\n", *ptr_int);
 \end{lstlisting}
     \smallskip
 
     \item ~
 \begin{lstlisting}
-ptr_short = (short *) tab;
+ptr_short = (unsigned short *) tab;
 printf("%x\n", *(ptr_short + 1));
 \end{lstlisting}
     \smallskip
