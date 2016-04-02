@@ -1,6 +1,7 @@
 % Auteur : Samuele Giraudo
 % Création : nov. 2013
 % Modifications : juil. 2014 oct. 2014 nov. 2014, déc. 2015, mars 2016
+% avril 2016
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -880,7 +881,19 @@ int compter_un_4(Mot64 x) \{
 
 \uncover<2->{
 Elle ne demande que quatre lectures dans le tableau \Code{nombre\_un},
-au lieu des huit de la méthode précédente.}
+au lieu des huit de la méthode précédente.
+\bigskip}
+
+\uncover<3->{
+À l'extrême, il est impossible de maintenir un tableau \Code{nombre\_un}
+qui ne demanderait qu'une seule lecture. En effet, sa taille mémoire
+serait de
+\begin{equation*}
+    2^{64} \times \Code{sizeof(int)} \:\mathrm{o}
+    \; = \; 2^{66} \:\mathrm{o}
+    \; = \; \frac{2^{66}}{2^{30}} \:\mathrm{Gio}
+    \; = \; 2^{36} \:\mathrm{Gio}.
+\end{equation*}}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
