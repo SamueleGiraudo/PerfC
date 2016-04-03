@@ -182,33 +182,35 @@ Appelons $C$ la carte sur laquelle nous travaillons et $n$ le nombre de
 villes qu'elle contient. La méthode de recherche d'une bonne visite sur
 $C$ se décrit de la manière suivante~:
 \begin{enumerate}
-    \item générer de manière aléatoire une liste $V = [v_1, \dots, v_k]$
-    de visites sur $C$. L'entier $k$ est fixé~;
+    \item {\bf générer} de manière aléatoire une liste $V = [v_1, \dots, v_k]$
+    de visites sur $C$. L'entier $k$ est fixé (une valeur habituelle pour
+    $k$ est de $128$)~;
     \smallskip
 
     \item \label{item:etape_tri}
-    trier $V$ dans l'ordre décroissant selon la longueur des visites.
+    {\bf trier} $V$ dans l'ordre décroissant selon la longueur des visites.
     De cette manière, la meilleure visite de $V$ est celle située en
-    tête~;
+    tête. Elle se note $v_1$~;
     \smallskip
 
-    \item construire une nouvelle liste $V'$ de villes de la manière
+    \item {\bf construire} une nouvelle liste $V'$ de villes de la manière
     suivante. Placer dans $V'$~:
     \begin{enumerate}
-        \item les villes $\Mut(v_1)$, $\Mut(v_2)$, \dots,
+        \item les visites $\Mut(v_1)$, $\Mut(v_2)$, \dots,
         $\Mut(v_{\alpha})$, où $\Mut$ est une opération de mutation
         appliquée sur visite. Son fonctionnement est expliqué plus loin~;
-        \item les villes $v_1$, $v_2$, \dots, $v_\beta$ provenant de $V$~;
+        \item les visites $v_1$, $v_2$, \dots, $v_\beta$ provenant de $V$~;
         \item un nombre $\gamma$ de visites générées aléatoirement~;
     \end{enumerate}
     Les entiers $\alpha$, $\beta$ et $\gamma$ sont fixés et vérifient
-    $\alpha + \beta + \gamma = k$~;
+    $\alpha + \beta + \gamma = k$ de sorte que $V'$ contiennent autant
+    de visites que $V$~;
     \smallskip
 
-    \item la nouvelle liste de visites $V$ est la liste $V'$~;
+    \item la {\bf nouvelle liste} de visites $V$ est la liste $V'$~;
     \smallskip
 
-    \item tant que le programme n'est pas interrompu, aller à
+    \item {\bf tant que} le programme n'est pas interrompu, aller à
     l'étape~\ref{item:etape_tri}.
 \end{enumerate}
 \medskip
@@ -249,7 +251,9 @@ on obtient
 \subsection*{\centering Précisions}
 Les paramètres $\alpha$, $\beta$ et $\gamma$ doivent pouvoir être
 choisis par l'utilisateur (des valeurs par défaut sont proposées qui
-peuvent dépendre du nombre $n$ de villes de la carte).
+peuvent dépendre du nombre $n$ de villes de la carte). Une phase
+d'expérimentation est importante pour trouver de bonnes valeurs par
+défaut.
 \medskip
 
 Une gestion efficace d'erreur doit protéger l'application. Tout ce qui
@@ -257,9 +261,32 @@ peut provoquer une erreur doit être anticipé (format de carte non valide,
 distances proposées non cohérentes, {\em etc.}).
 \medskip
 
-Tout ajout ou toute optimisation pertinente est le bienvenu (comme par
-exemple un moyen de schématiser une carte dans une fenêtre graphique).
-\bigskip
+Tout ajout ou toute optimisation pertinente est le bienvenu. Par exemple,
+\begin{itemize}
+    \item l'ajout d'un mécanisme pour visualiser une carte dans une
+    fenêtre graphique~;
+    \smallskip
+
+    \item la mise au point d'un mécanisme pour visualiser graphiquement
+    et en temps réel la meilleure visite calculée pour le moment~;
+    \smallskip
+
+    \item la possibilité de saisir une carte en cliquant dans une fenêtre
+    graphique de sorte à créer des coordonnées $(x, y)$ pour chaque ville~;
+    \smallskip
+
+    \item la connexion de l'application à un site internet contenant une
+    base de données de distances entre villes~;
+    \smallskip
+
+    \item la prise en compte, en plus des distances entre villes, d'un
+    coût de transport. La minimisation devra se faire par une fonction
+    linéaire $v \mapsto \lambda_d d + \lambda_c c$ sur la distance et
+    le coût. Elle associe à chaque visite $v$ la quantité mentionnée,
+    où $d$ est la longueur de la visite, $c$ son coût total, et
+    $\lambda_d$ et $\lambda_c$ des coefficients rationnels choisis par
+    l'utilisateur.
+\end{itemize}
 
 \begin{center} *** \\ * \end{center}
 \bigskip
@@ -276,7 +303,9 @@ le projet présenté.
 
 \begin{enumerate}
     \item Lire attentivement {\bf l'intégralité du sujet} avant de
-    commencer à répondre aux questions.
+    commencer à répondre aux questions. Synthétiser ce qui est demandé
+    de sorte à résumer l'information contenue dans le sujet en moins de
+    la moitié d'une page.
     \smallskip
 
     \item Une fois ceci fait, proposer un découpage en modules cohérent
@@ -296,7 +325,7 @@ le projet présenté.
     précédent. Au fil de l'écriture du projet, il est possible de se
     rendre compte que le découpage initialement prévu n'est pas complet
     ou adapté. Si c'est le cas, mentionner l'historique de ses
-     modifications.
+    modifications.
     \smallskip
 
     \item Maintenir un {\tt Makefile} pour compiler le projet.
