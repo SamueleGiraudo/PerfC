@@ -1,0 +1,340 @@
+% Auteur : Samuele Giraudo
+% Création : 25-04-16
+% Modifications : 25-04-16, 30-04-16
+
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{amsmath,amsthm,amsfonts,amssymb}
+\usepackage{lmodern}
+\usepackage[top=2.4cm,bottom=2.4cm,left=2.4cm,right=2.4cm]{geometry}
+\usepackage{hyperref}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tikz}
+
+%\author{Samuele Giraudo}
+\date{}
+\title{{\bf Perfectionnement à la programmation en {\sf C}} \\
+    Fiche de TD 6 \\
+    {\small L2 Informatique 2015-2016} \\
+    {\it \small Généricité}}
+
+\theoremstyle{definition}
+\newtheorem{Exercice}{Exercice}
+
+\newcommand{\EnsNat}{\mathbb{N}}
+\newcommand{\La}{{\tt a}}
+\newcommand{\Lb}{{\tt b}}
+\newcommand{\Lc}{{\tt c}}
+\newcommand{\Ld}{{\tt d}}
+
+% Configuration de listings.
+\lstset{
+    language=c,
+    basicstyle=\ttfamily\footnotesize,
+    identifierstyle=\color{Mahogany},
+    keywordstyle=\color{NavyBlue},
+    stringstyle=\color{Emerald},
+    commentstyle=\it\color{Gray},
+    columns=flexible,
+    tabsize=4,
+    extendedchars=true,
+    showspaces=false,
+    numbers=left,
+    numberstyle=\tiny,
+    breaklines=true,
+    breakautoindent=true,
+    captionpos=b,
+    showstringspaces=true
+}
+
+\begin{document}
+
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Déclarations de pointeurs de fonctions)}\smallskip
+\begin{enumerate}
+    \item Déclarer un pointeur {\tt f\_1} sur une fonction paramétrée
+    par deux entiers et qui renvoie un caractère.
+    \smallskip
+
+    \item Déclarer un pointeur {\tt f\_2} sur une fonction paramétrée
+    par une chaîne de caractères et un flottant et qui renvoie un
+    pointeur sur un entier.
+    \smallskip
+
+    \item Déclarer un pointeur {\tt f\_3} sur une fonction paramétrée
+    par un caractère et un pointeur sur une fonction de même signature
+    que celle de {\tt f\_1} et qui renvoie une chaîne de caractères.
+    \smallskip
+
+    \item Déclarer un pointeur {\tt f\_4} sur une fonction paramétrée
+    par deux caractères et qui renvoie un pointeur sur une fonction
+    de même signature que celle de {\tt f\_2}.
+    \smallskip
+
+    \item Déclarer un pointeur {\tt f\_5} sur une fonction paramétrée
+    par une fonction de même signature que celle de {\tt f\_2} et qui
+    renvoie un pointeur sur une fonction de même signature que celle
+    de~{\tt f\_1}.
+    \smallskip
+
+    \item Déclarer un tableau statique {\tt tab\_f\_1} de {\tt 32}
+    pointeurs de fonctions de mêmes signatures que celle de {\tt f\_1}.
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Pointeurs de fonction et tableaux)}\smallskip
+\begin{enumerate}
+    \item Écrire une fonction {\tt fois\_deux} qui renvoie le double
+    de son argument entier.
+    \smallskip
+
+    \item Écrire une fonction {\tt fact} qui renvoie la factorielle
+    de son argument entier.
+    \smallskip
+
+    \item Écrire une fonction
+\begin{lstlisting}
+void appliquer_tableau(int (*f)(int), int *tab, int n);
+\end{lstlisting}
+    qui modifie chaque élément du tableau {\tt tab} de taille {\tt n}
+    en son image par la fonction pointée par {\tt f}.
+    \smallskip
+
+    \item En supposant que {\tt tab} est un tableau d'entiers de taille
+    {\tt 128}, écrire une suite d'instructions qui modifie chaque
+    élément du tableau en le double de sa factorielle. On suppose que
+    les valeurs du tableau sont telles que chaque calcul peut se faire
+    sans dépassement de capacité.
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Pointeurs de fonction et tris)}\smallskip
+\label{ex:pointeurs_de_fonction_et_tris}
+
+Considérons les deux fonctions suivantes~:
+\begin{multicols}{2}
+\begin{lstlisting}
+void tri_croissant(int *tab, int n) {
+    int i, i_min, j, tmp;
+    for (i = 0 ; i < n - 1 ; i++) {
+        i_min = i;
+        for (j = i ; j < n ; j++) {
+            if (tab[j] < tab[i_min])
+                i_min = j;
+        }
+        tmp = tab[i_min];
+        tab[i_min] = tab[i];
+        tab[i] = tmp;
+    }
+}
+\end{lstlisting}
+\begin{lstlisting}
+void tri_decroissant(int *tab, int n) {
+    int i, i_max, j, tmp;
+    for (i = 0 ; i < n - 1 ; i++) {
+        i_max = i;
+        for (j = i ; j < n ; j++) {
+            if (tab[j] > tab[i_max])
+                i_max = j;
+        }
+        tmp = tab[i_max];
+        tab[i_max] = tab[i];
+        tab[i] = tmp;
+    }
+}
+\end{lstlisting}
+\end{multicols}
+L'une trie les éléments d'un tableau {\tt tab} de taille {\tt n} dans
+l'ordre croissant et l'autre, dans l'ordre décroissant.
+\smallskip
+
+Ces deux fonctions sont identiques, à l'exception de l'opérateur de
+comparaison en ligne 6 et de certains noms pour les variables locales.
+L'utilisation de pointeurs de fonctions permet d'éviter cette redondance
+de code et d'avoir ainsi une unique fonction qui réaliser, selon la
+manière dont elle est appelée, l'un ou l'autre tri.
+\begin{enumerate}
+    \item Écrire une fonction
+\begin{lstlisting}
+int superieur(int a, int b);
+\end{lstlisting}
+    qui renvoie {\tt 1} si {\tt a} est strictement supérieur à {\tt b},
+    {\tt 0} s'ils sont égaux et {\tt -1} sinon.
+    \smallskip
+
+    \item Écrire une fonction
+\begin{lstlisting}
+int inferieur(int a, int b);
+\end{lstlisting}
+    qui renvoie {\tt 1} si {\tt a} est strictement inférieur à {\tt b},
+    {\tt 0} s'ils sont égaux et {\tt -1} sinon.
+    \smallskip
+
+    \item Écrire une fonction {\tt tri}, paramétrée par un tableau
+    d'entiers {\tt tab}, sa taille {\tt n} et une fonction {\tt comparer}.
+    Cette fonction modifie {\tt tab} de sorte à le trier selon la comparaison
+    dictée par la fonction {\tt comparer}. Plus précisément, si {\tt a}
+    et {\tt b} sont des éléments de {\tt tab} et que {\tt a} apparaît
+    dans {\tt tab} à gauche de {\tt b}, il faut que la fonction
+    { \tt comparer} appelée avec les arguments {\tt a} et {\tt b} renvoie
+    {\tt -1} (ou {\tt 0} pour les répétitions d'éléments).
+    \smallskip
+
+    \item En supposant que {\tt tab} est un tableau d'entiers de taille
+    {\tt 2047}, écrire une suite d'instructions qui trie {\tt tab} dans
+    l'ordre croissant, affiche ses valeurs, trie {\tt tab} dans
+    l'ordre décroissant et affiche ses valeurs.
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Pointeurs et données génériques)}\smallskip
+
+Un {\em pointeur générique} est un pointeur de type {\tt void *}. Une
+{\em donnée générique} est une variable adressée par un pointeur
+générique.
+\begin{enumerate}
+    \item On suppose que {\tt a} est une variable de type {\tt int}.
+    Définir un pointeur générique {\tt ptr} qui adresse~{\tt a}.
+    \smallskip
+
+    \item Multiplier par trois la valeur de {\tt a} en opérant uniquement
+    sur {\tt ptr}.
+    \smallskip
+
+    \item On suppose maintenant que {\tt ptr} est un pointeur générique
+    et que l'on dispose d'un type
+\begin{lstlisting}
+typedef struct {
+    int x;
+    int y;
+} Couple;
+\end{lstlisting}
+    et d'une variable {\tt b} de ce type. Faire pointer {\tt ptr} vers
+    {\tt b}.
+    \smallskip
+
+    \item Incrémenter le champ {\tt y} de {\tt b} en opérant uniquement
+    sur {\tt ptr}.
+    \smallskip
+
+    \item Écrire une fonction
+\begin{lstlisting}
+void *twist(void *couple);
+\end{lstlisting}
+    qui travaille avec des pointeurs génériques voués à être des données
+    de type {\tt Couple}. Cette fonction renvoie un nouveau couple
+    obtenu en permutant les champs {\tt x} et {\tt y} du couple en
+    argument.
+    \smallskip
+
+    \item En supposant que {\tt c} est une variable de type {\tt Couple},
+    écrire une suite d'instructions appelant la fonction précédente
+    sur {\tt c}.
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Tableaux génériques)}\smallskip
+
+Un {\em tableau générique} est une variable de type {\tt void *},
+interprétée comme une concaténation d'octets formant, bloc par bloc,
+les cases du tableau. Pour manipuler une telle donnée, il est nécessaire
+de connaître la taille du tableau (nombre de cases) ainsi que le nombre
+d'octets nécessaires pour représenter un élément du tableau (nombre
+d'octets par bloc).
+\begin{enumerate}
+    \item Calculer le nombre d'octets nécessaires pour représenter
+    un tableau générique de taille $24$ voué à contenir des valeurs
+    occupant chacune $8$ octets.
+    \smallskip
+
+    \item Représenter graphiquement un tableau générique de taille $4$
+    voué à contenir des valeurs occupant chacune $2$ octets.
+    \smallskip
+
+    \item Représenter graphiquement un tableau générique de taille $2$
+    voué à contenir des valeurs occupant chacune $4$ octets.
+    \smallskip
+
+    \item Supposons que {\tt tab} est un tableau générique. Supposons de
+    plus que {\tt tab} est utilisé pour contenir des données de type
+    {\tt short}. Donner deux manières d'accéder à la $4\ieme$ donnée du
+    tableau.
+    \smallskip
+
+    \item Répondre à la même question que la précédente dans le cas où
+    {\tt tab} est utilisé pour contenir des {\tt int}.
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{Exercice} {\bf (Minimum générique dans un tableau)}\smallskip
+
+L'objectif de cette exercice est d'écrire une fonction générique qui
+calcule la plus petite valeur contenue dans un tableau générique.
+\begin{enumerate}
+    \item Déterminer la signature d'une fonction qui prend deux données
+    génériques en argument et qui renvoie la plus petite des deux. En
+    faire un type.
+    \smallskip
+
+    \item Écrire une telle fonction générique qui calcule la plus petite
+    valeur entre deux entiers.
+    \smallskip
+
+    \item Écrire une telle fonction générique qui calcule la plus petite
+    valeur entre deux chaînes de caractères (il est conseillé d'utiliser
+    la fonction {\tt strcmp} de {\tt string.h}.
+    \smallskip
+
+    \item Déterminer la signature de la fonction {\tt min\_tab} qui
+    répond à l'objectif de l'exercice. Elle est paramétrée, entre autres,
+    par un tableau générique et une fonction de calcul de la plus petite
+    valeur entre deux valeurs données.
+    \smallskip
+
+    \item Donner le corps de la fonction {\tt min\_tab}.
+    \smallskip
+
+    \item En supposant que {\tt tab} est un tableau d'entiers de taille
+    {\tt 64}, écrire une suite d'instructions qui calcule et affiche
+    sa plus petite valeur, en utilisant {\tt min\_tab}.
+    \smallskip
+
+    \item En supposant que {\tt tab} est un tableau de {\tt 64} chaînes
+    de caractères et toutes de taille {\tt 96}, écrire une suite
+    d'instructions qui calcule et affiche sa plus petite valeur, en
+    utilisant {\tt min\_tab}.
+\end{enumerate}
+\end{Exercice}
+\bigskip
+
+\end{document}
