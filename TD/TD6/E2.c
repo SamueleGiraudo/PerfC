@@ -39,6 +39,18 @@ void afficher_tab(int *tab, int n) {
         printf("%d ", tab[i]);
 }
 
+/** 5. */
+void appliquer_tableau_2(int (*tab_f[])(int), int *tab, int n) {
+    int i;
+
+    assert(tab_f != NULL);
+    assert(tab != NULL);
+    assert(n >= 0);
+
+    for (i = 0 ; i < n ; ++ i)
+        tab[i] = tab_f[i](tab[i]);
+}
+
 int main() {
 
     int tab[8]; /* 128 */

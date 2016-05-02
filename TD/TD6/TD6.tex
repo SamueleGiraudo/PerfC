@@ -1,6 +1,6 @@
 % Auteur : Samuele Giraudo
 % Création : 25-04-16
-% Modifications : 25-04-16, 30-04-16
+% Modifications : 25-04-16, 30-04-16, 02-04-16
 
 \documentclass[12pt]{article}
 
@@ -118,6 +118,17 @@ void appliquer_tableau(int (*f)(int), int *tab, int n);
     élément du tableau en le double de sa factorielle. On suppose que
     les valeurs du tableau sont telles que chaque calcul peut se faire
     sans dépassement de capacité.
+    \smallskip
+
+    \item Nous voulons maintenant modifier chaque élément d'un tableau
+    {\tt tab} d'entiers de sorte à remplacer chaque entrée {\tt tab[i]}
+    par son image par une fonction {\tt f\_i}. Pour cela, écrire une
+    fonction
+\begin{lstlisting}
+void appliquer_tableau_2(int (*tab_f[])(int), int *tab, int n);
+\end{lstlisting}
+    paramétrée par un tableau {\tt tab\_f} de {\tt n} fonctions et un
+    tableau d'entiers {\tt tab} de taille {\tt n}.
 \end{enumerate}
 \end{Exercice}
 \bigskip
